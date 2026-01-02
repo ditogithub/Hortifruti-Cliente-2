@@ -331,7 +331,6 @@ setInterval(() => {
 </script>
 
 
-
 <style>
 :root{
   --accent:#df4b10;
@@ -353,7 +352,7 @@ header {
 #btnOpenCart{ background:rgba(255,255,255,0.12); color:#fff; padding:6px 10px; border-radius:6px; border:0; cursor:pointer; font-weight:700; }
 .page { padding:19px; max-width:1400px; margin:0 auto; }
 .layout-coluna{ display:flex; flex-direction:column; gap:14px; align-items:center; }
-.card{ background:var(--card); border-radius:10px; padding-top: 35px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
+.card{ background:var(--card); border-radius:10px; padding-top: 67px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
 .products{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
 .product{ width:180px; background:#fafafa; border:1px solid #eee; border-radius:8px; padding:8px; text-align:center; display:flex; flex-direction:column; gap:8px; }
 
@@ -1468,8 +1467,368 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 }
 
 /*----------------------------------------------------------------------------------------------*/
+/* Estilos para área do usuário */
+.user-info-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgb(236, 143, 3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border-left: 2px solid #0375df;
+    max-width: 200px;
+}
 
-</style>
+.user-info-area img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #3498db;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+    
+}
+
+.user-name {
+    font-weight: 600;
+    color: #fafbfc;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-email {
+    color: #7f8c8d;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-logout {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 3px 6px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 9px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+/* Modal de login */
+.login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999 !important;
+}
+
+.login-modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    z-index: 999999 !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 3px solid #2ecc71;
+}
+
+.login-modal .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 999999 !important;
+}
+
+.login-modal .close-btn:hover {
+    background: #c0392b;
+}
+
+/* ADICIONE ESTES ESTILOS AO SEU CSS EXISTENTE */
+
+/* Melhorias para o Modal de Login */
+.login-modal {
+    background: rgba(0,0,0,0.92) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.login-modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 35px 30px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1) !important;
+    animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Tabs de Login/Cadastro */
+.login-tabs {
+    display: flex;
+    background: #f1f3f5;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.login-tab {
+    flex: 1;
+    padding: 14px 0;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+}
+
+.login-tab.active {
+    background: white;
+    color: #2c3e50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Campos do formulário */
+.login-form input {
+    width: 100%;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 15px;
+    background: white;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Botões */
+.login-form button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.login-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+
+/* Botão Google */
+.login-form button[style*="background: #DB4437"] {
+    background: linear-gradient(135deg, #DB4437 0%, #C23321 100%) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 15px;
+}
+
+.login-form button[style*="background: #DB4437"]:hover {
+    box-shadow: 0 8px 20px rgba(219, 68, 55, 0.3) !important;
+}
+
+/* Divisor */
+.login-form div[style*="border-bottom"] {
+    margin: 25px 0;
+    position: relative;
+}
+
+.login-form div[style*="border-bottom"] span {
+    background: white !important;
+    padding: 0 20px !important;
+    color: #6c757d !important;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Links */
+.login-form a {
+    color: #3498db !important;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.login-form a:hover {
+    color: #2980b9 !important;
+    text-decoration: underline;
+}
+
+/* Títulos */
+.login-modal-content h3 {
+    color: #2c3e50 !important;
+    margin-bottom: 30px !important;
+    font-size: 24px !important;
+    text-align: center !important;
+    font-weight: 700 !important;
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .login-modal-content {
+        padding: 25px 20px !important;
+        width: 95% !important;
+    }
+    
+    .login-tab {
+        padding: 12px 0;
+        font-size: 14px;
+    }
+    
+    .login-form input {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+    
+    .login-form button {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Badge de notificação (opcional) */
+.user-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+/* Tooltip para informações do usuário */
+.user-tooltip {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 20px;
+    min-width: 250px;
+    z-index: 1000;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #e9ecef;
+}
+
+.user-info-area:hover .user-tooltip {
+    display: block;
+}
+
+/* Animação para feedback visual */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Botão de fechar melhorado */
+.login-modal .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: #f8f9fa;
+    color: #6c757d;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+.login-modal .close-btn:hover {
+    background: #e74c3c;
+    color: white;
+    transform: rotate(90deg);
+}
+/*-----------------------------------------------------------------------------------------------*/
+
+</style> <!--final style-->
 
 
 </head>
@@ -1483,11 +1842,11 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
     <!-- LOGO -->
     <img src="imagens/compras_verduras.png" 
          alt="Logo" 
-         style="width: 40px; height: auto; border-radius: 8px;">
+         style="width: 30px; height: auto; border-radius: 8px;">
     
     
     <!-- NOME DA EMPRESA -->
-    <h1 style="margin: 0; font-size: 18px; font-weight: bold;">
+    <h1 style="margin: 0; font-size: 18px; font-weight: bold; color: #222;">
       HORTIFRUTI CLIENTE 2
     </h1>
   </div>
@@ -1502,38 +1861,54 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 
   <!--------------------------------------------------------------------------------------------------->
   <!-- REDES SOCIAIS -->
-    <div style="display: flex; gap: 15px; margin-top: 8px;">
-      <!-- Instagram -->
-      <a href="https://www.instagram.com/ta_na_mao_delivery/" 
-         target="_blank"
-         style="
-           color: #e23326;
-           text-decoration: none;
-           display: flex;
-           align-items: center;
-           gap: 5px;
-           font-weight: bold;
-         ">
-        <i class="fab fa-instagram" style="font-size: 20px;"></i>
-        <span style="font-size: 14px;">Instagram</span>
-      </a>
-      
-      <!-- Facebook -->
-      <a href="https://www.facebook.com/DeliveryTNM" 
-         target="_blank"
-         style="
-           color: #1877f2;
-           text-decoration: none;
-           display: flex;
-           align-items: center;
-           gap: 5px;
-           font-weight: bold;
-         ">
-        <i class="fab fa-facebook" style="font-size: 20px;"></i>
-        <span style="font-size: 14px;">Facebook</span>
-      </a>
-    </div>
-  </div>
+<div style="display: flex; gap: 15px; margin-top: 8px;">
+  <!-- Instagram -->
+  <a href="https://www.instagram.com/ta_na_mao_delivery/" 
+     target="_blank"
+     style="
+       color: #e23326;
+       text-decoration: none;
+       display: flex;
+       align-items: center;
+       gap: 5px;
+       font-weight: bold;
+     ">
+    <i class="fab fa-instagram" style="font-size: 24px;"></i>
+  </a>
+  
+  <!-- Facebook -->
+  <a href="https://www.facebook.com/DeliveryTNM" 
+     target="_blank"
+     style="
+       color: #1877f2;
+       text-decoration: none;
+       display: flex;
+       align-items: center;
+       gap: 5px;
+       font-weight: bold;
+     ">
+    <i class="fab fa-facebook" style="font-size: 24px;"></i>
+  </a>
+</div>
+  <!------------------------------------------------------------------------------------------------->
+   <!-- Adicione este código no cabeçalho, depois do botão do carrinho -->
+<button id="btnUserLogin" style="
+    background: rgba(255,255,255,0.12);
+    color: #0c0c0c;
+    padding: 4px 8px; /* Reduzido de 6px 10px */
+    border-radius: 6px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px; /* Reduzido de 6px */
+    font-size: 12px; /* Adicionado para texto menor */
+">
+    <i class="fas fa-user" style="font-size: 12px;"></i> <!-- Reduzido de 14px -->
+    <span id="userLoginText">Entrar</span>
+</button>
+
   <!------------------------------------------------------------------------------------------------->
 
   <!-- CAMPO DE PESQUISA -->
@@ -1573,8 +1948,8 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
       <span id="cartCount">0</span>
     </button>
   </div>
-
-
+  
+ 
 </header>
 <!----------------------------------------------------------------------------------------------------->
 
@@ -1735,7 +2110,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 
 <script>
 
- // FIREBASE HORTIFRUTI 2
+// FIREBASE HORTIFRUTI 2
 // =========================
 // FIREBASE (compat) CONFIG
 // =========================
@@ -1752,6 +2127,62 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+//-----------------------------------------------------------------------------------------------
+// =========================
+// CONFIGURAÇÃO DO FIREBASE AUTH COM GOOGLE
+// =========================
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+googleProvider.addScope('profile');
+googleProvider.addScope('email');
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
+
+// =========================
+// VERIFICAÇÃO DE AUTENTICAÇÃO AO CARREGAR A PÁGINA
+// =========================
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        console.log('👤 Usuário Firebase autenticado:', user.email);
+        
+        try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                
+                window.currentUser = {
+                    id: user.uid,
+                    name: userData.displayName || user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    phone: userData.phoneNumber || user.phoneNumber || '',
+                    photoURL: userData.photoURL || user.photoURL || '',
+                    provider: userData.provider || 'email',
+                    firebaseUser: user,
+                    createdAt: userData.createdAt || new Date().toISOString()
+                };
+                
+                localStorage.setItem('hortifruti_user', JSON.stringify(window.currentUser));
+                updateUserUI();
+                console.log('✅ Usuário carregado do Firestore:', window.currentUser.name);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados do usuário:', error);
+        }
+    } else {
+        console.log('👤 Nenhum usuário Firebase autenticado');
+        
+        const savedUser = localStorage.getItem('hortifruti_user');
+        if (savedUser) {
+            try {
+                window.currentUser = JSON.parse(savedUser);
+                updateUserUI();
+            } catch (e) {
+                console.log('Erro ao carregar usuário local:', e);
+            }
+        }
+    }
+});
 //------------------------------------------------------------------------------------------------
 
 // =========================
@@ -4656,17 +5087,169 @@ async function verificarPermissaoLocalizacao() {
   }
 }
 // =========================
+// =========================
 // FUNÇÃO ENVIAR WHATSAPP - CORRIGIDA PARA ABRIR APP NATIVO
 // =========================
 async function enviarWhats() {
   console.log(' Iniciando envio para WhatsApp...');
-
-   // ✅ NOVO: VERIFICAR SE LOCALIZAÇÃO ESTÁ BLOQUEADA
+  
+  // ✅ 0º PASSO: VERIFICAÇÃO DE LOGIN OBRIGATÓRIO (NOVO)
+  console.log('🔐 Verificando login do usuário...');
+  
+  // Função para verificar login de forma síncrona/simples
+  function verificarLogin() {
+    if (!window.currentUser || !window.currentUser.id) {
+      const modalHtml = `
+        <div id="loginRequiredModal" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0,0,0,0.85);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 999999;
+          font-family: Arial, sans-serif;
+        ">
+          <div style="
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+          ">
+            <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 15px;">
+              🔐 Login Obrigatório
+            </h3>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+              Para enviar pedidos pelo WhatsApp, é necessário fazer login com sua conta Google.
+            </p>
+            
+            <button id="modalLoginBtn" style="
+              background: #DB4437;
+              color: white;
+              border: none;
+              padding: 12px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: bold;
+              width: 100%;
+              margin-bottom: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+            ">
+              <i class="fab fa-google"></i>
+              Login com Google
+            </button>
+            
+            <p style="font-size: 12px; color: #95a5a6; margin-top: 15px;">
+              Seus dados serão salvos para próximas compras.
+            </p>
+            
+            <button id="modalCancelBtn" style="
+              margin-top: 10px;
+              background: none;
+              border: none;
+              color: #666;
+              cursor: pointer;
+              font-size: 14px;
+            ">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      `;
+      
+      const modalElement = document.createElement('div');
+      modalElement.innerHTML = modalHtml;
+      document.body.appendChild(modalElement);
+      
+      return new Promise((resolve) => {
+        document.getElementById('modalLoginBtn').onclick = async () => {
+          if (typeof loginWithGoogle === 'function') {
+            try {
+              await loginWithGoogle();
+              
+              // Aguardar o login ser processado
+              setTimeout(() => {
+                const modal = document.getElementById('loginRequiredModal');
+                if (modal) modal.remove();
+                
+                if (window.currentUser && window.currentUser.id) {
+                  console.log('✅ Login realizado com sucesso!');
+                  // Preencher dados automaticamente após login
+                  preencherDadosUsuario();
+                  resolve(true);
+                } else {
+                  alert('❌ Falha no login. Tente novamente.');
+                  resolve(false);
+                }
+              }, 1500);
+            } catch (error) {
+              console.error('Erro no login:', error);
+              resolve(false);
+            }
+          } else {
+            alert('❌ Função de login não disponível. Atualize a página.');
+            resolve(false);
+          }
+        };
+        
+        document.getElementById('modalCancelBtn').onclick = () => {
+          const modal = document.getElementById('loginRequiredModal');
+          if (modal) modal.remove();
+          alert('⚠️ O envio de pedidos requer login. Faça login para continuar.');
+          resolve(false);
+        };
+      });
+    }
+    
+    // Usuário já está logado
+    return Promise.resolve(true);
+  }
+  
+  // Executar verificação de login
+  const usuarioLogado = await verificarLogin();
+  if (!usuarioLogado) {
+    console.log(' Envio cancelado: usuário não fez login');
+    return;
+  }
+  
+  // ✅ FUNÇÃO AUXILIAR: Preencher dados do usuário
+  function preencherDadosUsuario() {
+    if (window.currentUser) {
+      const nameInput = document.getElementById('clientName');
+      const phoneInput = document.getElementById('clientPhone');
+      
+      if (nameInput && !nameInput.value && window.currentUser.name) {
+        nameInput.value = window.currentUser.name;
+        console.log('✅ Nome preenchido automaticamente:', window.currentUser.name);
+      }
+      
+      if (phoneInput && !phoneInput.value && window.currentUser.phone) {
+        phoneInput.value = window.currentUser.phone;
+        console.log('✅ Telefone preenchido automaticamente:', window.currentUser.phone);
+      }
+      
+      // Atualizar UI do usuário
+      updateUserUI();
+    }
+  }
+  
+  // Preencher dados automaticamente se disponíveis
+  preencherDadosUsuario();
+  
+  // ✅ 1º PASSO: VERIFICAR PERMISSÃO DE LOCALIZAÇÃO (CÓDIGO ORIGINAL)
   console.log('📍 Verificando permissões de localização...');
   const permissaoLocalizacao = await verificarPermissaoLocalizacao();
   
   if (!permissaoLocalizacao.permitido) {
-    // Mostrar mensagem detalhada de como desbloquear
     const tentarMesmoAssim = confirm(
       permissaoLocalizacao.mensagem + 
       '\n\n⚠️ SEM LOCALIZAÇÃO, O PEDIDO PODE NÃO SER ENVIADO!\n\n' +
@@ -4703,39 +5286,48 @@ async function enviarWhats() {
           'Se quiser retirar no local, selecione  → 🚶 Retirar no Local');
     
     // Reativar botão
-    btnWhats.textContent = originalText;
-    btnWhats.disabled = false;
+    if (btnWhats) {
+      btnWhats.textContent = originalText;
+      btnWhats.disabled = false;
+    }
     return;
   }
   //-----------------------------------------------------  
   
   // 🛑 BLOQUEAR BOTÃO para evitar cliques duplos
   const btnWhats = document.querySelector('button[onclick="enviarWhats()"]');
-  const originalText = btnWhats.textContent;
-  btnWhats.textContent = '⏳ Preparando...';
-  btnWhats.disabled = true;
+  const originalText = btnWhats ? btnWhats.textContent : 'Enviar pedido';
+  
+  if (btnWhats) {
+    btnWhats.textContent = '⏳ Preparando...';
+    btnWhats.disabled = true;
+  }
 
   try {
-    // ✅ 1º PASSO: VERIFICAR SE O ESTOQUE ESTÁ PAUSADO
+    // ✅ 2º PASSO: VERIFICAR SE O ESTOQUE ESTÁ PAUSADO
     const estoqueSnap = await db.collection('config').doc('estoque').get();
     const estoquePausado = estoqueSnap.exists ? estoqueSnap.data().pausado : false;
     
     if (estoquePausado) {
       alert('⏸️ Estoque em manutenção. Tente novamente mais tarde.');
-      btnWhats.textContent = originalText;
-      btnWhats.disabled = false;
+      if (btnWhats) {
+        btnWhats.textContent = originalText;
+        btnWhats.disabled = false;
+      }
       return;
     }
 
-    // ✅ 2º PASSO: VERIFICAR ESTOQUE DOS PRODUTOS (APENAS VERIFICAÇÃO)
+    // ✅ 3º PASSO: VERIFICAR ESTOQUE DOS PRODUTOS (APENAS VERIFICAÇÃO)
     for (const item of cart) {
       const produtoRef = db.collection('produtos').doc(item.id);
       const snap = await produtoRef.get();
       
       if (!snap.exists) {
         alert(`❌ Produto "${item.name}" não encontrado!`);
-        btnWhats.textContent = originalText;
-        btnWhats.disabled = false;
+        if (btnWhats) {
+          btnWhats.textContent = originalText;
+          btnWhats.disabled = false;
+        }
         return;
       }
       
@@ -4744,13 +5336,15 @@ async function enviarWhats() {
       
       if (item.qty > stockAtual) {
         alert(`❌ Estoque insuficiente:\n\n"${item.name}"\n• Pedido: ${item.qty}\n• Disponível: ${stockAtual}`);
-        btnWhats.textContent = originalText;
-        btnWhats.disabled = false;
+        if (btnWhats) {
+          btnWhats.textContent = originalText;
+          btnWhats.disabled = false;
+        }
         return;
       }
     }
 
-    // ✅ 3º PASSO: BUSCAR NÚMERO DO WHATSAPP
+    // ✅ 4º PASSO: BUSCAR NÚMERO DO WHATSAPP
     let numeroWhatsApp = '';
     try {
       const whatsSnap = await db.collection('config').doc('whatsapp').get();
@@ -4765,19 +5359,23 @@ async function enviarWhats() {
     // Verificar se tem número configurado
     if (!numeroWhatsApp || numeroWhatsApp.trim() === '') {
       alert('❌ Número do WhatsApp não configurado!\n\nConfigure no painel admin primeiro.');
-      btnWhats.textContent = originalText;
-      btnWhats.disabled = false;
+      if (btnWhats) {
+        btnWhats.textContent = originalText;
+        btnWhats.disabled = false;
+      }
       return;
     }
 
     // ✅ VALIDAR TROCO ANTES DE CONTINUAR
     if (!validarTrocoCompleto()) {
-      btnWhats.textContent = originalText;
-      btnWhats.disabled = false;
+      if (btnWhats) {
+        btnWhats.textContent = originalText;
+        btnWhats.disabled = false;
+      }
       return;
     }
 
-    // ✅ 4º PASSO: MONTAR MENSAGEM
+    // ✅ 5º PASSO: MONTAR MENSAGEM
     const name = document.getElementById('clientName')?.value.trim() || 'Não informado';
     const phone = document.getElementById('clientPhone')?.value.trim() || 'Não informado';
     const address = document.getElementById('clientAddress')?.value.trim() || 'Não informado';
@@ -4802,30 +5400,32 @@ async function enviarWhats() {
     msg += `🏠 *Endereço:* ${address}\n`;
     
     // Localização - encurtar link se for muito longo
-      if (locationLink && locationLink !== 'Não informado') {
-        // Verificar se é um link do Google Maps
-        if (locationLink.includes('google.com/maps')) {
-          // Extrair apenas as coordenadas para mostrar
-          const match = locationLink.match(/q=([-\d.]+),([-\d.]+)/);
-          if (match) {
-            const lat = match[1];
-            const lng = match[2];
-            msg += `📍 *Localização:* https://maps.google.com/?q=${lat},${lng}\n`;
-          } else {
-            msg += `📍 *Localização:* ${locationLink}\n`;
-          }
+    if (locationLink && locationLink !== 'Não informado') {
+      if (locationLink.includes('google.com/maps')) {
+        const match = locationLink.match(/q=([-\d.]+),([-\d.]+)/);
+        if (match) {
+          const lat = match[1];
+          const lng = match[2];
+          msg += `📍 *Localização:* https://maps.google.com/?q=${lat},${lng}\n`;
         } else {
           msg += `📍 *Localização:* ${locationLink}\n`;
         }
       } else {
-        msg += `📍 *Localização:* Não informado\n`;
+        msg += `📍 *Localização:* ${locationLink}\n`;
       }
+    } else {
+      msg += `📍 *Localização:* Não informado\n`;
+    }
     
     // Troco
     if (troco && troco.toLowerCase() !== 'não precisa de troco' && troco !== 'Não precisa de troco') {
-      // Remove "R$ " se estiver presente para formatar corretamente
       const trocoLimpo = troco.replace('R$ ', '').replace('R$', '');
       msg += `💵 *Troco para:* R$ ${trocoLimpo}\n`;
+    }
+    
+    // Adicionar informações do usuário logado (se disponível)
+    if (window.currentUser && window.currentUser.email) {
+      msg += `👤 *Usuário logado:* ${window.currentUser.email}\n`;
     }
     
     msg += `\n───────────────\n`;
@@ -4834,17 +5434,16 @@ async function enviarWhats() {
     msg += `🍎 *Produtos selecionados:*\n`;
     
     cart.forEach((item, index) => {
-        const emojiNumero = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-        const numeroEmoji = index < emojiNumero.length ? emojiNumero[index] : `${index + 1}.`;
-        
-        msg += `${numeroEmoji} ${item.name}\n`;
-        msg += `   - Preço: ${formatBRL(item.unitPrice)}\n`;
-        msg += `   - Quantidade: ${item.qty}\n`;
-        
-        // Adicionar linha separadora se não for o último item
-        if (index < cart.length - 1) {
-            msg += `\n`;
-        }
+      const emojiNumero = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+      const numeroEmoji = index < emojiNumero.length ? emojiNumero[index] : `${index + 1}.`;
+      
+      msg += `${numeroEmoji} ${item.name}\n`;
+      msg += `   - Preço: ${formatBRL(item.unitPrice)}\n`;
+      msg += `   - Quantidade: ${item.qty}\n`;
+      
+      if (index < cart.length - 1) {
+        msg += `\n`;
+      }
     });
     
     msg += `\n───────────────\n`;
@@ -4853,67 +5452,58 @@ async function enviarWhats() {
     msg += '*RESUMO DE VALORES:*\n';
     msg += `Subtotal: ${formatBRL(subtotalPedido)}\n`;
 
-    // Verificar se retirar no local está marcado
     const retirarLocalCheckbox2 = document.getElementById('retirarLocal');
     const retirarLocal2 = retirarLocalCheckbox2 ? retirarLocalCheckbox2.checked : false;
 
-    // Usar a mesma lógica do carrinho para mostrar a taxa
     if (retirarLocal2) {
-        msg += `Taxa de entrega: R$ 0,00 (Retirada no local)\n`;
+      msg += `Taxa de entrega: R$ 0,00 (Retirada no local)\n`;
     } else {
-        const taxaCalculada = encontrarTaxaDoBairro();
-        if (taxaCalculada > 0) {
-            msg += `Taxa de entrega: ${formatBRL(taxaCalculada)}\n`;
-        } else {
-            msg += `Taxa de entrega: R$ 0,00\n`;
-        }
+      const taxaCalculada = encontrarTaxaDoBairro();
+      if (taxaCalculada > 0) {
+        msg += `Taxa de entrega: ${formatBRL(taxaCalculada)}\n`;
+      } else {
+        msg += `Taxa de entrega: R$ 0,00\n`;
+      }
     }
 
     msg += `*TOTAL FINAL: ${formatBRL(totalFinal)}*\n\n`;
     msg += `💖 Agradecemos pela sua preferência!\n`;
     msg += `🛒 Seu pedido já está sendo providenciado.\n`;
-    //msg += `💰 *Chave PIX:* ${rawPixPhone || 'Não configurada'}\n`;
-
-    // Formatar chave PIX para exibição (remover +55 e espaços)
-        let pixParaExibicao = rawPixPhone || 'Não configurada';
-        if (pixParaExibicao) {
-            // Remover +55 se existir
-            pixParaExibicao = pixParaExibicao.replace('+55', '');
-            // Remover espaços
-            pixParaExibicao = pixParaExibicao.trim();
-        }
-        msg += `💰 *Chave PIX:* ${pixParaExibicao}\n`;
+    
+    let pixParaExibicao = rawPixPhone || 'Não configurada';
+    if (pixParaExibicao) {
+      pixParaExibicao = pixParaExibicao.replace('+55', '').trim();
+    }
+    msg += `💰 *Chave PIX:* ${pixParaExibicao}\n`;
 
     msg += `📅 *Data:* ${new Date().toLocaleDateString('pt-BR')} ${new Date().toLocaleTimeString('pt-BR')}`;
 
-    // ✅ 5º PASSO: CRIAR URL DO WHATSAPP
+    // ✅ 6º PASSO: CRIAR URL DO WHATSAPP
     const mensagemCodificada = encodeURIComponent(msg);
     const urlAPI = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=${mensagemCodificada}`;
     
     console.log(' URL WhatsApp gerada:', urlAPI);
 
-        // ✅ 5.5º PASSO: CALCULAR TAXA FINAL PARA CONFIRMAÇÃO
+    // ✅ 7º PASSO: CALCULAR TAXA FINAL PARA CONFIRMAÇÃO
     const taxaFinalConfirmacao = encontrarTaxaDoBairro();
     
-    // ✅ 6º PASSO: CONFIRMAÇÃO FINAL DO USUÁRIO
+    // ✅ 8º PASSO: CONFIRMAÇÃO FINAL DO USUÁRIO
     const confirmacao = confirm(
       `📱 ENVIAR PEDIDO PARA WHATSAPP?\n\n` +
       `Número: ${numeroWhatsApp}\n` +
       `Subtotal: ${formatBRL(subtotalPedido)}\n` +
       `Taxa de entrega: ${formatBRL(taxaFinalConfirmacao)}\n` +
       `Total final: ${formatBRL(totalFinal)}\n` +
-      `Cliente: ${name}\n\n` +
+      `Cliente: ${name}\n` +
+      `Usuário: ${window.currentUser?.email || 'Não logado'}\n\n` +
       `Clique em OK para abrir o WhatsApp e enviar.\n` +
       `Clique em CANCELAR para voltar ao carrinho.`
     );
     
-    // 🔴🔴🔴 AQUI ESTÁ A CORREÇÃO CRÍTICA:
-    // SÓ REDUZIR ESTOQUE E LIMPAR CARRINHO SE O USUÁRIO CONFIRMAR
-    
     if (confirmacao) {
       console.log(' Usuário confirmou - processando pedido...');
       
-      // ✅ 7º PASSO: RESERVAR ESTOQUE (APENAS SE CONFIRMAR)
+      // ✅ 9º PASSO: RESERVAR ESTOQUE (APENAS SE CONFIRMAR)
       for (const item of cart) {
         const produtoRef = db.collection('produtos').doc(item.id);
         const snap = await produtoRef.get();
@@ -4926,9 +5516,8 @@ async function enviarWhats() {
         });
       }
 
-      // ✅ 8º PASSO: LIMPAR CARRINHO (APENAS SE CONFIRMAR)
+      // ✅ 10º PASSO: LIMPAR CARRINHO (APENAS SE CONFIRMAR)
       cart = [];
-      // Não permitir recuperação após envio
       lastRemovedCart = null;
       removedCartTimestamp = null;
       hideRecoverButton();
@@ -4936,7 +5525,7 @@ async function enviarWhats() {
       renderCart();
       carregarProdutos();
 
-      // ✅ 9º PASSO: ABRIR WHATSAPP
+      // ✅ 11º PASSO: ABRIR WHATSAPP
       console.log(' Abrindo WhatsApp...');
       try {
         window.open(urlAPI, '_blank', 'noopener,noreferrer');
@@ -4945,7 +5534,7 @@ async function enviarWhats() {
         window.location.href = urlAPI;
       }
 
-      // ✅ 10º PASSO: FEEDBACK DE SUCESSO
+      // ✅ 12º PASSO: FEEDBACK DE SUCESSO
       setTimeout(() => {
         alert('✅ Pedido enviado com sucesso!\n\n' +
               '• Carrinho limpo\n' +
@@ -4955,29 +5544,27 @@ async function enviarWhats() {
       }, 500);
       
     } else {
-      // ⚠️ USUÁRIO CANCELOU - NÃO FAZER NADA COM ESTOQUE/CARRINHO
       console.log(' Usuário cancelou o envio pelo WhatsApp');
       alert('⚠️ Envio cancelado.\n\nO carrinho permanece intacto.\n\nContinue comprando!');
       
-      // Apenas reativa o botão, mantém tudo como estava
-      btnWhats.textContent = originalText;
-      btnWhats.disabled = false;
+      if (btnWhats) {
+        btnWhats.textContent = originalText;
+        btnWhats.disabled = false;
+      }
     }
 
   } catch (error) {
     console.error('❌ Erro:', error);
     alert('❌ Erro ao processar pedido. Tente novamente.\n\nErro: ' + error.message);
   } finally {
-    // ✅ SEMPRE: Reativar botão (com timeout de segurança)
     setTimeout(() => {
-      if (btnWhats.disabled) {
+      if (btnWhats && btnWhats.disabled) {
         btnWhats.textContent = originalText;
         btnWhats.disabled = false;
       }
     }, 2000);
   }
 }
-
 //-----------------------------------------------------------------------------------------------
 
 // =========================
@@ -10456,7 +11043,6 @@ window.configurarBackupAutomatico = async function() {
 };
 
 //----------------------------------------------------------------------------------------------------
-
 // 6. RESETAR SISTEMA - VERSÃO COM CARRINHO REALMENTE LIMPO
 window.resetarSistema = function() {
     if (confirm('⚠️ ⚠️ ⚠️  RESETAR SISTEMA COMPLETO?\n\nIsso irá:\n• Limpar TODO o cache local\n• Remover carrinho atual\n• Recarregar TODOS os dados\n• Manter configurações do Firebase\n\n🚨 Esta ação não pode ser desfeita!\n\nContinuar?')) {
@@ -10548,7 +11134,7 @@ window.resetarSistema = function() {
                     saveCart();
                 } else {
                     // Fallback: salvar diretamente
-                    localStorage.setItem('horti1_cart', '[]');
+                    localStorage.setItem('horti2_cart', '[]');
                     localStorage.setItem('cart', '[]');
                 }
                 
@@ -10593,7 +11179,7 @@ window.resetarSistema = function() {
                     salvarCarrinhoLimpo();
                     
                     // Depois limpa outras coisas
-                    const chavesParaManter = ['horti1_cart', 'cart']; // Mantém essas
+                    const chavesParaManter = ['horti2_cart', 'cart']; // Mantém essas
                     const todasChaves = [];
                     
                     // Coletar todas as chaves
@@ -10701,6 +11287,8 @@ window.resetarSistema = function() {
         console.log('✅ Reset do sistema iniciado...');
     }
 };
+
+//--------------------------------------------------------------------------------------------------------------------------------------
 
 // =========================
 // SISTEMA DE GESTÃO DE SENHAS (MODO TÉCNICO) - VERSÃO CORRIGIDA
@@ -10870,6 +11458,7 @@ window.verSenhasSistema = async function() {
         alert('❌ Erro: ' + error.message);
     }
 };
+//-----------------------------------------------------------------------------------------------------
   // 2. TROCAR SENHA DO ADMIN (já existe, mantida para referência)
   window.trocarSenhaAdmin = async function() {
       console.log(' Iniciando troca de senha admin...');
@@ -11380,6 +11969,1187 @@ console.log('2. Função atualizarSelectBairros:', typeof atualizarSelectBairros
 console.log('3. Função configurarBotaoAtualizarBairros:', typeof configurarBotaoAtualizarBairros);
 console.log('4. Função configurarSelectBairro:', typeof configurarSelectBairro);
 console.log('5. Select encontrado:', document.getElementById('clientBairro') ? 'SIM' : 'NÃO');
+
+//----------------------------------------------------------------------------------------------------
+// =========================
+// SISTEMA DE AUTENTICAÇÃO DO USUÁRIO (CLIENTE)
+// =========================
+
+// Referências aos elementos do DOM
+let userLoginModal = null;
+
+// Estado do usuário
+window.currentUser = null;
+
+// Inicializar autenticação do usuário
+function initUserAuth() {
+    // Verificar se já existe usuário salvo
+    const savedUser = localStorage.getItem('delivery_bebidas_user');
+    if (savedUser) {
+        try {
+            window.currentUser = JSON.parse(savedUser);
+            updateUserUI();
+        } catch (e) {
+            console.log('Erro ao carregar usuário:', e);
+        }
+    }
+    
+    // Configurar botão de login
+    const btnUserLogin = document.getElementById('btnUserLogin');
+    if (btnUserLogin) {
+        btnUserLogin.addEventListener('click', showUserLoginModal);
+    }
+}
+
+// Mostrar modal de login do usuário
+function showUserLoginModal() {
+    // Se já estiver logado, mostrar opções
+    if (window.currentUser) {
+        showUserMenu();
+        return;
+    }
+    
+    // Criar modal de login
+    userLoginModal = document.createElement('div');
+    userLoginModal.className = 'login-modal';
+    
+    userLoginModal.innerHTML = `
+        <div class="login-modal-content">
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">👤 Entrar na sua conta</h3>
+            
+            <div class="login-tabs">
+                <button class="login-tab active" data-tab="login">Entrar</button>
+                <button class="login-tab" data-tab="register">Cadastrar</button>
+            </div>
+            
+            <div id="loginForm" class="login-form">
+                <input type="email" id="loginEmail" placeholder="Seu email" required>
+                <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                <button onclick="userLogin()">Entrar</button>
+                
+                <div style="text-align: center; margin: 15px 0;">
+                    <div style="border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 20px 0;">
+                        <span style="background: white; padding: 0 10px; color: #666;">OU</span>
+                    </div>
+                    
+                    <button onclick="loginWithGoogle()" style="
+                        background: #DB4437;
+                        color: white;
+                        border: none;
+                        padding: 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        width: 100%;
+                        margin-top: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                    ">
+                        <i class="fab fa-google"></i>
+                        Entrar com Google
+                    </button>
+                </div>
+                
+                <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
+                    <a href="#" onclick="showForgotPassword()" style="color: #3498db;">
+                        Esqueci minha senha
+                    </a>
+                    <br>
+                    Não tem conta? <a href="#" onclick="switchToRegister()" style="color: #3498db;">Cadastre-se</a>
+                </p>
+            </div>
+            
+            <div id="registerForm" class="login-form" style="display: none;">
+                <input type="text" id="registerName" placeholder="Seu nome completo" required>
+                <input type="email" id="registerEmail" placeholder="Seu email" required>
+                <input type="password" id="registerPassword" placeholder="Crie uma senha (mín. 6 caracteres)" required>
+                <input type="tel" id="registerPhone" placeholder="Seu telefone (WhatsApp)">
+                <button onclick="userRegister()">Cadastrar</button>
+                
+                <div style="text-align: center; margin: 15px 0;">
+                    <div style="border-bottom: 1px solid #ddd; line-height: 0.1em; margin: 20px 0;">
+                        <span style="background: white; padding: 0 10px; color: #666;">OU</span>
+                    </div>
+                    
+                    <button onclick="loginWithGoogle()" style="
+                        background: #DB4437;
+                        color: white;
+                        border: none;
+                        padding: 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: bold;
+                        width: 100%;
+                        margin-top: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                    ">
+                        <i class="fab fa-google"></i>
+                        Cadastrar com Google
+                    </button>
+                </div>
+                
+                <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;">
+                    Já tem conta? <a href="#" onclick="switchToLogin()" style="color: #3498db;">Faça login</a>
+                </p>
+            </div>
+            
+            <button onclick="closeUserLoginModal()" style="
+                margin-top: 15px;
+                background: none;
+                border: none;
+                color: #666;
+                cursor: pointer;
+                font-size: 14px;
+                width: 100%;
+                text-align: center;
+            ">
+                ✕ Fechar
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(userLoginModal);
+    
+    // Configurar tabs
+    const tabs = userLoginModal.querySelectorAll('.login-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+    
+    // Fechar ao clicar fora
+    /*userLoginModal.addEventListener('click', function(e) {
+        if (e.target === userLoginModal) {
+            closeUserLoginModal();
+        }
+    });*/
+    
+    // Focar no primeiro campo
+    setTimeout(() => {
+        const emailInput = document.getElementById('loginEmail');
+        if (emailInput) emailInput.focus();
+    }, 100);
+}
+
+//------------------------------------------------------------------------------------------
+// =========================
+// LOGIN COM GOOGLE
+// =========================
+async function loginWithGoogle() {
+    try {
+        console.log('🔐 Iniciando login com Google...');
+        
+        // Mostrar loading
+        const loadingMsg = '🔄 Conectando com Google...';
+        const loadingDiv = document.createElement('div');
+        loadingDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            z-index: 1000000;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        `;
+        loadingDiv.textContent = loadingMsg;
+        document.body.appendChild(loadingDiv);
+        
+        // Fazer login com popup
+        const result = await auth.signInWithPopup(googleProvider);
+        const user = result.user;
+        
+        console.log('✅ Login com Google bem-sucedido:', user.email);
+        
+        // Remover loading
+        loadingDiv.remove();
+        
+        // Salvar dados do usuário
+        window.currentUser = {
+            id: user.uid,
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            phone: user.phoneNumber || '',
+            photoURL: user.photoURL,
+            provider: 'google',
+            firebaseUser: user
+        };
+        
+        // Salvar no localStorage para persistência
+        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        
+        // Salvar/atualizar usuário no Firestore
+        await saveUserToFirestore(user);
+        
+        // Atualizar UI
+        updateUserUI();
+        
+        // Fechar modal
+        closeUserLoginModal();
+        
+        // Mostrar mensagem de boas-vindas
+        alert(`✅ Bem-vindo, ${user.displayName || user.email}!`);
+        
+        // Preencher automaticamente o formulário de cliente
+        fillClientFormWithUserData();
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_google_sucesso', {
+                email: user.email,
+                uid: user.uid,
+                provider: 'google'
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro no login com Google:', error);
+        
+        // Remover loading se ainda existir
+        document.querySelectorAll('div').forEach(div => {
+            if (div.textContent.includes('Conectando com Google')) {
+                div.remove();
+            }
+        });
+        
+        // Tratar erros específicos
+        let errorMessage = 'Erro ao conectar com Google: ';
+        
+        switch(error.code) {
+            case 'auth/popup-blocked':
+                errorMessage = 'O popup do Google foi bloqueado. Por favor, permita popups para este site.';
+                break;
+            case 'auth/popup-closed-by-user':
+                errorMessage = 'Login cancelado. Você fechou a janela de login do Google.';
+                break;
+            case 'auth/cancelled-popup-request':
+                errorMessage = 'Login cancelado. Tente novamente.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        alert(`❌ ${errorMessage}`);
+        
+        // Log de erro
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_google_falha', {
+                error: error.code,
+                message: error.message
+            });
+        }
+    }
+}
+
+// =========================
+// SALVAR USUÁRIO NO FIRESTORE
+// =========================
+async function saveUserToFirestore(user) {
+    try {
+        const userData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || user.email.split('@')[0],
+            photoURL: user.photoURL || '',
+            phoneNumber: user.phoneNumber || '',
+            provider: user.providerData[0]?.providerId || 'google',
+            lastLogin: new Date().toISOString(),
+            createdAt: new Date().toISOString()
+        };
+        
+        // Salvar/atualizar no Firestore
+        await db.collection('users').doc(user.uid).set(userData, { merge: true });
+        
+        console.log('✅ Usuário salvo no Firestore:', user.uid);
+        
+    } catch (error) {
+        console.error('❌ Erro ao salvar usuário no Firestore:', error);
+    }
+}
+
+//------------------------------------------------------------------------------------------
+
+// Alternar entre login e cadastro
+function switchTab(tabName) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabs = document.querySelectorAll('.login-tab');
+    
+    tabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-tab') === tabName) {
+            tab.classList.add('active');
+        }
+    });
+    
+    if (tabName === 'login') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    }
+}
+
+function switchToRegister() {
+    switchTab('register');
+}
+
+function switchToLogin() {
+    switchTab('login');
+}
+
+// Fechar modal de login
+function closeUserLoginModal() {
+    if (userLoginModal) {
+        userLoginModal.remove();
+        userLoginModal = null;
+    }
+    
+    // Restaurar scroll do body
+    document.body.style.overflow = '';
+    
+    // Remover event listeners de teclado
+    const escHandlers = document.querySelectorAll('[data-esc-handler]');
+    escHandlers.forEach(handler => handler.remove());
+}
+
+//-------------------------------------------------------------------------------------------------
+
+// Função de login do usuário (agora com Firebase)
+async function userLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    if (!email || !password) {
+        alert('Preencha todos os campos!');
+        return;
+    }
+    
+    try {
+        // Mostrar loading
+        const loginBtn = document.querySelector('#loginForm button');
+        const originalText = loginBtn.textContent;
+        loginBtn.textContent = '🔄 Entrando...';
+        loginBtn.disabled = true;
+        
+        // Fazer login com Firebase Auth
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Salvar dados do usuário
+        window.currentUser = {
+            id: user.uid,
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            phone: user.phoneNumber || '',
+            photoURL: user.photoURL,
+            provider: 'email',
+            firebaseUser: user
+        };
+        
+        // Salvar no localStorage
+        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        
+        // Salvar/atualizar no Firestore
+        await saveUserToFirestore(user);
+        
+        // Atualizar UI
+        updateUserUI();
+        
+        // Fechar modal
+        closeUserLoginModal();
+        
+        // Mostrar mensagem de boas-vindas
+        alert(`✅ Bem-vindo de volta, ${window.currentUser.name}!`);
+        
+        // Preencher automaticamente o formulário de cliente
+        fillClientFormWithUserData();
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_email_sucesso', {
+                email: email,
+                uid: user.uid
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro no login:', error);
+        
+        let errorMessage = 'Erro ao fazer login: ';
+        
+        switch(error.code) {
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+                errorMessage = '❌ Email ou senha incorretos!';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = '❌ Email inválido!';
+                break;
+            case 'auth/user-disabled':
+                errorMessage = '❌ Esta conta foi desativada.';
+                break;
+            case 'auth/too-many-requests':
+                errorMessage = '❌ Muitas tentativas. Tente novamente mais tarde.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = '❌ Erro de conexão. Verifique sua internet.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        
+        // Log de erro
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_email_falha', {
+                email: email,
+                error: error.code
+            });
+        }
+        
+    } finally {
+        // Restaurar botão
+        const loginBtn = document.querySelector('#loginForm button');
+        if (loginBtn) {
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+        }
+    }
+}
+
+// Função de registro do usuário (agora com Firebase)
+async function userRegister() {
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
+    const phone = document.getElementById('registerPhone').value.trim();
+    
+    if (!name || !email || !password) {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('A senha deve ter pelo menos 6 caracteres!');
+        return;
+    }
+    
+    // Validação de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Digite um email válido!');
+        return;
+    }
+    
+    try {
+        // Mostrar loading
+        const registerBtn = document.querySelector('#registerForm button');
+        const originalText = registerBtn.textContent;
+        registerBtn.textContent = '🔄 Criando conta...';
+        registerBtn.disabled = true;
+        
+        // Criar conta no Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Atualizar nome do perfil
+        await user.updateProfile({
+            displayName: name
+        });
+        
+        // Salvar dados adicionais no Firestore
+        const userData = {
+            uid: user.uid,
+            email: user.email,
+            displayName: name,
+            phoneNumber: phone,
+            provider: 'email',
+            lastLogin: new Date().toISOString(),
+            createdAt: new Date().toISOString()
+        };
+        
+        await db.collection('users').doc(user.uid).set(userData, { merge: true });
+        
+        // Salvar dados localmente
+        window.currentUser = {
+            id: user.uid,
+            name: name,
+            email: user.email,
+            phone: phone,
+            provider: 'email',
+            firebaseUser: user
+        };
+        
+        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        
+        // Atualizar UI
+        updateUserUI();
+        
+        // Fechar modal
+        closeUserLoginModal();
+        
+        // Mostrar mensagem de sucesso
+        alert(`✅ Conta criada com sucesso, ${name}!`);
+        
+        // Preencher automaticamente o formulário de cliente
+        fillClientFormWithUserData();
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('registro_sucesso', {
+                email: email,
+                uid: user.uid,
+                name: name
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro no registro:', error);
+        
+        let errorMessage = 'Erro ao criar conta: ';
+        
+        switch(error.code) {
+            case 'auth/email-already-in-use':
+                errorMessage = '❌ Este email já está cadastrado!';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = '❌ Email inválido!';
+                break;
+            case 'auth/weak-password':
+                errorMessage = '❌ Senha muito fraca. Use pelo menos 6 caracteres.';
+                break;
+            case 'auth/operation-not-allowed':
+                errorMessage = '❌ Cadastro por email não está disponível no momento.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = '❌ Erro de conexão. Verifique sua internet.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        alert(errorMessage);
+        
+        // Log de erro
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('registro_falha', {
+                email: email,
+                error: error.code
+            });
+        }
+        
+    } finally {
+        // Restaurar botão
+        const registerBtn = document.querySelector('#registerForm button');
+        if (registerBtn) {
+            registerBtn.textContent = originalText;
+            registerBtn.disabled = false;
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------
+// =========================
+// RECUPERAÇÃO DE SENHA
+// =========================
+async function showForgotPassword() {
+    // Fechar modal atual se existir
+    closeUserLoginModal();
+    
+    // Criar modal de recuperação
+    const recoveryModal = document.createElement('div');
+    recoveryModal.className = 'login-modal';
+    
+    recoveryModal.innerHTML = `
+        <div class="login-modal-content">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">🔑 Recuperar Senha</h3>
+            
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+                Digite o email da sua conta. Enviaremos um link para redefinir sua senha.
+            </p>
+            
+            <div id="recoveryForm" style="width: 100%;">
+                <input type="email" id="recoveryEmail" 
+                       placeholder="Seu email cadastrado" 
+                       style="
+                           width: 100%;
+                           padding: 12px;
+                           margin-bottom: 15px;
+                           border: 2px solid #ddd;
+                           border-radius: 6px;
+                           font-size: 16px;
+                           box-sizing: border-box;
+                       "
+                       required>
+                
+                <button onclick="sendPasswordReset()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: #3498db;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                ">
+                    Enviar Link de Recuperação
+                </button>
+                
+                <div id="recoveryMessage" style="
+                    display: none;
+                    padding: 10px;
+                    border-radius: 6px;
+                    margin-bottom: 15px;
+                    font-size: 14px;
+                    text-align: center;
+                "></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="closeRecoveryModal()" style="
+                    background: none;
+                    border: none;
+                    color: #3498db;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin-right: 15px;
+                ">
+                    ← Voltar ao login
+                </button>
+                
+                <button onclick="closeRecoveryModal()" style="
+                    background: none;
+                    border: none;
+                    color: #666;
+                    cursor: pointer;
+                    font-size: 14px;
+                ">
+                    ✕ Fechar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(recoveryModal);
+    
+    // Focar no campo de email
+    setTimeout(() => {
+        const emailInput = document.getElementById('recoveryEmail');
+        if (emailInput) emailInput.focus();
+    }, 100);
+    
+    // Permitir Enter para enviar
+    recoveryModal.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendPasswordReset();
+        }
+    });
+    
+    // Guardar referência para fechar
+    window.recoveryModal = recoveryModal;
+}
+
+// =========================
+// ENVIAR EMAIL DE RECUPERAÇÃO
+// =========================
+async function sendPasswordReset() {
+    const emailInput = document.getElementById('recoveryEmail');
+    const messageDiv = document.getElementById('recoveryMessage');
+    
+    if (!emailInput || !messageDiv) return;
+    
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+        showRecoveryMessage('❌ Digite seu email!', 'error');
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showRecoveryMessage('❌ Digite um email válido!', 'error');
+        return;
+    }
+    
+    try {
+        // Mostrar loading
+        const originalText = emailInput.nextElementSibling.textContent;
+        emailInput.nextElementSibling.textContent = '🔄 Enviando...';
+        emailInput.nextElementSibling.disabled = true;
+        
+        // Enviar email de recuperação via Firebase
+        await auth.sendPasswordResetEmail(email, {
+            url: window.location.href, // URL para redirecionar após redefinição
+            handleCodeInApp: false
+        });
+        
+        // Mostrar sucesso
+        showRecoveryMessage(
+            '✅ Email enviado com sucesso!<br><br>' +
+            'Verifique sua caixa de entrada e siga as instruções no email para redefinir sua senha.<br><br>' +
+            '<small style="color: #666;">Se não encontrar, verifique sua pasta de spam.</small>',
+            'success'
+        );
+        
+        // Limpar campo
+        emailInput.value = '';
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('recuperacao_senha_enviada', {
+                email: email,
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao enviar email de recuperação:', error);
+        
+        let errorMessage = 'Erro ao enviar email: ';
+        
+        switch(error.code) {
+            case 'auth/user-not-found':
+                errorMessage = '❌ Email não encontrado. Verifique se digitou corretamente.';
+                break;
+            case 'auth/invalid-email':
+                errorMessage = '❌ Email inválido. Digite um email válido.';
+                break;
+            case 'auth/too-many-requests':
+                errorMessage = '❌ Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = '❌ Erro de conexão. Verifique sua internet.';
+                break;
+            default:
+                errorMessage += error.message;
+        }
+        
+        showRecoveryMessage(errorMessage, 'error');
+        
+    } finally {
+        // Restaurar botão
+        const sendButton = emailInput.nextElementSibling;
+        if (sendButton) {
+            sendButton.textContent = 'Enviar Link de Recuperação';
+            sendButton.disabled = false;
+        }
+    }
+}
+
+// =========================
+// MOSTRAR MENSAGEM DE RECUPERAÇÃO
+// =========================
+function showRecoveryMessage(message, type) {
+    const messageDiv = document.getElementById('recoveryMessage');
+    if (!messageDiv) return;
+    
+    messageDiv.innerHTML = message;
+    messageDiv.style.display = 'block';
+    messageDiv.style.background = type === 'success' ? '#d4edda' : '#f8d7da';
+    messageDiv.style.color = type === 'success' ? '#155724' : '#721c24';
+    messageDiv.style.border = type === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+}
+
+// =========================
+// FECHAR MODAL DE RECUPERAÇÃO
+// =========================
+function closeRecoveryModal() {
+    // Fechar modal de recuperação
+    if (window.recoveryModal) {
+        window.recoveryModal.remove();
+        window.recoveryModal = null;
+    }
+    
+    // Reabrir modal de login
+    setTimeout(() => {
+        showUserLoginModal();
+    }, 300);
+}
+
+//-------------------------------------------------------------------------------------------
+
+// Preencher formulário de cliente com dados do usuário
+function fillClientFormWithUserData() {
+    if (!window.currentUser) return;
+    
+    const nameInput = document.getElementById('clientName');
+    const phoneInput = document.getElementById('clientPhone');
+    const emailInput = document.getElementById('clientEmail');
+    
+    if (nameInput && window.currentUser.name) {
+        nameInput.value = window.currentUser.name;
+    }
+    
+    if (phoneInput && window.currentUser.phone) {
+        phoneInput.value = window.currentUser.phone;
+    }
+    
+    // Se não existir campo de email, podemos criar
+    if (!emailInput) {
+        // Adicionar campo de email se não existir
+        const clientForm = document.querySelector('.client-form');
+        if (clientForm) {
+            const emailField = document.createElement('div');
+            emailField.className = 'col';
+            emailField.innerHTML = `<input id="clientEmail" placeholder="Email" value="${window.currentUser.email || ''}">`;
+            clientForm.insertBefore(emailField, clientForm.firstChild);
+        }
+    } else if (window.currentUser.email) {
+        emailInput.value = window.currentUser.email;
+    }
+}
+
+// Mostrar menu do usuário (quando já está logado)
+function showUserMenu() {
+    const menu = document.createElement('div');
+    menu.style.cssText = `
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        padding: 15px;
+        min-width: 200px;
+        z-index: 1000;
+        border: 1px solid #eee;
+    `;
+    
+    menu.innerHTML = `
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div style="
+                width: 50px;
+                height: 50px;
+                background: #3498db;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 10px;
+                font-size: 20px;
+                font-weight: bold;
+            ">
+                ${window.currentUser.name ? window.currentUser.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <strong>${window.currentUser.name || 'Usuário'}</strong><br>
+            <small style="color: #666;">${window.currentUser.email || ''}</small>
+        </div>
+        
+        <div style="border-top: 1px solid #eee; padding-top: 10px;">
+            <button onclick="fillClientFormWithUserData()" style="
+                width: 100%;
+                padding: 8px;
+                background: #3498db;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 5px;
+                text-align: left;
+            ">
+                📝 Usar meus dados no pedido
+            </button>
+            
+            <button onclick="viewOrderHistory()" style="
+                width: 100%;
+                padding: 8px;
+                background: #f39c12;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 5px;
+                text-align: left;
+            ">
+                📋 Ver meus pedidos
+            </button>
+            
+            <button onclick="userLogout()" style="
+                width: 100%;
+                padding: 8px;
+                background: #e74c3c;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-align: left;
+            ">
+                🚪 Sair da conta
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Fechar menu ao clicar fora
+    setTimeout(() => {
+        const closeMenu = function(e) {
+            if (!menu.contains(e.target) && e.target.id !== 'btnUserLogin') {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        };
+        document.addEventListener('click', closeMenu);
+    }, 100);
+}
+
+// Ver histórico de pedidos
+function viewOrderHistory() {
+    // Aqui você pode implementar a visualização do histórico de pedidos
+    alert('Em breve: histórico de pedidos!');
+    
+    // Por enquanto, vamos apenas mostrar os pedidos salvos no localStorage
+    const orders = JSON.parse(localStorage.getItem('user_orders_' + window.currentUser.id) || '[]');
+    
+    if (orders.length === 0) {
+        alert('Você ainda não fez nenhum pedido.');
+        return;
+    }
+    
+    let message = `📋 Seus últimos pedidos (${orders.length}):\n\n`;
+    
+    orders.slice(-5).reverse().forEach((order, index) => {
+        const date = new Date(order.timestamp).toLocaleDateString('pt-BR');
+        const total = order.total ? `R$ ${parseFloat(order.total).toFixed(2)}` : 'N/A';
+        message += `${index + 1}. ${date} - ${total}\n`;
+    });
+    
+    alert(message);
+}
+
+// Logout do usuário
+function userLogout() {
+    if (confirm('Deseja sair da sua conta?')) {
+        window.currentUser = null;
+        localStorage.removeItem('delivery_bebidas_user');
+        updateUserUI();
+        alert('Você saiu da sua conta.');
+    }
+}
+
+// Atualizar interface do usuário
+function updateUserUI() {
+    const btnUserLogin = document.getElementById('btnUserLogin');
+    
+    if (!btnUserLogin) return;
+    
+    if (window.currentUser) {
+        // Usuário logado
+        let avatarContent = '';
+        
+        if (window.currentUser.photoURL) {
+            // Usar foto do Google (ou outra foto de perfil)
+            avatarContent = `<img src="${window.currentUser.photoURL}" alt="${window.currentUser.name}" style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; border: 2px solid #3498db;">`;
+        } else {
+            // Usar inicial do nome com cor personalizada
+            const initial = window.currentUser.name ? window.currentUser.name.charAt(0).toUpperCase() : 'U';
+            // Gerar cor baseada no nome para consistência
+            const colors = ['#3498db', '#2ecc71', '#9b59b6', '#e74c3c', '#f39c12', '#1abc9c'];
+            const colorIndex = initial.charCodeAt(0) % colors.length;
+            avatarContent = `<div style="width: 24px; height: 24px; background: ${colors[colorIndex]}; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; font-size: 12px; font-weight: bold;">${initial}</div>`;
+        }
+        
+        btnUserLogin.innerHTML = `
+            ${avatarContent}
+            <span style="font-weight: 500;">${window.currentUser.name || window.currentUser.email.split('@')[0]}</span>
+            <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 10px; opacity: 0.7;"></i>
+        `;
+        
+        // Adicionar tooltip
+        btnUserLogin.title = `Logado como: ${window.currentUser.email}${window.currentUser.provider ? ` (via ${window.currentUser.provider})` : ''}`;
+        
+        // Adicionar classe para usuário logado
+        btnUserLogin.classList.add('user-logged-in');
+        btnUserLogin.classList.remove('user-not-logged');
+        
+        // Atualizar área do usuário se existir
+        const userArea = document.querySelector('.user-info-area');
+        if (!userArea) {
+            const header = document.querySelector('header');
+            if (header) {
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user-info-area';
+                userDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        ${window.currentUser.photoURL ? 
+                            `<img src="${window.currentUser.photoURL}" alt="${window.currentUser.name}" style="width: 32px; height: 32px; border-radius: 50%;">` : 
+                            `<div style="width: 32px; height: 32px; background: #3498db; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                ${window.currentUser.name ? window.currentUser.name.charAt(0).toUpperCase() : 'U'}
+                            </div>`
+                        }
+                        <div>
+                            <div class="user-name">${window.currentUser.name || 'Usuário'}</div>
+                            <div class="user-email">${window.currentUser.email}</div>
+                        </div>
+                    </div>
+                    <button class="btn-logout" onclick="userLogout()" title="Sair da conta">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sair</span>
+                    </button>
+                `;
+                header.appendChild(userDiv);
+            }
+        }
+        
+    } else {
+        // Usuário não logado
+        btnUserLogin.innerHTML = `
+            <i class="fas fa-user" style="font-size: 14px; margin-right: 5px;"></i>
+            <span>Entrar / Cadastrar</span>
+        `;
+        
+        // Adicionar tooltip
+        btnUserLogin.title = 'Clique para entrar ou criar uma conta';
+        
+        // Remover classe de usuário logado
+        btnUserLogin.classList.remove('user-logged-in');
+        btnUserLogin.classList.add('user-not-logged');
+        
+        // Remover área do usuário se existir
+        const userArea = document.querySelector('.user-info-area');
+        if (userArea) {
+            userArea.remove();
+        }
+    }
+}
+
+// =========================
+// INTEGRAÇÃO COM O ENVIO DE PEDIDOS
+// =========================
+
+// Modificar a função enviarWhats para salvar pedido no histórico do usuário
+const originalEnviarWhats = window.enviarWhats;
+window.enviarWhats = async function() {
+    // Chamar função original
+    const result = await originalEnviarWhats.apply(this, arguments);
+    
+    // Se o pedido foi enviado com sucesso, salvar no histórico
+    if (window.currentUser) {
+        try {
+            // Capturar dados do pedido atual
+            const orderData = {
+                userId: window.currentUser.id,
+                items: [...cart],
+                total: calcTotal(),
+                name: document.getElementById('clientName')?.value || window.currentUser.name,
+                phone: document.getElementById('clientPhone')?.value || window.currentUser.phone,
+                address: document.getElementById('clientAddress')?.value || '',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Salvar pedido
+            const orders = JSON.parse(localStorage.getItem('user_orders_' + window.currentUser.id) || '[]');
+            orders.push(orderData);
+            localStorage.setItem('user_orders_' + window.currentUser.id, JSON.stringify(orders));
+            
+            console.log('Pedido salvo no histórico do usuário');
+            
+        } catch (error) {
+            console.error('Erro ao salvar pedido:', error);
+        }
+    }
+    
+    return result;
+};
+
+// =========================
+// INICIALIZAÇÃO
+// =========================
+
+// Adicionar ao DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initUserAuth, 1000);
+    
+    // Atalho de teclado para login (Ctrl+L)
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'l') {
+            e.preventDefault();
+            showUserLoginModal();
+        }
+    });
+});
+
+// =========================
+// EXTRAS: INTEGRAÇÃO COM FIREBASE AUTH (OPCIONAL)
+// =========================
+
+// Se quiser usar Firebase Auth em vez do sistema local:
+
+async function loginWithFirebase(email, password) {
+    try {
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        window.currentUser = {
+            id: user.uid,
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            phone: user.phoneNumber || '',
+            photoURL: user.photoURL,
+            firebaseUser: user
+        };
+        
+        return true;
+    } catch (error) {
+        console.error('Erro Firebase login:', error);
+        return false;
+    }
+}
+
+async function registerWithFirebase(name, email, password, phone) {
+    try {
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Atualizar perfil
+        await user.updateProfile({
+            displayName: name
+        });
+        
+        // Salvar dados adicionais no Firestore
+        await db.collection('users').doc(user.uid).set({
+            name: name,
+            email: email,
+            phone: phone,
+            createdAt: new Date().toISOString()
+        });
+        
+        window.currentUser = {
+            id: user.uid,
+            name: name,
+            email: email,
+            phone: phone,
+            firebaseUser: user
+        };
+        
+        return true;
+    } catch (error) {
+        console.error('Erro Firebase registro:', error);
+        return false;
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------
 </script>
 </body>
 </html>
