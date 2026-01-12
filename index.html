@@ -19,7 +19,7 @@
 (function() {
     'use strict';
     
-    const SISTEMA = 'HORTIFRUTI 2 (Cliente B)';
+    window.SISTEMA = 'HORTIFRUTI 2 (Cliente B)';
     const CHAVE_CART = 'horti2_cart';
 
     //-------------------------------------------------------------------------------------------------------
@@ -1929,7 +1929,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
       border-radius: 10px;
       transition: all 0.3s ease;
     ">
-      <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" 
+      <img src="https://cdn-icons-png.flaticon.com/128/3/3729.png" 
            alt="Admin"
            style="
                width: 30px;
@@ -4362,7 +4362,7 @@ async function carregarTaxaEntrega() {
 //---------------------------------------------------------------------------------------------------------------
 
 // =========================
-// CONTROLE DO CARRINHO - VERSÃO CORRIGIDA
+// CONTROLE DO CARRINHO - VERSÃO CORRIGIDA HORTIFRUTI 2
 // =========================
 async function atualizarStatusCarrinhoUnificado() {
   try {
@@ -4390,7 +4390,21 @@ async function atualizarStatusCarrinhoUnificado() {
     // Apenas esvaziar carrinho se estiver desativado
     if (!cartEnabled) {
       cart = [];
-      localStorage.removeItem('cart');
+      
+      // USAR MÉTODO SEGURO para limpar localStorage (evita interceptação)
+      try {
+        // Método 1: Usar Storage.prototype diretamente
+        Storage.prototype.removeItem.call(localStorage, 'cart');
+        
+        // Método 2: Limpar também a chave específica do Hortifruti 2
+        const chaveHortifruti = window.CHAVE_CART || 'horti2_cart';
+        Storage.prototype.removeItem.call(localStorage, chaveHortifruti);
+        
+        console.log('🛒 Carrinho limpo (desativado)');
+      } catch (storageErr) {
+        console.warn('⚠️ Erro ao limpar localStorage:', storageErr);
+      }
+      
       if (typeof renderCart === 'function') renderCart();
       if (typeof updateCartCount === 'function') updateCartCount();
     }
@@ -5088,11 +5102,108 @@ async function verificarPermissaoLocalizacao() {
   }
 }
 // =========================
-// =========================
 // FUNÇÃO ENVIAR WHATSAPP - CORRIGIDA PARA ABRIR APP NATIVO
 // =========================
 async function enviarWhats() {
   console.log(' Iniciando envio para WhatsApp...');
+
+  //--------------------------------------------------------------------------
+  // ========================
+  // DEBUG SUPER DETALHADO - O que realmente está no carrinho?
+  // ========================
+  console.log('🔍 === DEBUG SUPER DETALHADO DO CARRINHO ===');
+
+  // Verificar se cart existe
+  console.log('1. window.cart existe?', typeof window.cart !== 'undefined');
+  console.log('2. cart é:', cart);
+  console.log('3. cart === window.cart?', cart === window.cart);
+
+  // Verificar itens individuais
+  if (cart && Array.isArray(cart) && cart.length > 0) {
+      console.log('4. ANALISANDO CADA ITEM DO CARRINHO:');
+      
+      cart.forEach((item, index) => {
+          console.log(`\n   ITEM ${index + 1}:`);
+          console.log('   Tipo:', typeof item);
+          console.log('   É objeto?', item && typeof item === 'object');
+          
+          if (item && typeof item === 'object') {
+              console.log('   Todas as chaves:', Object.keys(item));
+              console.log('   Valores completos:', item);
+              
+              // Verificar propriedades específicas
+              console.log('   Propriedades específicas:');
+              console.log('     item.name:', item.name);
+              console.log('     item.unitPrice:', item.unitPrice, '(tipo:', typeof item.unitPrice, ')');
+              console.log('     item.qty:', item.qty, '(tipo:', typeof item.qty, ')');
+              console.log('     item.id:', item.id);
+              console.log('     item.img:', item.img);
+              console.log('     item.mode:', item.mode);
+              
+              // Tentar calcular com valores que existem
+              const possiveisPrecos = ['unitPrice', 'price', 'preco', 'valor', 'value', 'preço'];
+              const possiveisQtds = ['qty', 'quantity', 'quantidade', 'amount', 'qtde'];
+              
+              let precoUsado = 0;
+              let qtdUsada = 1;
+              
+              for (const chave of possiveisPrecos) {
+                  if (item[chave] !== undefined) {
+                      precoUsado = parseFloat(item[chave]) || 0;
+                      console.log(`     Preço encontrado em "${chave}":`, precoUsado);
+                      break;
+                  }
+              }
+              
+              for (const chave of possiveisQtds) {
+                  if (item[chave] !== undefined) {
+                      qtdUsada = parseInt(item[chave]) || 1;
+                      console.log(`     Quantidade encontrada em "${chave}":`, qtdUsada);
+                      break;
+                  }
+              }
+              
+              console.log(`     CÁLCULO: ${precoUsado} x ${qtdUsada} = ${precoUsado * qtdUsada}`);
+          } else {
+              console.log('   ⚠️ ITEM INVÁLIDO!');
+          }
+      });
+  } else {
+      console.log('4. CARRINHO VAZIO OU INVÁLIDO!');
+      console.log('   cart:', cart);
+      console.log('   É array?', Array.isArray(cart));
+      console.log('   Tamanho:', cart ? cart.length : 'n/a');
+  }
+
+  // Verificar localStorage
+  console.log('\n5. VERIFICANDO localStorage:');
+  const todasChaves = Object.keys(localStorage);
+  const chavesCart = todasChaves.filter(key => key.includes('cart') || key.includes('Cart'));
+  console.log('   Chaves relacionadas a carrinho:', chavesCart);
+
+  chavesCart.forEach(chave => {
+      try {
+          const dados = JSON.parse(localStorage.getItem(chave));
+          console.log(`   "${chave}":`, Array.isArray(dados) ? `${dados.length} itens` : 'Não é array');
+          if (Array.isArray(dados) && dados.length > 0) {
+              console.log('     Primeiro item:', dados[0]);
+          }
+      } catch (e) {
+          console.log(`   "${chave}": Erro ao parsear`);
+      }
+  });
+
+  // Verificar se há conflito com outras variáveis
+  console.log('\n6. VERIFICANDO VARIÁVEIS GLOBAIS:');
+  const variaveisCart = ['cart', 'Cart', 'carrinho', 'shoppingCart', 'bebida_cart', 'bebida1_cart'];
+  variaveisCart.forEach(varName => {
+      if (window[varName] !== undefined) {
+          console.log(`   window.${varName}:`, window[varName]);
+      }
+  });
+
+  console.log('=== FIM DEBUG SUPER DETALHADO ===');
+  //--------------------------------------------------------------------------
   
   // ✅ 0º PASSO: VERIFICAÇÃO DE LOGIN OBRIGATÓRIO (NOVO)
   console.log('🔐 Verificando login do usuário...');
@@ -5391,7 +5502,7 @@ async function enviarWhats() {
     let msg = '*🛒 NOVO PEDIDO - DELIVERY HORTIFRUTI* 🛒\n\n';
     
     // INFORMAÇÕES DO CLIENTE COM EMOJIS
-    msg += `👤 *Nome:* ${name}\n`;
+    msg += `👨 *Nome:* ${name}\n`;
     msg += `📞 *Telefone:* ${phone}\n`;
     // Obter bairro selecionado
     const bairroSelecionado = document.getElementById('clientBairro')?.value || 'Não selecionado';
@@ -5426,13 +5537,13 @@ async function enviarWhats() {
     
     // Adicionar informações do usuário logado (se disponível)
     if (window.currentUser && window.currentUser.email) {
-      msg += `👤 *Usuário logado:* ${window.currentUser.email}\n`;
+      msg += `👨 *Usuário logado:* ${window.currentUser.email}\n`;
     }
     
     msg += `\n───────────────\n`;
     
     // PRODUTOS SELECIONADOS
-    msg += `🍎 *Produtos selecionados:*\n`;
+    msg += `🍍🍎*Produtos Selecionados:*\n`;
     
     cart.forEach((item, index) => {
       const emojiNumero = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
@@ -5469,7 +5580,7 @@ async function enviarWhats() {
 
     msg += `*TOTAL FINAL: ${formatBRL(totalFinal)}*\n\n`;
     msg += `💖 Agradecemos pela sua preferência!\n`;
-    msg += `🛒 Seu pedido já está sendo providenciado.\n`;
+    msg += `🚛 Seu pedido já está sendo providenciado.\n`;
     
     let pixParaExibicao = rawPixPhone || 'Não configurada';
     if (pixParaExibicao) {
@@ -5517,7 +5628,117 @@ async function enviarWhats() {
         });
       }
 
-      // ✅ 10º PASSO: LIMPAR CARRINHO (APENAS SE CONFIRMAR)
+      // =========================
+      // ✅ 10º PASSO: SALVAR PEDIDO NO FIREBASE (DEVE VIR ANTES DE LIMPAR!)
+      // =========================
+      console.log('💾 SALVANDO PEDIDO - Carrinho ANTES de salvar:', cart.length, 'itens');
+      
+      // FAZER CÓPIA PROFUNDA DO CARRINHO ANTES DE QUALQUER LIMPEZA
+      const carrinhoParaSalvar = JSON.parse(JSON.stringify(cart));
+      console.log('📦 Cópia do carrinho para salvar:', carrinhoParaSalvar.length, 'itens');
+      
+      if (carrinhoParaSalvar.length === 0) {
+        console.log('⚠️ Cópia do carrinho vazia! Usando localStorage como backup...');
+        const backupCart = JSON.parse(localStorage.getItem('bebida1_cart') || '[]');
+        if (backupCart.length > 0) {
+          console.log('🔄 Usando backup do localStorage:', backupCart.length, 'itens');
+          carrinhoParaSalvar.push(...backupCart);
+        }
+      }
+      
+      if (carrinhoParaSalvar.length === 0) {
+        console.log('❌ ERRO: Nenhum item encontrado para salvar!');
+        alert('❌ Erro: Carrinho vazio! Adicione itens antes de enviar.');
+        if (btnWhats) {
+          btnWhats.textContent = originalText;
+          btnWhats.disabled = false;
+        }
+        return;
+      }
+      
+      // Calcular valores
+      let subtotal = 0;
+      const itensFormatados = carrinhoParaSalvar.map(item => {
+        const preco = parseFloat(item.unitPrice) || 0;
+        const quantidade = parseInt(item.qty) || 1;
+        const totalItem = preco * quantidade;
+        
+        subtotal += totalItem;
+        
+        console.log(`📊 Item: ${item.name || 'Sem nome'} - R$ ${preco} x ${quantidade} = R$ ${totalItem}`);
+        
+        return {
+          id: item.id || '',
+          nome: item.name || 'Produto sem nome',
+          imagem: item.img || '',
+          modo: item.mode || 'unit',
+          precoUnitario: preco,
+          quantidade: quantidade,
+          totalItem: totalItem
+        };
+      });
+      
+      const taxaEntrega = encontrarTaxaDoBairro();
+      const retirarLocal = document.getElementById('retirarLocal')?.checked || false;
+      const totalFinalCalculado = subtotal + (retirarLocal ? 0 : taxaEntrega);
+      
+      console.log('💰 VALORES PARA SALVAR:');
+      console.log('   Subtotal: R$', subtotal);
+      console.log('   Taxa entrega: R$', taxaEntrega);
+      console.log('   Retirar local:', retirarLocal);
+      console.log('   TOTAL: R$', totalFinalCalculado);
+      
+      // Criar pedido
+      const pedido = {
+        cliente: {
+          nome: document.getElementById('clientName')?.value || 'Não informado',
+          telefone: document.getElementById('clientPhone')?.value || 'Não informado',
+          endereco: document.getElementById('clientAddress')?.value || 'Não informado',
+          localizacao: document.getElementById('clientLocation')?.value || 'Não informado',
+          bairro: document.getElementById('clientBairro')?.value || 'Não informado',
+          retirarLocal: retirarLocal
+        },
+        
+        itens: itensFormatados,
+        
+        resumo: {
+          subtotal: subtotal,
+          taxaEntrega: retirarLocal ? 0 : taxaEntrega,
+          total: totalFinalCalculado,
+          formaPagamento: document.getElementById('clientTroco')?.value ? 'dinheiro (com troco)' : 'pix',
+          retirarLocal: retirarLocal
+        },
+        
+        userId: window.currentUser?.id || '',
+        userName: window.currentUser?.name || '',
+        userEmail: window.currentUser?.email || '',
+        
+        numeroPedido: 'PED' + Date.now().toString().slice(-8),
+        status: 'pendente', // ← MUDAR DE 'enviado' PARA 'pendente'
+        origem: 'delivery_bebidas_1',
+                
+        dataPedido: new Date().toISOString(),
+        criadoEm: new Date().toISOString(),
+        atualizadoEm: new Date().toISOString(),
+        atualizado_em: new Date().toISOString(),
+        
+        timestamp: Date.now(),
+        subtotal: subtotal,
+        total: totalFinalCalculado
+      };
+      
+      console.log('📤 Salvando no Firebase...');
+      const resultado = await db.collection('pedidos').add(pedido);
+      
+      console.log('✅ PEDIDO SALVO NO FIREBASE!');
+      console.log('📌 ID:', resultado.id);
+      console.log('📌 Número:', pedido.numeroPedido);
+      console.log('📌 Total: R$', totalFinalCalculado.toFixed(2));
+
+      // =========================
+      // ✅ 11º PASSO: SÓ AQUI LIMPAR CARRINHO (DEPOIS DE SALVAR!)
+      // =========================
+      console.log('🧹 LIMPANDO CARRINHO (após salvar no Firebase)...');
       cart = [];
       lastRemovedCart = null;
       removedCartTimestamp = null;
@@ -5525,24 +5746,40 @@ async function enviarWhats() {
       saveCart();
       renderCart();
       carregarProdutos();
-
-      // ✅ 11º PASSO: ABRIR WHATSAPP
-      console.log(' Abrindo WhatsApp...');
+      
+      // =========================
+      // ✅ 12º PASSO: ABRIR WHATSAPP
+      // =========================
+      console.log('🌐 Abrindo WhatsApp...');
       try {
         window.open(urlAPI, '_blank', 'noopener,noreferrer');
       } catch (error) {
         console.log('Erro ao abrir WhatsApp Web:', error);
         window.location.href = urlAPI;
       }
-
-      // ✅ 12º PASSO: FEEDBACK DE SUCESSO
+      
+      // =========================
+      // ✅ 13º PASSO: FEEDBACK DE SUCESSO
+      // =========================
       setTimeout(() => {
-        alert('✅ Pedido enviado com sucesso!\n\n' +
-              '• Carrinho limpo\n' +
-              '• Estoque atualizado\n' +
-              '• WhatsApp aberto para envio\n\n' +
-              'Agradecemos pelo pedido! 🛒');
+        alert(`✅ Pedido #${pedido.numeroPedido} enviado com sucesso!\n\n` +
+              `• Pedido salvo no sistema\n` +
+              `• Carrinho limpo\n` +
+              `• Estoque atualizado\n` +
+              `• WhatsApp aberto para envio\n\n` +
+              `Total: R$ ${totalFinalCalculado.toFixed(2)}\n` +
+              `Agradecemos pelo pedido! 🛒`);
       }, 500);
+      
+      // =========================
+      // ✅ 14º PASSO: ATUALIZAR HISTÓRICO
+      // =========================
+      if (typeof atualizarHistoricoPedidos === 'function') {
+        setTimeout(() => {
+          atualizarHistoricoPedidos();
+          console.log('🔄 Histórico atualizado');
+        }, 2000);
+      }
       
     } else {
       console.log(' Usuário cancelou o envio pelo WhatsApp');
@@ -5565,6 +5802,101 @@ async function enviarWhats() {
       }
     }, 2000);
   }
+}
+//-----------------------------------------------------------------------------------------------
+// =========================
+// FUNÇÃO PARA SALVAR PEDIDO NO FIREBASE
+// =========================
+async function salvarPedidoNoFirebase(pedidoData) {
+    try {
+        // Gerar número do pedido único
+        const numeroPedido = 'PED' + Date.now().toString().slice(-8);
+        
+        // Preparar itens no formato correto
+        const itensFormatados = cart.map(item => ({
+            id: item.id,
+            nome: item.name,
+            imagem: item.img || 'https://via.placeholder.com/100x100?text=Sem+imagem',
+            modo: item.mode || 'unit',
+            precoUnitario: Number(item.unitPrice) || 0,
+            quantidade: Number(item.qty) || 1,
+            totalItem: (Number(item.unitPrice) * Number(item.qty)) || 0
+        }));
+        
+        // Calcular valores
+        const subtotal = calcSubtotal();
+        const taxaEntrega = encontrarTaxaDoBairro();
+        const retirarLocal = document.getElementById('retirarLocal')?.checked || false;
+        const total = subtotal + (retirarLocal ? 0 : taxaEntrega);
+        
+        // Criar objeto do pedido NO FORMATO CORRETO
+        const pedidoCompleto = {
+            // Informações do cliente
+            cliente: {
+                nome: document.getElementById('clientName')?.value || window.currentUser?.name || 'Não informado',
+                telefone: document.getElementById('clientPhone')?.value || window.currentUser?.phone || 'Não informado',
+                endereco: document.getElementById('clientAddress')?.value || 'Não informado',
+                localizacao: document.getElementById('clientLocation')?.value || 'Não informado',
+                bairro: document.getElementById('clientBairro')?.value || 'Não informado',
+                retirarLocal: retirarLocal
+            },
+            
+            // Itens do pedido
+            itens: itensFormatados,
+            
+            // Resumo financeiro
+            resumo: {
+                subtotal: subtotal,
+                taxaEntrega: retirarLocal ? 0 : taxaEntrega,
+                total: total,
+                formaPagamento: 'WhatsApp',
+                retirarLocal: retirarLocal
+            },
+            
+            // Informações do usuário
+            userId: window.currentUser?.id || '',
+            userName: window.currentUser?.name || 'Não informado',
+            userEmail: window.currentUser?.email || 'Não informado',
+            
+            // Metadados do pedido
+            numeroPedido: numeroPedido,
+            status: 'pendente', // ou 'enviado' se já foi pelo WhatsApp
+            origem: 'Hortifruti 2',
+            observacoes: document.getElementById('clientTroco')?.value || '',
+            
+            // Datas
+            dataPedido: new Date().toISOString(),
+            criadoEm: new Date().toISOString(),
+            atualizadoEm: new Date().toISOString(),
+            
+            // Para compatibilidade (mantenha se outros sistemas usarem)
+            timestamp: Date.now(),
+            subtotal: subtotal,
+            total: total
+        };
+        
+        // Salvar pedido na collection 'pedidos'
+        const pedidoRef = await db.collection('pedidos').add(pedidoCompleto);
+        console.log('✅ Pedido salvo no Firebase com ID:', pedidoRef.id);
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('pedido_salvo', {
+                pedidoId: pedidoRef.id,
+                numeroPedido: numeroPedido,
+                userId: window.currentUser?.id,
+                total: total,
+                status: 'pendente'
+            });
+        }
+        
+        return pedidoRef.id;
+        
+    } catch (error) {
+        console.error('❌ Erro ao salvar pedido no Firebase:', error);
+        alert('❌ Erro ao salvar pedido. Verifique o console para mais detalhes.');
+        return null;
+    }
 }
 //-----------------------------------------------------------------------------------------------
 
@@ -6835,6 +7167,35 @@ header.querySelector('div').appendChild(closeBtn);
   });
   
   toolbar.appendChild(addBtn);
+
+  //------------------------------------------------------------------------------------
+  // BOTÃO VER TODOS OS PEDIDOS
+const todosPedidosBtn = document.createElement('button');
+todosPedidosBtn.className = 'btn';
+todosPedidosBtn.style.cssText = 'background: #9b59b6; color: #fff; margin: 0; flex: 1; min-width: 200px;';
+todosPedidosBtn.innerHTML = '📦 Ver Todos os Pedidos';
+
+todosPedidosBtn.addEventListener('click', async () => {
+    // Verificar se o usuário é admin
+    if (!window.adminAutenticado) {
+        alert('❌ Acesso não autorizado!');
+        return;
+    }
+    
+    // Chama a função que lista TODOS os pedidos
+    if (typeof listarTodosPedidos === 'function') {
+        await listarTodosPedidos();
+    } else {
+        // Se a função não existir, crie-a
+        alert('⚠️ Função não carregada. Carregando...');
+        await criarFuncaoTodosPedidos();
+    }
+});
+
+toolbar.appendChild(todosPedidosBtn);
+//--------------------------------------------------------------------------
+
+  //-----------------------------------------------------------------------------------
 
   // BOTÃO REPOSIÇÃO DE ESTOQUE
   const estoqueRapidoBtn = document.createElement('button');
@@ -8700,9 +9061,748 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-
-
 //--------------------------------------------------------------------------------------------------------
+// =========================
+// FUNÇÃO PARA VER DETALHES DO PEDIDO (COM RESET COMPLETO DE ESTILOS)
+// =========================
+// FUNÇÃO CORRIGIDA - VER DETALHES DO PEDIDO
+window.verDetalhesPedido = async function(pedidoId) {
+    console.log('🔍 Botão clicado - Ver detalhes do pedido:', pedidoId);
+    
+    try {
+        // 1. Fechar qualquer modal existente
+        const modaisExistentes = document.querySelectorAll('[id^="modalDetalhesPedido"]');
+        modaisExistentes.forEach(modal => {
+            if (modal && modal.parentNode) {
+                modal.remove();
+            }
+        });
+        
+        // 2. Esconder modal da lista se existir
+        const modalLista = document.getElementById('modalTodosPedidos');
+        if (modalLista) {
+            modalLista.style.display = 'none';
+        }
+        
+        // 3. Mostrar loading
+        const loadingHTML = `
+            <div id="modalDetalhesLoading" style="
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: rgba(0,0,0,0.9) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                z-index: 999999 !important;
+                font-family: Arial, sans-serif !important;
+            ">
+                <div style="
+                    text-align: center !important;
+                    color: white !important;
+                ">
+                    <div style="font-size: 50px !important; margin-bottom: 20px !important;">⏳</div>
+                    <div style="font-size: 18px !important;">Carregando detalhes do pedido...</div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', loadingHTML);
+        
+        // 4. Buscar dados do pedido
+        console.log('📡 Buscando dados do pedido:', pedidoId);
+        const pedidoDoc = await db.collection('pedidos').doc(pedidoId).get();
+        
+        if (!pedidoDoc.exists) {
+            // Remover loading
+            const loading = document.getElementById('modalDetalhesLoading');
+            if (loading) loading.remove();
+            
+            alert('❌ Pedido não encontrado!');
+            if (modalLista) modalLista.style.display = 'flex';
+            return;
+        }
+        
+        const pedido = pedidoDoc.data();
+        console.log('✅ Pedido encontrado:', pedido);
+        
+        // 5. Preparar itens e calcular valores
+        let itensParaMostrar = [];
+        let subtotal = 0;
+        let itensHTML = '';
+        
+        // Verificar diferentes possibilidades de nome dos campos
+        if (pedido.itens && Array.isArray(pedido.itens) && pedido.itens.length > 0) {
+            itensParaMostrar = pedido.itens;
+        } else if (pedido.items && Array.isArray(pedido.items) && pedido.items.length > 0) {
+            itensParaMostrar = pedido.items;
+        } else if (pedido.produtos && Array.isArray(pedido.produtos) && pedido.produtos.length > 0) {
+            itensParaMostrar = pedido.produtos;
+        }
+        
+        console.log('📦 Itens para mostrar:', itensParaMostrar.length);
+        
+        // Calcular subtotal e gerar HTML dos itens
+        if (itensParaMostrar.length > 0) {
+            itensParaMostrar.forEach((item, index) => {
+                const nome = item.nome || item.name || item.productName || 'Produto sem nome';
+                const quantidade = parseInt(item.quantidade || item.qty || item.quantity || 1);
+                const precoUnitario = parseFloat(item.precoUnitario || item.unitPrice || item.price || item.valor || 0);
+                const totalItem = quantidade * precoUnitario;
+                
+                subtotal += totalItem;
+                
+                itensHTML += `
+                    <div style="
+                        all: initial !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        padding: 20px !important;
+                        margin-bottom: 15px !important;
+                        background: white !important;
+                        border-radius: 12px !important;
+                        border: 1px solid #e0e0e0 !important;
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <div style="
+                            all: initial !important;
+                            width: 40px !important;
+                            height: 40px !important;
+                            background: linear-gradient(135deg, #3498db, #2980b9) !important;
+                            color: white !important;
+                            border-radius: 50% !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            font-weight: bold !important;
+                            font-size: 18px !important;
+                            margin-right: 20px !important;
+                            flex-shrink: 0 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            ${index + 1}
+                        </div>
+                        
+                        <div style="
+                            all: initial !important;
+                            flex: 1 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <div style="
+                                all: initial !important;
+                                font-weight: bold !important;
+                                color: #2c3e50 !important;
+                                font-size: 18px !important;
+                                margin-bottom: 8px !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                ${nome}
+                            </div>
+                            <div style="
+                                all: initial !important;
+                                display: flex !important;
+                                gap: 30px !important;
+                                font-size: 15px !important;
+                                color: #666 !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                <div style="all: initial !important;">
+                                    <strong style="all: initial; font-weight: bold !important;">Quantidade:</strong> ${quantidade}
+                                </div>
+                                <div style="all: initial !important;">
+                                    <strong style="all: initial; font-weight: bold !important;">Preço unitário:</strong> R$ ${precoUnitario.toFixed(2).replace('.', ',')}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="
+                            all: initial !important;
+                            font-weight: bold !important;
+                            color: #27ae60 !important;
+                            font-size: 24px !important;
+                            padding: 12px 20px !important;
+                            background: linear-gradient(135deg, #eafaf1, #d4efdf) !important;
+                            border-radius: 10px !important;
+                            min-width: 140px !important;
+                            text-align: center !important;
+                            flex-shrink: 0 !important;
+                            box-sizing: border-box !important;
+                            font-family: Arial, sans-serif !important;
+                        ">
+                            R$ ${totalItem.toFixed(2).replace('.', ',')}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            itensHTML = `
+                <div style="
+                    all: initial !important;
+                    text-align: center !important;
+                    padding: 50px !important;
+                    color: #666 !important;
+                    background: #f9f9f9 !important;
+                    border-radius: 10px !important;
+                    box-sizing: border-box !important;
+                ">
+                    <div style="all: initial; font-size: 64px !important; margin-bottom: 20px !important;">📭</div>
+                    <p style="all: initial; font-size: 18px !important; font-family: Arial, sans-serif !important;">
+                        Nenhum item encontrado
+                    </p>
+                </div>
+            `;
+        }
+        
+        // 6. CALCULAR TAXA DE ENTREGA
+        let taxaEntrega = 0;
+        if (pedido.resumo && pedido.resumo.taxaEntrega) {
+            taxaEntrega = parseFloat(pedido.resumo.taxaEntrega) || 0;
+        } else if (pedido.taxaEntrega) {
+            taxaEntrega = parseFloat(pedido.taxaEntrega) || 0;
+        } else if (pedido.cliente && pedido.cliente.taxa) {
+            taxaEntrega = parseFloat(pedido.cliente.taxa) || 0;
+        } else if (pedido.taxa) {
+            taxaEntrega = parseFloat(pedido.taxa) || 0;
+        }
+        
+        // 7. CALCULAR TOTAL
+        const totalPedido = subtotal + taxaEntrega;
+        
+        // 8. FUNÇÃO PARA FORMATAR VALORES
+        function formatBRL(valor) {
+            return 'R$ ' + parseFloat(valor || 0).toFixed(2).replace('.', ',');
+        }
+        
+        // 9. CRIAR MODAL
+        const modalId = 'modalDetalhesPedido_' + Date.now();
+        const modalHTML = `
+            <div id="${modalId}" style="
+                /* RESET COMPLETO */
+                all: initial !important;
+                
+                /* POSICIONAMENTO */
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: 9999999 !important;
+                
+                /* FUNDO ESCURO */
+                background: rgba(0,0,0,0.95) !important;
+                
+                /* CENTRALIZAR */
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                
+                /* FONTE */
+                font-family: Arial, sans-serif !important;
+                box-sizing: border-box !important;
+            ">
+                <div style="
+                    all: initial !important;
+                    position: relative !important;
+                    width: 95% !important;
+                    max-width: 900px !important;
+                    max-height: 90vh !important;
+                    overflow-y: auto !important;
+                    background: white !important;
+                    border-radius: 15px !important;
+                    padding: 30px !important;
+                    box-shadow: 0 30px 90px rgba(0,0,0,0.9) !important;
+                    border: 3px solid #3498db !important;
+                    box-sizing: border-box !important;
+                ">
+                    <!-- CABEÇALHO -->
+                    <div style="
+                        all: initial !important;
+                        display: flex !important;
+                        justify-content: space-between !important;
+                        align-items: center !important;
+                        margin-bottom: 25px !important;
+                        padding-bottom: 20px !important;
+                        border-bottom: 2px solid #3498db !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <h2 style="
+                            all: initial !important;
+                            color: #2c3e50 !important;
+                            margin: 0 !important;
+                            font-size: 26px !important;
+                            font-weight: bold !important;
+                            font-family: Arial, sans-serif !important;
+                        ">
+                            📄 Detalhes do Pedido #${pedido.numeroPedido || pedidoId.substring(0, 8)}
+                        </h2>
+                        <button onclick="document.getElementById('${modalId}').remove(); 
+                                       document.getElementById('modalTodosPedidos') && (document.getElementById('modalTodosPedidos').style.display = 'flex');" 
+                                style="
+                                    all: initial !important;
+                                    background: #e74c3c !important;
+                                    color: white !important;
+                                    border: none !important;
+                                    padding: 10px 20px !important;
+                                    border-radius: 6px !important;
+                                    cursor: pointer !important;
+                                    font-weight: bold !important;
+                                    font-size: 14px !important;
+                                    font-family: Arial, sans-serif !important;
+                                    box-sizing: border-box !important;
+                                ">
+                            ✕ Fechar
+                        </button>
+                    </div>
+                    
+                    <!-- INFORMAÇÕES BÁSICAS -->
+                    <div style="
+                        all: initial !important;
+                        display: grid !important;
+                        grid-template-columns: 1fr 1fr !important;
+                        gap: 20px !important;
+                        margin-bottom: 25px !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <!-- DADOS DO PEDIDO -->
+                        <div style="
+                            all: initial !important;
+                            background: #f8f9fa !important;
+                            padding: 20px !important;
+                            border-radius: 10px !important;
+                            border-left: 4px solid #3498db !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <h3 style="
+                                all: initial !important;
+                                color: #2c3e50 !important;
+                                margin: 0 0 15px 0 !important;
+                                font-size: 18px !important;
+                                font-weight: bold !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                📋 DADOS DO PEDIDO
+                            </h3>
+                            <div style="
+                                all: initial !important;
+                                font-size: 14px !important;
+                                line-height: 1.6 !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Número:</strong> ${pedido.numeroPedido || pedidoId.substring(0, 8)}
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Data/Hora:</strong> ${new Date(pedido.dataPedido || pedido.timestamp || pedido.createdAt).toLocaleString('pt-BR')}
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Status:</strong> 
+                                    <span style="
+                                        background: ${pedido.status === 'enviado' ? '#3498db' : 
+                                                   pedido.status === 'pendente' ? '#f39c12' : 
+                                                   pedido.status === 'confirmado' ? '#27ae60' : 
+                                                   pedido.status === 'entregue' ? '#2ecc71' : '#95a5a6'};
+                                        color: white;
+                                        padding: 4px 12px;
+                                        border-radius: 15px;
+                                        font-size: 12px;
+                                        font-weight: bold;
+                                        margin-left: 8px;
+                                    ">
+                                        ${pedido.status ? pedido.status.toUpperCase() : 'ENVIADO'}
+                                    </span>
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Pagamento:</strong> ${pedido.resumo?.formaPagamento || pedido.formaPagamento || 'Não informado'}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- DADOS DO CLIENTE -->
+                        <div style="
+                            all: initial !important;
+                            background: #f8f9fa !important;
+                            padding: 20px !important;
+                            border-radius: 10px !important;
+                            border-left: 4px solid #2ecc71 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <h3 style="
+                                all: initial !important;
+                                color: #2c3e50 !important;
+                                margin: 0 0 15px 0 !important;
+                                font-size: 18px !important;
+                                font-weight: bold !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                👤 DADOS DO CLIENTE
+                            </h3>
+                            <div style="
+                                all: initial !important;
+                                font-size: 14px !important;
+                                line-height: 1.6 !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Nome:</strong> ${pedido.cliente?.nome || pedido.userName || 'Não informado'}
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Telefone:</strong> ${pedido.cliente?.telefone || pedido.telefone || 'Não informado'}
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Endereço:</strong> ${pedido.cliente?.endereco || pedido.endereco || 'Não informado'}
+                                </p>
+                                <p style="all: initial; margin: 8px 0 !important;">
+                                    <strong>Bairro:</strong> ${pedido.cliente?.bairro || pedido.bairro || 'Não informado'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RESUMO FINANCEIRO -->
+                    <div style="
+                        all: initial !important;
+                        border-radius: 12px !important;
+                        padding: 20px !important;
+                        margin-bottom: 25px !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <h3 style="
+                            all: initial !important;
+                            color: #2c3e50 !important;
+                            margin: 0 0 20px 0 !important;
+                            font-size: 20px !important;
+                            font-weight: bold !important;
+                            text-align: center !important;
+                            font-family: Arial, sans-serif !important;
+                        ">
+                            💰 RESUMO FINANCEIRO
+                        </h3>
+                        
+                        <!-- SUBTOTAL -->
+                        <div style="
+                            all: initial !important;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            align-items: center !important;
+                            padding: 15px !important;
+                            margin-bottom: 10px !important;
+                            background: white !important;
+                            border-radius: 8px !important;
+                            border: 1px solid #e0e0e0 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <div style="all: initial !important;">
+                                <strong style="all: initial; font-weight: bold !important;">Subtotal:</strong>
+                            </div>
+                            <div style="
+                                all: initial !important;
+                                color: #2c3e50 !important;
+                                font-size: 18px !important;
+                                font-weight: bold !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                ${formatBRL(subtotal)}
+                            </div>
+                        </div>
+                        
+                        <!-- TAXA DE ENTREGA -->
+                        <div style="
+                            all: initial !important;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            align-items: center !important;
+                            padding: 15px !important;
+                            margin-bottom: 10px !important;
+                            background: white !important;
+                            border-radius: 8px !important;
+                            border: 1px solid #e0e0e0 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <div style="all: initial !important;">
+                                <strong style="all: initial; font-weight: bold !important;">Taxa de entrega:</strong>
+                            </div>
+                            <div style="
+                                all: initial !important;
+                                color: #d35400 !important;
+                                font-size: 18px !important;
+                                font-weight: bold !important;
+                                font-family: Arial, sans-serif !important;
+                            ">
+                                ${taxaEntrega > 0 ? formatBRL(taxaEntrega) : 'Grátis'}
+                            </div>
+                        </div>
+                        
+                        <!-- DIVISOR -->
+                        <hr style="
+                            all: initial !important;
+                            border: none !important;
+                            height: 1px !important;
+                            background: linear-gradient(90deg, transparent, #3498db, transparent) !important;
+                            margin: 15px 0 !important;
+                        ">
+                        
+                        <!-- TOTAL -->
+                        <div style="
+                            all: initial !important;
+                            display: flex !important;
+                            justify-content: space-between !important;
+                            align-items: center !important;
+                            padding: 20px !important;
+                            background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
+                            border-radius: 10px !important;
+                            border: 2px solid #219653 !important;
+                            box-sizing: border-box !important;
+                        ">
+                            <div style="all: initial !important;">
+                                <strong style="all: initial; font-weight: bold !important; color: white !important; font-size: 18px !important;">
+                                    TOTAL A PAGAR:
+                                </strong>
+                            </div>
+                            <div style="
+                                all: initial !important;
+                                color: white !important;
+                                font-size: 24px !important;
+                                font-weight: bold !important;
+                                font-family: Arial, sans-serif !important;
+                                text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+                            ">
+                                ${formatBRL(totalPedido)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ITENS DO PEDIDO -->
+                    <div style="
+                        all: initial !important;
+                        margin-bottom: 25px !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <h3 style="
+                            all: initial !important;
+                            color: #2c3e50 !important;
+                            margin: 0 0 15px 0 !important;
+                            font-size: 20px !important;
+                            font-weight: bold !important;
+                            font-family: Arial, sans-serif !important;
+                        ">
+                            📦 ITENS DO PEDIDO (${itensParaMostrar.length})
+                        </h3>
+                        <div style="
+                            all: initial !important;
+                            max-height: 300px !important;
+                            overflow-y: auto !important;
+                            padding-right: 10px !important;
+                            box-sizing: border-box !important;
+                        ">
+                            ${itensHTML}
+                        </div>
+                    </div>
+                    
+                    <!-- BOTÕES -->
+                    <div style="
+                        all: initial !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        gap: 15px !important;
+                        padding-top: 20px !important;
+                        border-top: 2px solid #eee !important;
+                        box-sizing: border-box !important;
+                    ">
+                        <button onclick="alterarStatusPedidoAdmin('${pedidoId}'); 
+                                       document.getElementById('${modalId}').remove();" 
+                                style="
+                                    all: initial !important;
+                                    background: linear-gradient(135deg, #f39c12, #e67e22) !important;
+                                    color: white !important;
+                                    border: none !important;
+                                    padding: 12px 24px !important;
+                                    border-radius: 8px !important;
+                                    cursor: pointer !important;
+                                    font-weight: bold !important;
+                                    font-size: 14px !important;
+                                    font-family: Arial, sans-serif !important;
+                                    box-sizing: border-box !important;
+                                ">
+                            ✏️ Alterar Status
+                        </button>
+                        
+                        <button onclick="document.getElementById('${modalId}').remove(); 
+                                       document.getElementById('modalTodosPedidos') && (document.getElementById('modalTodosPedidos').style.display = 'flex');" 
+                                style="
+                                    all: initial !important;
+                                    background: linear-gradient(135deg, #3498db, #2980b9) !important;
+                                    color: white !important;
+                                    border: none !important;
+                                    padding: 12px 24px !important;
+                                    border-radius: 8px !important;
+                                    cursor: pointer !important;
+                                    font-weight: bold !important;
+                                    font-size: 14px !important;
+                                    font-family: Arial, sans-serif !important;
+                                    box-sizing: border-box !important;
+                                ">
+                            ↩️ Voltar à Lista
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 10. Remover loading e adicionar modal
+        const loading = document.getElementById('modalDetalhesLoading');
+        if (loading) loading.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        console.log('✅ Modal de detalhes criado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao mostrar detalhes:', error);
+        
+        // Remover loading se existir
+        const loading = document.getElementById('modalDetalhesLoading');
+        if (loading) loading.remove();
+        
+        alert('❌ Erro ao carregar detalhes do pedido: ' + error.message);
+        
+        // Restaurar modal da lista
+        const modalLista = document.getElementById('modalTodosPedidos');
+        if (modalLista) {
+            modalLista.style.display = 'flex';
+        }
+    }
+};
+//---------------------------------------------------------------------------------------------------------------
+// =========================
+// FUNÇÃO PARA ALTERAR STATUS DO PEDIDO (VERSÃO CORRIGIDA)
+// =========================
+window.alterarStatusPedido = async function(pedidoId, statusAtual) {
+    try {
+        // Verificar se o usuário é admin/logista
+        const user = auth.currentUser;
+        if (!user) {
+            alert('❌ Você precisa estar logado para alterar status!');
+            return;
+        }
+        
+        // Opções de status com descrições
+        const opcoesStatus = {
+            'pendente': { label: '⏳ Pendente', desc: 'Aguardando processamento', color: '#f39c12' },
+            'enviado': { label: '📤 Enviado', desc: 'Pedido enviado/saiu para entrega', color: '#3498db' },
+            'confirmado': { label: '✅ Confirmado', desc: 'Pedido confirmado', color: '#27ae60' },
+            'entregue': { label: '🚚 Entregue', desc: 'Entrega realizada', color: '#2ecc71' },
+            'cancelado': { label: '❌ Cancelado', desc: 'Pedido cancelado', color: '#e74c3c' }
+        };
+        
+        // Criar lista de opções para o prompt
+        let opcoesTexto = 'Selecione o novo status:\n\n';
+        Object.keys(opcoesStatus).forEach((status, index) => {
+            const info = opcoesStatus[status];
+            opcoesTexto += `${index + 1}. ${info.label} - ${info.desc}\n`;
+        });
+        
+        opcoesTexto += `\nStatus atual: ${opcoesStatus[statusAtual]?.label || statusAtual}\n`;
+        opcoesTexto += `Digite o número correspondente:`;
+        
+        const resposta = prompt(opcoesTexto);
+        
+        if (!resposta) {
+            console.log('❌ Alteração cancelada pelo usuário');
+            return;
+        }
+        
+        // Converter resposta para status
+        const opcoesArray = Object.keys(opcoesStatus);
+        const indiceSelecionado = parseInt(resposta) - 1;
+        
+        if (isNaN(indiceSelecionado) || indiceSelecionado < 0 || indiceSelecionado >= opcoesArray.length) {
+            alert('❌ Opção inválida! Use um número de 1 a ' + opcoesArray.length);
+            return;
+        }
+        
+        const novoStatus = opcoesArray[indiceSelecionado];
+        const infoStatus = opcoesStatus[novoStatus];
+        
+        // Confirmar alteração
+        const confirmacao = confirm(
+            `CONFIRMAR ALTERAÇÃO DE STATUS\n\n` +
+            `Pedido: ${pedidoId.substring(0, 8)}\n` +
+            `Status atual: ${opcoesStatus[statusAtual]?.label || statusAtual}\n` +
+            `Novo status: ${infoStatus.label}\n\n` +
+            `${infoStatus.desc}\n\n` +
+            `Deseja continuar?`
+        );
+        
+        if (!confirmacao) {
+            console.log('❌ Alteração cancelada na confirmação');
+            return;
+        }
+        
+        // Mostrar loading
+        alert(`🔄 Alterando status para ${infoStatus.label}...`);
+        
+        // Atualizar no Firebase
+        await db.collection('pedidos').doc(pedidoId).update({
+            status: novoStatus,
+            atualizadoEm: new Date().toISOString(),
+            atualizadoPor: user.uid,
+            atualizadoPorNome: user.displayName || user.email || 'Administrador'
+        });
+        
+        console.log(`✅ Status do pedido ${pedidoId} alterado para: ${novoStatus}`);
+        
+        // Fechar modal atual se existir
+        const modalAtual = document.querySelector('div[style*="position: fixed; top: 0; left: 0;"]');
+        if (modalAtual) {
+            modalAtual.remove();
+        }
+        
+        // ✅ CORREÇÃO AQUI: NÃO pedir ID do usuário
+        // Em vez disso, simplesmente recarregar a lista de pedidos atual
+        
+        // Verificar qual lista está aberta e recarregar
+        if (typeof listarTodosPedidos === 'function') {
+            console.log('🔄 Recarregando lista de pedidos...');
+            setTimeout(() => {
+                listarTodosPedidos(); // Recarrega a lista completa
+            }, 500);
+        } else {
+            console.log('🔄 Recarregando página...');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+        
+        // Mensagem de sucesso
+        setTimeout(() => {
+            alert(`✅ Status alterado com sucesso!\n\n` +
+                  `Pedido: ${pedidoId.substring(0, 8)}\n` +
+                  `Novo status: ${infoStatus.label}\n` +
+                  `Alterado por: ${user.displayName || user.email || 'Administrador'}`);
+        }, 300);
+        
+    } catch (error) {
+        console.error('❌ Erro ao alterar status:', error);
+        alert('❌ Erro ao alterar status: ' + error.message);
+        
+        // Tentar recarregar a lista mesmo com erro
+        if (typeof listarTodosPedidos === 'function') {
+            setTimeout(listarTodosPedidos, 1000);
+        }
+    }
+};
+// Função para fechar histórico
+function fecharHistorico() {
+    const modal = document.querySelector('div[style*="position: fixed; top: 0; left: 0;"]');
+    if (modal) {
+        modal.remove();
+    }
+}
+//----------------------------------------------------------------------------------------
+
 
 // =========================
 // CONFIGURAR EVENTOS
@@ -11985,7 +13085,8 @@ window.currentUser = null;
 // Inicializar autenticação do usuário
 function initUserAuth() {
     // Verificar se já existe usuário salvo
-    const savedUser = localStorage.getItem('delivery_bebidas_user');
+    // ALTERAR: 'delivery_bebidas_user' para 'hortifruti2_user'
+    const savedUser = localStorage.getItem('hortifruti2_user'); // ← MUDAR AQUI
     if (savedUser) {
         try {
             window.currentUser = JSON.parse(savedUser);
@@ -12187,7 +13288,7 @@ async function loginWithGoogle() {
         };
         
         // Salvar no localStorage para persistência
-        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser)); // ← MUDAR AQUI
         
         // Salvar/atualizar usuário no Firestore
         await saveUserToFirestore(user);
@@ -12363,7 +13464,7 @@ async function userLogin() {
         };
         
         // Salvar no localStorage
-        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
         
         // Salvar/atualizar no Firestore
         await saveUserToFirestore(user);
@@ -12497,7 +13598,7 @@ async function userRegister() {
             firebaseUser: user
         };
         
-        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
         
         // Atualizar UI
         updateUserUI();
@@ -12941,7 +14042,8 @@ function viewOrderHistory() {
 function userLogout() {
     if (confirm('Deseja sair da sua conta?')) {
         window.currentUser = null;
-        localStorage.removeItem('delivery_bebidas_user');
+        // ALTERAR: 'delivery_bebidas_user' para 'hortifruti2_user'
+        localStorage.removeItem('hortifruti2_user'); // ← MUDAR AQUI
         updateUserUI();
         alert('Você saiu da sua conta.');
     }
@@ -13149,6 +14251,613 @@ async function registerWithFirebase(name, email, password, phone) {
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------
+// =========================
+// FUNÇÃO DE PEDIDOS QUE FUNCIONA SEM CONFLITOS
+// =========================
+
+function abrirListaPedidos() {
+    console.log('🎯 Abrindo lista de pedidos...');
+    
+    // Fechar qualquer modal existente
+    const modaisExistentes = document.querySelectorAll('.modal-pedidos-container');
+    modaisExistentes.forEach(modal => modal.remove());
+    
+    // Criar container principal
+    const container = document.createElement('div');
+    container.className = 'modal-pedidos-container';
+    container.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 1000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    `;
+    
+    // Criar conteúdo do modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-pedidos-conteudo';
+    modal.style.cssText = `
+        position: relative;
+        width: 95%;
+        max-width: 900px;
+        max-height: 95vh;
+        overflow-y: auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9);
+        border: 3px solid #3498db;
+        box-sizing: border-box;
+        display: block;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        color: #000;
+    `;
+    
+    // Conteúdo inicial (loading)
+    modal.innerHTML = `
+        <div style="padding: 40px;">
+            <!-- Header -->
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 2px solid #3498db;
+            ">
+                <h1 style="
+                    margin: 0;
+                    color: #2c3e50;
+                    font-size: 28px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                ">
+                    📦 TODOS OS PEDIDOS
+                </h1>
+                <button onclick="fecharModalPedidos()" 
+                        style="
+                            background: #e74c3c;
+                            color: white;
+                            border: none;
+                            width: 50px;
+                            height: 50px;
+                            border-radius: 50%;
+                            cursor: pointer;
+                            font-size: 24px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: transform 0.2s;
+                        "
+                        onmouseover="this.style.transform='scale(1.1)'"
+                        onmouseout="this.style.transform='scale(1)'">
+                    ✕
+                </button>
+            </div>
+            
+            <!-- Barra de busca e filtros -->
+            <div style="
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 30px;
+            ">
+                <input type="text" 
+                       id="filtroBuscaPedidos" 
+                       placeholder="🔍 Buscar por cliente, telefone ou número do pedido..." 
+                       style="
+                            width: 100%;
+                            padding: 15px;
+                            border: 2px solid #3498db;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            margin-bottom: 15px;
+                            box-sizing: border-box;
+                       ">
+                
+                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+                    <button onclick="filtrarPedidosPorStatus('todos')" 
+                            class="filtro-status ativo"
+                            style="
+                                background: #3498db;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 20px;
+                                cursor: pointer;
+                                white-space: nowrap;
+                                font-weight: bold;
+                            ">
+                        Todos
+                    </button>
+                    <button onclick="filtrarPedidosPorStatus('pendente')" 
+                            class="filtro-status"
+                            style="
+                                background: #f39c12;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 20px;
+                                cursor: pointer;
+                                white-space: nowrap;
+                            ">
+                        ⏳ Pendente
+                    </button>
+                    <button onclick="filtrarPedidosPorStatus('enviado')" 
+                            class="filtro-status"
+                            style="
+                                background: #3498db;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 20px;
+                                cursor: pointer;
+                                white-space: nowrap;
+                            ">
+                        📤 Enviado
+                    </button>
+                    <button onclick="filtrarPedidosPorStatus('entregue')" 
+                            class="filtro-status"
+                            style="
+                                background: #2ecc71;
+                                color: white;
+                                border: none;
+                                padding: 10px 20px;
+                                border-radius: 20px;
+                                cursor: pointer;
+                                white-space: nowrap;
+                            ">
+                        🚚 Entregue
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Lista de pedidos -->
+            <div id="listaPedidosConteudo" style="min-height: 300px;">
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">🔄</div>
+                    <h3 style="color: #2c3e50;">Carregando pedidos...</h3>
+                    <p style="color: #7f8c8d;">Isso pode levar alguns segundos</p>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="
+                margin-top: 40px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
+                <div style="color: #7f8c8d; font-size: 14px;">
+                    <span id="contadorPedidos">0</span> pedidos encontrados
+                </div>
+                <button onclick="carregarPedidos()" 
+                        style="
+                            padding: 12px 30px;
+                            background: #2ecc71;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: bold;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        ">
+                    🔄 Atualizar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Adicionar à página
+    container.appendChild(modal);
+    document.body.appendChild(container);
+    
+    // Carregar pedidos
+    carregarPedidos();
+    
+    // Configurar busca em tempo real
+    setTimeout(() => {
+        const inputBusca = document.getElementById('filtroBuscaPedidos');
+        if (inputBusca) {
+            inputBusca.addEventListener('input', function() {
+                filtrarPedidosPorBusca(this.value);
+            });
+        }
+    }, 500);
+}
+
+// Função para carregar pedidos
+async function carregarPedidos() {
+    try {
+        const lista = document.getElementById('listaPedidosConteudo');
+        const contador = document.getElementById('contadorPedidos');
+        
+        if (!lista || !contador) return;
+        
+        // Mostrar loading
+        lista.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 48px; margin-bottom: 20px;">🔄</div>
+                <h3 style="color: #2c3e50;">Buscando pedidos...</h3>
+            </div>
+        `;
+        
+        // Buscar do Firebase
+        const snapshot = await db.collection('pedidos')
+            .orderBy('timestamp', 'desc')
+            .limit(50)
+            .get();
+        
+        if (snapshot.empty) {
+            lista.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="font-size: 80px; margin-bottom: 20px; color: #bdc3c7;">📭</div>
+                    <h3 style="color: #7f8c8d;">Nenhum pedido encontrado</h3>
+                    <p>Quando houver pedidos, eles aparecerão aqui.</p>
+                </div>
+            `;
+            contador.textContent = '0';
+            return;
+        }
+        
+        const pedidos = [];
+        snapshot.forEach(doc => {
+            pedidos.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        // Atualizar contador
+        contador.textContent = pedidos.length;
+        
+        // Gerar HTML dos pedidos
+        renderizarPedidos(pedidos);
+        
+        // Salvar pedidos globalmente para filtragem
+        window.pedidosAtuais = pedidos;
+        
+    } catch (error) {
+        console.error('Erro ao carregar pedidos:', error);
+        const lista = document.getElementById('listaPedidosConteudo');
+        if (lista) {
+            lista.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px; color: #e74c3c;">
+                    <div style="font-size: 60px; margin-bottom: 20px;">⚠️</div>
+                    <h3>Erro ao carregar pedidos</h3>
+                    <p>${error.message}</p>
+                    <button onclick="carregarPedidos()" 
+                            style="
+                                margin-top: 20px;
+                                padding: 10px 20px;
+                                background: #3498db;
+                                color: white;
+                                border: none;
+                                border-radius: 5px;
+                                cursor: pointer;
+                            ">
+                        Tentar novamente
+                    </button>
+                </div>
+            `;
+        }
+    }
+}
+
+// Função para renderizar pedidos
+function renderizarPedidos(pedidos) {
+    const lista = document.getElementById('listaPedidosConteudo');
+    if (!lista) return;
+    
+    if (pedidos.length === 0) {
+        lista.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px;">
+                <div style="font-size: 80px; margin-bottom: 20px; color: #bdc3c7;">📭</div>
+                <p style="color: #7f8c8d;">Nenhum pedido corresponde aos filtros</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div style="display: grid; gap: 15px;">';
+    
+    pedidos.forEach(pedido => {
+        const data = new Date(pedido.timestamp || pedido.dataPedido || Date.now());
+        const status = pedido.status || 'pendente';
+        const clienteNome = pedido.cliente?.nome || pedido.userName || 'Cliente não informado';
+        const clienteTelefone = pedido.cliente?.telefone || 'Não informado';
+        const total = pedido.resumo?.total || pedido.total || 0;
+        const itensCount = pedido.itens?.length || 0;
+        const numeroPedido = pedido.numeroPedido || pedido.id.substring(0, 8).toUpperCase();
+        
+        // Configurações de status
+        const statusConfig = {
+            'pendente': { cor: '#f39c12', emoji: '⏳', texto: 'PENDENTE' },
+            'enviado': { cor: '#3498db', emoji: '📤', texto: 'ENVIADO' },
+            'confirmado': { cor: '#27ae60', emoji: '✅', texto: 'CONFIRMADO' },
+            'entregue': { cor: '#2ecc71', emoji: '🚚', texto: 'ENTREGUE' },
+            'cancelado': { cor: '#e74c3c', emoji: '❌', texto: 'CANCELADO' }
+        };
+        
+        const statusInfo = statusConfig[status] || statusConfig.pendente;
+        
+        html += `
+            <div class="card-pedido" 
+                 data-id="${pedido.id}"
+                 data-cliente="${clienteNome.toLowerCase()}"
+                 data-telefone="${clienteTelefone}"
+                 data-numero="${numeroPedido}"
+                 data-status="${status}"
+                 style="
+                    background: white;
+                    border-radius: 10px;
+                    border: 1px solid #e0e0e0;
+                    overflow: hidden;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                 "
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                
+                <div style="border-left: 5px solid ${statusInfo.cor};">
+                    <!-- Cabeçalho -->
+                    <div style="padding: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="
+                                        background: ${statusInfo.cor};
+                                        color: white;
+                                        padding: 6px 12px;
+                                        border-radius: 15px;
+                                        font-size: 12px;
+                                        font-weight: bold;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 5px;
+                                    ">
+                                        ${statusInfo.emoji} ${statusInfo.texto}
+                                    </span>
+                                    <span style="
+                                        font-size: 12px;
+                                        color: #666;
+                                        background: #f8f9fa;
+                                        padding: 4px 10px;
+                                        border-radius: 12px;
+                                        font-family: 'Courier New', monospace;
+                                    ">
+                                        #${numeroPedido}
+                                    </span>
+                                </div>
+                                <div style="font-size: 13px; color: #7f8c8d;">
+                                    ${data.toLocaleDateString('pt-BR')} • ${data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                                </div>
+                            </div>
+                            
+                            <div style="text-align: right;">
+                                <div style="font-size: 22px; font-weight: bold; color: #27ae60;">
+                                    R$ ${total.toFixed(2)}
+                                </div>
+                                <div style="font-size: 12px; color: #95a5a6; margin-top: 3px;">
+                                    ${pedido.resumo?.formaPagamento || 'Pagamento'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Informações do cliente -->
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">
+                                ${clienteNome}
+                            </div>
+                            <div style="font-size: 14px; color: #666;">
+                                📞 ${clienteTelefone}
+                            </div>
+                        </div>
+                        
+                        <!-- Informações do pedido -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div style="font-size: 14px; color: #666;">
+                                🛒 ${itensCount} item(s)
+                            </div>
+                            <div style="font-size: 14px; color: #666;">
+                                📦 ${pedido.resumo?.entrega === 'delivery' ? 'Delivery' : 'Retirada'}
+                            </div>
+                        </div>
+                        
+                        <!-- Ações -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <button onclick="abrirDetalhesPedidoIndividual('${pedido.id}')" 
+                                    style="
+                                        padding: 12px;
+                                        background: #3498db;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-weight: bold;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 8px;
+                                        transition: background 0.2s;
+                                    "
+                                    onmouseover="this.style.background='#2980b9'"
+                                    onmouseout="this.style.background='#3498db'">
+                                👁️ Ver Detalhes
+                            </button>
+                            <button onclick="alterarStatusPedidoIndividual('${pedido.id}', '${status}')" 
+                                    style="
+                                        padding: 12px;
+                                        background: ${statusInfo.cor};
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-weight: bold;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 8px;
+                                        transition: background 0.2s;
+                                    "
+                                    onmouseover="this.style.background='${statusInfo.cor.replace(')', ', 0.9)').replace('rgb', 'rgba').replace(')', ', 0.9)')}'"
+                                    onmouseout="this.style.background='${statusInfo.cor}'">
+                                🔄 Alterar Status
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    lista.innerHTML = html;
+}
+
+// Funções auxiliares
+function fecharModalPedidos() {
+    const container = document.querySelector('.modal-pedidos-container');
+    if (container) container.remove();
+}
+
+function filtrarPedidosPorStatus(status) {
+    // Ativar botão clicado
+    const botoes = document.querySelectorAll('.filtro-status');
+    botoes.forEach(botao => {
+        if (botao.getAttribute('onclick')?.includes(`'${status}'`)) {
+            botao.classList.add('ativo');
+            botao.style.fontWeight = 'bold';
+            botao.style.transform = 'scale(1.05)';
+        } else {
+            botao.classList.remove('ativo');
+            botao.style.fontWeight = 'normal';
+            botao.style.transform = 'scale(1)';
+        }
+    });
+    
+    if (!window.pedidosAtuais) return;
+    
+    let pedidosFiltrados = window.pedidosAtuais;
+    
+    if (status !== 'todos') {
+        pedidosFiltrados = window.pedidosAtuais.filter(p => p.status === status);
+    }
+    
+    renderizarPedidos(pedidosFiltrados);
+    
+    // Atualizar contador
+    const contador = document.getElementById('contadorPedidos');
+    if (contador) {
+        contador.textContent = pedidosFiltrados.length;
+    }
+}
+
+function filtrarPedidosPorBusca(termo) {
+    if (!window.pedidosAtuais) return;
+    
+    termo = termo.toLowerCase().trim();
+    
+    if (!termo) {
+        renderizarPedidos(window.pedidosAtuais);
+        const contador = document.getElementById('contadorPedidos');
+        if (contador) contador.textContent = window.pedidosAtuais.length;
+        return;
+    }
+    
+    const pedidosFiltrados = window.pedidosAtuais.filter(pedido => {
+        const clienteNome = (pedido.cliente?.nome || pedido.userName || '').toLowerCase();
+        const clienteTelefone = (pedido.cliente?.telefone || '').toLowerCase();
+        const numeroPedido = (pedido.numeroPedido || pedido.id || '').toLowerCase();
+        const status = (pedido.status || '').toLowerCase();
+        
+        return clienteNome.includes(termo) || 
+               clienteTelefone.includes(termo) || 
+               numeroPedido.includes(termo) ||
+               status.includes(termo);
+    });
+    
+    renderizarPedidos(pedidosFiltrados);
+    
+    const contador = document.getElementById('contadorPedidos');
+    if (contador) contador.textContent = pedidosFiltrados.length;
+}
+
+function abrirDetalhesPedidoIndividual(pedidoId) {
+    // Usar sua função existente de detalhes
+    if (typeof verDetalhesPedido === 'function') {
+        verDetalhesPedido(pedidoId);
+    } else {
+        alert(`Detalhes do pedido: ${pedidoId}`);
+    }
+}
+
+function alterarStatusPedidoIndividual(pedidoId, statusAtual) {
+    // Usar sua função existente de alterar status
+    if (typeof alterarStatusPedido === 'function') {
+        alterarStatusPedido(pedidoId, statusAtual);
+    } else {
+        alert(`Alterar status do pedido: ${pedidoId}`);
+    }
+}
+
+// =========================
+// CONFIGURAÇÃO FINAL
+// =========================
+
+// Substituir a função original
+window.listarTodosPedidos = abrirListaPedidos;
+
+// Adicionar botão de teste se necessário
+function adicionarBotaoTeste() {
+    if (document.getElementById('botaoTesteListaPedidos')) return;
+    
+    const botao = document.createElement('button');
+    botao.id = 'botaoTesteListaPedidos';
+    botao.innerHTML = '📋 TESTAR LISTA DE PEDIDOS';
+    botao.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 99999;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    `;
+    
+    botao.onclick = abrirListaPedidos;
+    document.body.appendChild(botao);
+    
+    console.log('✅ Botão de teste adicionado!');
+}
+
+// Adicionar botão automaticamente
+setTimeout(adicionarBotaoTeste, 1000);
+
+console.log('🎯 SISTEMA DE PEDIDOS CONFIGURADO!');
+console.log('👉 Execute: abrirListaPedidos()');
+console.log('👉 Ou clique no botão "📋 TESTAR LISTA DE PEDIDOS"');
 
 //----------------------------------------------------------------------------------------------------
 </script>
