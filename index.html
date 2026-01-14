@@ -13248,18 +13248,9 @@ async function loginWithGoogle() {
     try {
         console.log('🔐 Iniciando login com Google...');
         
-        // Detectar se é dispositivo móvel
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        
-        console.log('📱 Dispositivo:', isMobile ? 'Mobile' : 'Desktop');
-        console.log('🌐 Navegador iOS/Safari:', isIOS || isSafari);
-        
         // Mostrar loading
-        const loadingMsg = isMobile ? '🔄 Abrindo Google... (Pode levar alguns segundos)' : '🔄 Conectando com Google...';
+        const loadingMsg = '🔄 Conectando com Google...';
         const loadingDiv = document.createElement('div');
-        loadingDiv.id = 'google-login-loading';
         loadingDiv.style.cssText = `
             position: fixed;
             top: 50%;
@@ -13272,68 +13263,98 @@ async function loginWithGoogle() {
             z-index: 1000000;
             font-weight: bold;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-            max-width: 90vw;
         `;
-        loadingDiv.innerHTML = `
-            <div style="margin-bottom: 10px; font-size: 24px;">⏳</div>
-            <div>${loadingMsg}</div>
-            ${isMobile ? '<div style="font-size: 12px; margin-top: 10px; opacity: 0.8;">Se não abrir automaticamente, volte para esta página</div>' : ''}
-        `;
+        loadingDiv.textContent = loadingMsg;
         document.body.appendChild(loadingDiv);
         
-        let result;
+        // Fazer login com popup
+        const result = await auth.signInWithPopup(googleProvider);
+        const user = result.user;
         
-        // Estratégia diferente para mobile vs desktop
-        if (isMobile) {
-            console.log('📱 Usando signInWithRedirect para mobile...');
-            
-            // Em mobile, usa redirect que é mais confiável
-            // Salvar estado antes do redirect
-            sessionStorage.setItem('google_login_pending', 'true');
-            sessionStorage.setItem('redirect_url', window.location.href);
-            
-            // Usar redirect (funciona melhor em mobile)
-            await auth.signInWithRedirect(googleProvider);
-            
-            // Não continuar o código aqui - o redirect vai levar para outra página
-            return; // IMPORTANTE: sai da função aqui
-            
-        } else {
-            console.log('🖥️ Usando signInWithPopup para desktop...');
-            
-            // Em desktop, usa popup normalmente
-            result = await auth.signInWithPopup(googleProvider);
-            await processGoogleLoginResult(result);
+        console.log('✅ Login com Google bem-sucedido:', user.email);
+        
+        // Remover loading
+        loadingDiv.remove();
+        
+        // Salvar dados do usuário
+        window.currentUser = {
+            id: user.uid,
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            phone: user.phoneNumber || '',
+            photoURL: user.photoURL,
+            provider: 'google',
+            firebaseUser: user
+        };
+        
+        // Salvar no localStorage para persistência
+        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        
+        // Salvar/atualizar usuário no Firestore
+        await saveUserToFirestore(user);
+        
+        // Atualizar UI
+        updateUserUI();
+        
+        // Fechar modal
+        closeUserLoginModal();
+        
+        // Mostrar mensagem de boas-vindas
+        alert(`✅ Bem-vindo, ${user.displayName || user.email}!`);
+        
+        // Preencher automaticamente o formulário de cliente
+        fillClientFormWithUserData();
+        
+        // Log do sistema
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_google_sucesso', {
+                email: user.email,
+                uid: user.uid,
+                provider: 'google'
+            });
         }
         
     } catch (error) {
-        console.error('❌ Erro no login com Google:', error.code, error.message);
+        console.error('❌ Erro no login com Google:', error);
         
-        // Remover loading
-        const loadingDiv = document.getElementById('google-login-loading');
-        if (loadingDiv) loadingDiv.remove();
+        // Remover loading se ainda existir
+        document.querySelectorAll('div').forEach(div => {
+            if (div.textContent.includes('Conectando com Google')) {
+                div.remove();
+            }
+        });
         
-        // Se for erro de popup bloqueado em mobile, tentar redirect
-        if ((error.code === 'auth/popup-blocked' || 
-             error.code === 'auth/operation-not-supported-in-this-environment') && 
-            /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-            
-            console.log('🔄 Popup bloqueado no mobile, tentando redirect...');
-            
-            alert('🔒 Redirecionando para login do Google...\n\nApós fazer login, você voltará automaticamente.');
-            
-            // Tentar com redirect
-            sessionStorage.setItem('google_login_pending', 'true');
-            await auth.signInWithRedirect(googleProvider);
-            return;
+        // Tratar erros específicos
+        let errorMessage = 'Erro ao conectar com Google: ';
+        
+        switch(error.code) {
+            case 'auth/popup-blocked':
+                errorMessage = 'O popup do Google foi bloqueado. Por favor, permita popups para este site.';
+                break;
+            case 'auth/popup-closed-by-user':
+                errorMessage = 'Login cancelado. Você fechou a janela de login do Google.';
+                break;
+            case 'auth/cancelled-popup-request':
+                errorMessage = 'Login cancelado. Tente novamente.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+                break;
+            default:
+                errorMessage += error.message;
         }
         
-        // Tratar outros erros
-        handleGoogleLoginError(error);
+        alert(`❌ ${errorMessage}`);
+        
+        // Log de erro
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('login_google_falha', {
+                error: error.code,
+                message: error.message
+            });
+        }
     }
 }
-
 // Função para processar o resultado do login (após retorno do popup ou redirect)
 async function processGoogleLoginResult(result) {
     try {
