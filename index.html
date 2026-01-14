@@ -6336,43 +6336,17 @@ function continuarComprando() {
 }
 
 // =========================
-// TIMEOUT DA SESSÃO ADMIN - CORRIGIDO
+// FUNÇÃO PARA INICIAR TIMEOUT DA SESSÃO (30 minutos)
 // =========================
 function iniciarTimeoutAdmin() {
-    console.log('⏱️ Iniciando timeout da sessão admin...');
-    
-    // Limpar timeout anterior se existir
-    if (window.adminSessaoTimeout) {
-        clearTimeout(window.adminSessaoTimeout);
-    }
-    
-    // Timeout de 60 minutos
-    window.adminSessaoTimeout = setTimeout(async () => {
-        console.log('⏰ Sessão admin prestes a expirar...');
-        
-        // Renovar sessão automaticamente se ainda estiver autenticado
-        if (auth.currentUser) {
-            try {
-                const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
-                const adminAccessSnap = await adminAccessRef.get();
-                
-                if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-                    // Ainda tem permissão, renovar sessão
-                    console.log('🔄 Renovando sessão admin...');
-                    iniciarTimeoutAdmin();
-                    return;
-                }
-            } catch (error) {
-                console.error('❌ Erro ao renovar sessão:', error);
-            }
-        }
-        
-        // Se não tem permissão ou não está autenticado, fazer logout
-        logoutAdmin();
-        
-    }, 60 * 60 * 1000); // 60 minutos
-    
-    console.log('✅ Timeout admin configurado (60 minutos)');
+  if (adminSessaoTimeout) {
+    clearTimeout(adminSessaoTimeout);
+  }
+  
+  adminSessaoTimeout = setTimeout(() => {
+    adminAutenticado = false;
+    alert('⏰ Sessão do admin expirada! Faça login novamente.');
+  }, 5 * 60 * 1000); // 30 minutos
 }
 
 // =========================
@@ -7134,81 +7108,36 @@ function showLoginModal() {
 // =========================
 // ADMIN PANEL - FUNÇÃO PRINCIPAL COM FIREBASE
 // =========================
-// =========================
-// ADMIN PANEL - FUNÇÃO PRINCIPAL CORRIGIDA
-// =========================
 async function renderAdminProducts() {
-    console.log('🔄 renderAdminProducts chamado, estado admin:', window.adminAutenticado);
+    console.log('🔄 Abrindo painel admin (com Firebase Auth)...');
     
-    // Se já está autenticado como admin, abre direto
-    if (window.adminAutenticado) {
-        console.log('✅ Admin já autenticado - abrindo painel');
-        await renderAdminProductsContent();
-        iniciarTimeoutAdmin();
-        return;
-    }
-    
-    // Se não está autenticado, verificar se tem usuário Firebase
+    // Verificar se já está autenticado
     if (auth.currentUser) {
-        console.log('👤 Usuário Firebase detectado, verificando permissões...');
+        // Verificar se ainda tem permissão
+        const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
+        const adminAccessSnap = await adminAccessRef.get();
         
-        try {
-            const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
-            const adminAccessSnap = await adminAccessRef.get();
-            
-            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-                // Tem permissão de admin
-                window.adminAutenticado = true;
-                
-                // Salvar sessão
-                sessionStorage.setItem('admin_session_firebase', 'true');
-                sessionStorage.setItem('admin_user_id', auth.currentUser.uid);
-                
-                console.log('✅ Permissão admin confirmada para:', auth.currentUser.email);
-                await renderAdminProductsContent();
-                iniciarTimeoutAdmin();
-                return;
-            } else {
-                console.log('❌ Usuário não tem permissão admin');
-            }
-        } catch (error) {
-            console.error('❌ Erro ao verificar permissões:', error);
+        if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+            // Já autenticado e com permissão
+            console.log('✅ Usuário já autenticado:', auth.currentUser.email);
+            await renderAdminProductsContent();
+            iniciarTimeoutAdmin();
+            return;
         }
     }
     
-    // Se chegou aqui, pedir autenticação
-    console.log('🔐 Pedindo autenticação admin...');
+    // Se não está autenticado, mostrar modal de login
     const loginResult = await showLoginModal();
     
     if (loginResult.success) {
         console.log('✅ Login bem-sucedido:', loginResult.user.email);
-        
-        // Verificar se o usuário tem permissão admin
-        try {
-            const adminAccessRef = db.collection('admin_access').doc(loginResult.user.uid);
-            const adminAccessSnap = await adminAccessRef.get();
-            
-            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-                window.adminAutenticado = true;
-                
-                // Salvar sessão
-                sessionStorage.setItem('admin_session_firebase', 'true');
-                sessionStorage.setItem('admin_user_id', loginResult.user.uid);
-                
-                await renderAdminProductsContent();
-                iniciarTimeoutAdmin();
-            } else {
-                alert('❌ Este usuário não tem permissão de administrador!');
-                window.adminAutenticado = false;
-            }
-        } catch (error) {
-            alert('❌ Erro ao verificar permissões: ' + error.message);
-        }
+        window.adminAutenticado = true;
+        await renderAdminProductsContent();
+        iniciarTimeoutAdmin();
     } else {
         console.log('❌ Login cancelado ou falhou');
     }
 }
-
 //--------------------------------------------------------------------------------------------------------
 
 // =========================
@@ -9363,88 +9292,69 @@ auth.onAuthStateChanged((user) => {
 
 //--------------------------------------------------------------------------------------------------------
 // =========================
-// FUNÇÃO PARA VER DETALHES DO PEDIDO (COM RESET COMPLETO DE ESTILOS)
+// FUNÇÃO SIMPLIFICADA PARA VER DETALHES DO PEDIDO
+// Baseado no design da imagem
 // =========================
-// FUNÇÃO CORRIGIDA - VER DETALHES DO PEDIDO
 window.verDetalhesPedido = async function(pedidoId) {
-    console.log('🔍 Botão clicado - Ver detalhes do pedido:', pedidoId);
+    console.log('🔍 Ver detalhes do pedido:', pedidoId);
     
     try {
-        // 1. Fechar qualquer modal existente
-        const modaisExistentes = document.querySelectorAll('[id^="modalDetalhesPedido"]');
-        modaisExistentes.forEach(modal => {
-            if (modal && modal.parentNode) {
-                modal.remove();
-            }
-        });
+        // 1. Fechar modais existentes
+        document.querySelectorAll('[id^="modalDetalhesPedido"]').forEach(modal => modal.remove());
+        document.getElementById('modalDetalhesLoading')?.remove();
         
-        // 2. Esconder modal da lista se existir
+        // 2. Esconder modal da lista
         const modalLista = document.getElementById('modalTodosPedidos');
-        if (modalLista) {
-            modalLista.style.display = 'none';
-        }
+        if (modalLista) modalLista.style.display = 'none';
         
-        // 3. Mostrar loading
+        // 3. Loading
         const loadingHTML = `
             <div id="modalDetalhesLoading" style="
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                background: rgba(0,0,0,0.9) !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                z-index: 999999 !important;
-                font-family: Arial, sans-serif !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 999999;
             ">
-                <div style="
-                    text-align: center !important;
-                    color: white !important;
-                ">
-                    <div style="font-size: 50px !important; margin-bottom: 20px !important;">⏳</div>
-                    <div style="font-size: 18px !important;">Carregando detalhes do pedido...</div>
+                <div style="text-align: center; color: white;">
+                    <div style="font-size: 50px; margin-bottom: 20px;">⏳</div>
+                    <div style="font-size: 18px;">Carregando...</div>
                 </div>
             </div>
         `;
-        
         document.body.insertAdjacentHTML('beforeend', loadingHTML);
         
-        // 4. Buscar dados do pedido
-        console.log('📡 Buscando dados do pedido:', pedidoId);
+        // 4. Buscar dados
         const pedidoDoc = await db.collection('pedidos').doc(pedidoId).get();
-        
         if (!pedidoDoc.exists) {
-            // Remover loading
-            const loading = document.getElementById('modalDetalhesLoading');
-            if (loading) loading.remove();
-            
+            document.getElementById('modalDetalhesLoading')?.remove();
             alert('❌ Pedido não encontrado!');
             if (modalLista) modalLista.style.display = 'flex';
             return;
         }
         
         const pedido = pedidoDoc.data();
-        console.log('✅ Pedido encontrado:', pedido);
         
-        // 5. Preparar itens e calcular valores
+        // 5. Preparar itens
         let itensParaMostrar = [];
         let subtotal = 0;
         let itensHTML = '';
         
-        // Verificar diferentes possibilidades de nome dos campos
+        // Buscar itens
         if (pedido.itens && Array.isArray(pedido.itens) && pedido.itens.length > 0) {
             itensParaMostrar = pedido.itens;
-        } else if (pedido.items && Array.isArray(pedido.items) && pedido.items.length > 0) {
+        } else if (pedido.items && Array.isArray(pedido.items)) {
             itensParaMostrar = pedido.items;
-        } else if (pedido.produtos && Array.isArray(pedido.produtos) && pedido.produtos.length > 0) {
+        } else if (pedido.produtos && Array.isArray(pedido.produtos)) {
             itensParaMostrar = pedido.produtos;
         }
         
-        console.log('📦 Itens para mostrar:', itensParaMostrar.length);
-        
-        // Calcular subtotal e gerar HTML dos itens
+        // Gerar HTML dos itens - VERSÃO SIMPLIFICADA
         if (itensParaMostrar.length > 0) {
             itensParaMostrar.forEach((item, index) => {
                 const nome = item.nome || item.name || item.productName || 'Produto sem nome';
@@ -9456,523 +9366,224 @@ window.verDetalhesPedido = async function(pedidoId) {
                 
                 itensHTML += `
                     <div style="
-                        all: initial !important;
-                        display: flex !important;
-                        align-items: center !important;
-                        padding: 20px !important;
-                        margin-bottom: 15px !important;
-                        background: white !important;
-                        border-radius: 12px !important;
-                        border: 1px solid #e0e0e0 !important;
-                        box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;
-                        box-sizing: border-box !important;
+                        padding: 8px 0;
+                        border-bottom: 1px solid #eee;
+                        font-size: 14px;
+                        display: flex;
+                        justify-content: space-between;
                     ">
-                        <div style="
-                            all: initial !important;
-                            width: 40px !important;
-                            height: 40px !important;
-                            background: linear-gradient(135deg, #3498db, #2980b9) !important;
-                            color: white !important;
-                            border-radius: 50% !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            justify-content: center !important;
-                            font-weight: bold !important;
-                            font-size: 18px !important;
-                            margin-right: 20px !important;
-                            flex-shrink: 0 !important;
-                            box-sizing: border-box !important;
-                        ">
-                            ${index + 1}
-                        </div>
-                        
-                        <div style="
-                            all: initial !important;
-                            flex: 1 !important;
-                            box-sizing: border-box !important;
-                        ">
-                            <div style="
-                                all: initial !important;
-                                font-weight: bold !important;
-                                color: #2c3e50 !important;
-                                font-size: 18px !important;
-                                margin-bottom: 8px !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                ${nome}
-                            </div>
-                            <div style="
-                                all: initial !important;
-                                display: flex !important;
-                                gap: 30px !important;
-                                font-size: 15px !important;
-                                color: #666 !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                <div style="all: initial !important;">
-                                    <strong style="all: initial; font-weight: bold !important;">Quantidade:</strong> ${quantidade}
+                        <div>
+                            <div style="font-weight: bold;">${nome}</div>
+                            ${item.observacao ? `
+                                <div style="font-size: 12px; color: #666; margin-top: 2px;">
+                                    ${item.observacao}
                                 </div>
-                                <div style="all: initial !important;">
-                                    <strong style="all: initial; font-weight: bold !important;">Preço unitário:</strong> R$ ${precoUnitario.toFixed(2).replace('.', ',')}
-                                </div>
-                            </div>
+                            ` : ''}
                         </div>
-                        
-                        <div style="
-                            all: initial !important;
-                            font-weight: bold !important;
-                            color: #27ae60 !important;
-                            font-size: 24px !important;
-                            padding: 12px 20px !important;
-                            background: linear-gradient(135deg, #eafaf1, #d4efdf) !important;
-                            border-radius: 10px !important;
-                            min-width: 140px !important;
-                            text-align: center !important;
-                            flex-shrink: 0 !important;
-                            box-sizing: border-box !important;
-                            font-family: Arial, sans-serif !important;
-                        ">
-                            R$ ${totalItem.toFixed(2).replace('.', ',')}
+                        <div style="text-align: right;">
+                            <div>${quantidade} × R$ ${precoUnitario.toFixed(2)}</div>
+                            <div style="font-weight: bold;">R$ ${totalItem.toFixed(2)}</div>
                         </div>
                     </div>
                 `;
             });
         } else {
             itensHTML = `
-                <div style="
-                    all: initial !important;
-                    text-align: center !important;
-                    padding: 50px !important;
-                    color: #666 !important;
-                    background: #f9f9f9 !important;
-                    border-radius: 10px !important;
-                    box-sizing: border-box !important;
-                ">
-                    <div style="all: initial; font-size: 64px !important; margin-bottom: 20px !important;">📭</div>
-                    <p style="all: initial; font-size: 18px !important; font-family: Arial, sans-serif !important;">
-                        Nenhum item encontrado
-                    </p>
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    Nenhum item encontrado
                 </div>
             `;
         }
         
-        // 6. CALCULAR TAXA DE ENTREGA
-        let taxaEntrega = 0;
-        if (pedido.resumo && pedido.resumo.taxaEntrega) {
-            taxaEntrega = parseFloat(pedido.resumo.taxaEntrega) || 0;
-        } else if (pedido.taxaEntrega) {
-            taxaEntrega = parseFloat(pedido.taxaEntrega) || 0;
-        } else if (pedido.cliente && pedido.cliente.taxa) {
-            taxaEntrega = parseFloat(pedido.cliente.taxa) || 0;
-        } else if (pedido.taxa) {
-            taxaEntrega = parseFloat(pedido.taxa) || 0;
-        }
-        
-        // 7. CALCULAR TOTAL
+        // 6. Calcular valores
+        const taxaEntrega = parseFloat(
+            pedido.resumo?.taxaEntrega || 
+            pedido.taxaEntrega || 
+            pedido.cliente?.taxa || 
+            pedido.taxa || 
+            0
+        );
         const totalPedido = subtotal + taxaEntrega;
         
-        // 8. FUNÇÃO PARA FORMATAR VALORES
-        function formatBRL(valor) {
-            return 'R$ ' + parseFloat(valor || 0).toFixed(2).replace('.', ',');
-        }
-        
-        // 9. CRIAR MODAL
+        // 7. Criar modal simplificado
         const modalId = 'modalDetalhesPedido_' + Date.now();
-        const modalHTML = `
+        
+        // Formatar data
+        const dataPedido = pedido.dataPedido || pedido.timestamp || pedido.createdAt;
+        const dataFormatada = dataPedido ? new Date(dataPedido).toLocaleDateString('pt-BR') + ', ' + new Date(dataPedido).toLocaleTimeString('pt-BR') : '';
+        
+        modalHTML = `
             <div id="${modalId}" style="
-                /* RESET COMPLETO */
-                all: initial !important;
-                
-                /* POSICIONAMENTO */
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                z-index: 9999999 !important;
-                
-                /* FUNDO ESCURO */
-                background: rgba(0,0,0,0.95) !important;
-                
-                /* CENTRALIZAR */
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                
-                /* FONTE */
-                font-family: Arial, sans-serif !important;
-                box-sizing: border-box !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 9999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                box-sizing: border-box;
             ">
                 <div style="
-                    all: initial !important;
-                    position: relative !important;
-                    width: 95% !important;
-                    max-width: 900px !important;
-                    max-height: 90vh !important;
-                    overflow-y: auto !important;
-                    background: white !important;
-                    border-radius: 15px !important;
-                    padding: 30px !important;
-                    box-shadow: 0 30px 90px rgba(0,0,0,0.9) !important;
-                    border: 3px solid #3498db !important;
-                    box-sizing: border-box !important;
+                    position: relative;
+                    width: 100%;
+                    max-width: 500px;
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    font-family: Arial, sans-serif;
                 ">
-                    <!-- CABEÇALHO -->
+                    <!-- CABEÇALHO SIMPLES -->
                     <div style="
-                        all: initial !important;
-                        display: flex !important;
-                        justify-content: space-between !important;
-                        align-items: center !important;
-                        margin-bottom: 25px !important;
-                        padding-bottom: 20px !important;
-                        border-bottom: 2px solid #3498db !important;
-                        box-sizing: border-box !important;
+                        background: #f8f8f8;
+                        padding: 15px;
+                        border-radius: 8px 8px 0 0;
+                        border-bottom: 1px solid #ddd;
                     ">
-                        <h2 style="
-                            all: initial !important;
-                            color: #2c3e50 !important;
-                            margin: 0 !important;
-                            font-size: 26px !important;
-                            font-weight: bold !important;
-                            font-family: Arial, sans-serif !important;
-                        ">
-                            📄 Detalhes do Pedido #${pedido.numeroPedido || pedidoId.substring(0, 8)}
-                        </h2>
-                        <button onclick="document.getElementById('${modalId}').remove(); 
-                                       document.getElementById('modalTodosPedidos') && (document.getElementById('modalTodosPedidos').style.display = 'flex');" 
-                                style="
-                                    all: initial !important;
-                                    background: #e74c3c !important;
-                                    color: white !important;
-                                    border: none !important;
-                                    padding: 10px 20px !important;
-                                    border-radius: 6px !important;
-                                    cursor: pointer !important;
-                                    font-weight: bold !important;
-                                    font-size: 14px !important;
-                                    font-family: Arial, sans-serif !important;
-                                    box-sizing: border-box !important;
-                                ">
-                            ✕ Fechar
-                        </button>
-                    </div>
-                    
-                    <!-- INFORMAÇÕES BÁSICAS -->
-                    <div style="
-                        all: initial !important;
-                        display: grid !important;
-                        grid-template-columns: 1fr 1fr !important;
-                        gap: 20px !important;
-                        margin-bottom: 25px !important;
-                        box-sizing: border-box !important;
-                    ">
-                        <!-- DADOS DO PEDIDO -->
-                        <div style="
-                            all: initial !important;
-                            background: #f8f9fa !important;
-                            padding: 20px !important;
-                            border-radius: 10px !important;
-                            border-left: 4px solid #3498db !important;
-                            box-sizing: border-box !important;
-                        ">
-                            <h3 style="
-                                all: initial !important;
-                                color: #2c3e50 !important;
-                                margin: 0 0 15px 0 !important;
-                                font-size: 18px !important;
-                                font-weight: bold !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                📋 DADOS DO PEDIDO
-                            </h3>
-                            <div style="
-                                all: initial !important;
-                                font-size: 14px !important;
-                                line-height: 1.6 !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Número:</strong> ${pedido.numeroPedido || pedidoId.substring(0, 8)}
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Data/Hora:</strong> ${new Date(pedido.dataPedido || pedido.timestamp || pedido.createdAt).toLocaleString('pt-BR')}
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Status:</strong> 
-                                    <span style="
-                                        background: ${pedido.status === 'enviado' ? '#3498db' : 
-                                                   pedido.status === 'pendente' ? '#f39c12' : 
-                                                   pedido.status === 'confirmado' ? '#27ae60' : 
-                                                   pedido.status === 'entregue' ? '#2ecc71' : '#95a5a6'};
-                                        color: white;
-                                        padding: 4px 12px;
-                                        border-radius: 15px;
-                                        font-size: 12px;
-                                        font-weight: bold;
-                                        margin-left: 8px;
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0; font-size: 16px; color: #333;">
+                                Pedido #${pedido.numeroPedido || pedidoId.substring(0, 8)}
+                            </h2>
+                            <button onclick="document.getElementById('${modalId}').remove(); 
+                                           if (document.getElementById('modalTodosPedidos')) {
+                                               document.getElementById('modalTodosPedidos').style.display = 'flex';
+                                           }" 
+                                    style="
+                                        background: none;
+                                        border: none;
+                                        font-size: 20px;
+                                        cursor: pointer;
+                                        color: #666;
+                                        padding: 0;
+                                        width: 30px;
+                                        height: 30px;
                                     ">
-                                        ${pedido.status ? pedido.status.toUpperCase() : 'ENVIADO'}
-                                    </span>
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Pagamento:</strong> ${pedido.resumo?.formaPagamento || pedido.formaPagamento || 'Não informado'}
-                                </p>
+                                ×
+                            </button>
+                        </div>
+                        <div style="margin-top: 5px; font-size: 12px; color: #666;">
+                            ${dataFormatada}
+                        </div>
+                    </div>
+                    
+                    <!-- CONTEÚDO PRINCIPAL -->
+                    <div style="padding: 20px; max-height: 70vh; overflow-y: auto;">
+                        <!-- INFORMAÇÕES DE PAGAMENTO E ENTREGA -->
+                        <div style="margin-bottom: 20px;">
+                            <div style="margin-bottom: 8px; font-size: 14px;">
+                                <strong>Pagamento:</strong> ${pedido.resumo?.formaPagamento || pedido.formaPagamento || 'Não informado'}
                             </div>
+                            <div style="margin-bottom: 8px; font-size: 14px;">
+                                <strong>Entrega:</strong> ${pedido.resumo?.entrega === 'delivery' ? 'Delivery' : 'Retirada'}
+                            </div>
+                            ${pedido.resumo?.entrega === 'delivery' ? `
+                                <div style="font-size: 14px; color: #27ae60;">
+                                    Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}
+                                </div>
+                            ` : ''}
                         </div>
                         
-                        <!-- DADOS DO CLIENTE -->
+                        <!-- INFORMAÇÕES DO CLIENTE -->
                         <div style="
-                            all: initial !important;
-                            background: #f8f9fa !important;
-                            padding: 20px !important;
-                            border-radius: 10px !important;
-                            border-left: 4px solid #2ecc71 !important;
-                            box-sizing: border-box !important;
+                            background: #f9f9f9;
+                            padding: 15px;
+                            border-radius: 6px;
+                            margin-bottom: 20px;
                         ">
-                            <h3 style="
-                                all: initial !important;
-                                color: #2c3e50 !important;
-                                margin: 0 0 15px 0 !important;
-                                font-size: 18px !important;
-                                font-weight: bold !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                👤 DADOS DO CLIENTE
-                            </h3>
-                            <div style="
-                                all: initial !important;
-                                font-size: 14px !important;
-                                line-height: 1.6 !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                <p style="all: initial; margin: 8px 0 !important;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 15px; color: #333;">CLIENTE</h3>
+                            <div style="font-size: 14px;">
+                                <div style="margin-bottom: 5px;">
                                     <strong>Nome:</strong> ${pedido.cliente?.nome || pedido.userName || 'Não informado'}
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
+                                </div>
+                                <div style="margin-bottom: 5px;">
                                     <strong>Telefone:</strong> ${pedido.cliente?.telefone || pedido.telefone || 'Não informado'}
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Endereço:</strong> ${pedido.cliente?.endereco || pedido.endereco || 'Não informado'}
-                                </p>
-                                <p style="all: initial; margin: 8px 0 !important;">
-                                    <strong>Bairro:</strong> ${pedido.cliente?.bairro || pedido.bairro || 'Não informado'}
-                                </p>
+                                </div>
+                                <div>
+                                    <strong>Endereço:</strong> ${pedido.cliente?.endereco || pedido.endereco || pedido.cliente?.bairro || 'Não informado'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- ITENS DO PEDIDO -->
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 15px; color: #333;">
+                                Itens do pedido
+                            </h3>
+                            <div>
+                                ${itensHTML}
+                            </div>
+                        </div>
+                        
+                        <!-- RESUMO FINANCEIRO SIMPLES -->
+                        <div style="
+                            background: #f9f9f9;
+                            padding: 15px;
+                            border-radius: 6px;
+                        ">
+                            <h3 style="margin: 0 0 15px 0; font-size: 15px; color: #333; text-align: center;">
+                                Resumo Financeiro
+                            </h3>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                                <div>Subtotal:</div>
+                                <div>R$ ${subtotal.toFixed(2)}</div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
+                                <div>Taxa de entrega:</div>
+                                <div>${taxaEntrega > 0 ? 'R$ ' + taxaEntrega.toFixed(2) : 'Grátis'}</div>
+                            </div>
+                            
+                            <hr style="border: none; height: 1px; background: #ddd; margin: 10px 0;">
+                            
+                            <div style="display: flex; justify-content: space-between; font-size: 16px; font-weight: bold;">
+                                <div>TOTAL:</div>
+                                <div>R$ ${totalPedido.toFixed(2)}</div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- RESUMO FINANCEIRO -->
+                    <!-- RODAPÉ COM BOTÃO -->
                     <div style="
-                        all: initial !important;
-                        border-radius: 12px !important;
-                        padding: 20px !important;
-                        margin-bottom: 25px !important;
-                        box-sizing: border-box !important;
+                        padding: 15px;
+                        border-top: 1px solid #ddd;
+                        display: flex;
+                        justify-content: center;
                     ">
-                        <h3 style="
-                            all: initial !important;
-                            color: #2c3e50 !important;
-                            margin: 0 0 20px 0 !important;
-                            font-size: 20px !important;
-                            font-weight: bold !important;
-                            text-align: center !important;
-                            font-family: Arial, sans-serif !important;
-                        ">
-                            💰 RESUMO FINANCEIRO
-                        </h3>
-                        
-                        <!-- SUBTOTAL -->
-                        <div style="
-                            all: initial !important;
-                            display: flex !important;
-                            justify-content: space-between !important;
-                            align-items: center !important;
-                            padding: 15px !important;
-                            margin-bottom: 10px !important;
-                            background: white !important;
-                            border-radius: 8px !important;
-                            border: 1px solid #e0e0e0 !important;
-                            box-sizing: border-box !important;
-                        ">
-                            <div style="all: initial !important;">
-                                <strong style="all: initial; font-weight: bold !important;">Subtotal:</strong>
-                            </div>
-                            <div style="
-                                all: initial !important;
-                                color: #2c3e50 !important;
-                                font-size: 18px !important;
-                                font-weight: bold !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                ${formatBRL(subtotal)}
-                            </div>
-                        </div>
-                        
-                        <!-- TAXA DE ENTREGA -->
-                        <div style="
-                            all: initial !important;
-                            display: flex !important;
-                            justify-content: space-between !important;
-                            align-items: center !important;
-                            padding: 15px !important;
-                            margin-bottom: 10px !important;
-                            background: white !important;
-                            border-radius: 8px !important;
-                            border: 1px solid #e0e0e0 !important;
-                            box-sizing: border-box !important;
-                        ">
-                            <div style="all: initial !important;">
-                                <strong style="all: initial; font-weight: bold !important;">Taxa de entrega:</strong>
-                            </div>
-                            <div style="
-                                all: initial !important;
-                                color: #d35400 !important;
-                                font-size: 18px !important;
-                                font-weight: bold !important;
-                                font-family: Arial, sans-serif !important;
-                            ">
-                                ${taxaEntrega > 0 ? formatBRL(taxaEntrega) : 'Grátis'}
-                            </div>
-                        </div>
-                        
-                        <!-- DIVISOR -->
-                        <hr style="
-                            all: initial !important;
-                            border: none !important;
-                            height: 1px !important;
-                            background: linear-gradient(90deg, transparent, #3498db, transparent) !important;
-                            margin: 15px 0 !important;
-                        ">
-                        
-                        <!-- TOTAL -->
-                        <div style="
-                            all: initial !important;
-                            display: flex !important;
-                            justify-content: space-between !important;
-                            align-items: center !important;
-                            padding: 20px !important;
-                            background: linear-gradient(135deg, #27ae60, #2ecc71) !important;
-                            border-radius: 10px !important;
-                            border: 2px solid #219653 !important;
-                            box-sizing: border-box !important;
-                        ">
-                            <div style="all: initial !important;">
-                                <strong style="all: initial; font-weight: bold !important; color: white !important; font-size: 18px !important;">
-                                    TOTAL A PAGAR:
-                                </strong>
-                            </div>
-                            <div style="
-                                all: initial !important;
-                                color: white !important;
-                                font-size: 24px !important;
-                                font-weight: bold !important;
-                                font-family: Arial, sans-serif !important;
-                                text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
-                            ">
-                                ${formatBRL(totalPedido)}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- ITENS DO PEDIDO -->
-                    <div style="
-                        all: initial !important;
-                        margin-bottom: 25px !important;
-                        box-sizing: border-box !important;
-                    ">
-                        <h3 style="
-                            all: initial !important;
-                            color: #2c3e50 !important;
-                            margin: 0 0 15px 0 !important;
-                            font-size: 20px !important;
-                            font-weight: bold !important;
-                            font-family: Arial, sans-serif !important;
-                        ">
-                            📦 ITENS DO PEDIDO (${itensParaMostrar.length})
-                        </h3>
-                        <div style="
-                            all: initial !important;
-                            max-height: 300px !important;
-                            overflow-y: auto !important;
-                            padding-right: 10px !important;
-                            box-sizing: border-box !important;
-                        ">
-                            ${itensHTML}
-                        </div>
-                    </div>
-                    
-                    <!-- BOTÕES -->
-                    <div style="
-                        all: initial !important;
-                        display: flex !important;
-                        justify-content: center !important;
-                        gap: 15px !important;
-                        padding-top: 20px !important;
-                        border-top: 2px solid #eee !important;
-                        box-sizing: border-box !important;
-                    ">
-                        <button onclick="alterarStatusPedidoAdmin('${pedidoId}'); 
-                                       document.getElementById('${modalId}').remove();" 
+                        <button onclick="alterarStatusPedidoAdmin('${pedidoId}'); document.getElementById('${modalId}').remove();" 
                                 style="
-                                    all: initial !important;
-                                    background: linear-gradient(135deg, #f39c12, #e67e22) !important;
-                                    color: white !important;
-                                    border: none !important;
-                                    padding: 12px 24px !important;
-                                    border-radius: 8px !important;
-                                    cursor: pointer !important;
-                                    font-weight: bold !important;
-                                    font-size: 14px !important;
-                                    font-family: Arial, sans-serif !important;
-                                    box-sizing: border-box !important;
+                                    padding: 10px 25px;
+                                    background: #4CAF50;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                    font-size: 14px;
+                                    font-weight: bold;
+                                    width: 100%;
                                 ">
-                            ✏️ Alterar Status
-                        </button>
-                        
-                        <button onclick="document.getElementById('${modalId}').remove(); 
-                                       document.getElementById('modalTodosPedidos') && (document.getElementById('modalTodosPedidos').style.display = 'flex');" 
-                                style="
-                                    all: initial !important;
-                                    background: linear-gradient(135deg, #3498db, #2980b9) !important;
-                                    color: white !important;
-                                    border: none !important;
-                                    padding: 12px 24px !important;
-                                    border-radius: 8px !important;
-                                    cursor: pointer !important;
-                                    font-weight: bold !important;
-                                    font-size: 14px !important;
-                                    font-family: Arial, sans-serif !important;
-                                    box-sizing: border-box !important;
-                                ">
-                            ↩️ Voltar à Lista
+                            Alterar Status
                         </button>
                     </div>
                 </div>
             </div>
         `;
         
-        // 10. Remover loading e adicionar modal
-        const loading = document.getElementById('modalDetalhesLoading');
-        if (loading) loading.remove();
-        
+        // 8. Remover loading e adicionar modal
+        document.getElementById('modalDetalhesLoading')?.remove();
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         
-        console.log('✅ Modal de detalhes criado com sucesso!');
+        console.log('✅ Modal simplificado criado!');
         
     } catch (error) {
-        console.error('❌ Erro ao mostrar detalhes:', error);
-        
-        // Remover loading se existir
-        const loading = document.getElementById('modalDetalhesLoading');
-        if (loading) loading.remove();
-        
-        alert('❌ Erro ao carregar detalhes do pedido: ' + error.message);
-        
-        // Restaurar modal da lista
+        console.error('❌ Erro:', error);
+        document.getElementById('modalDetalhesLoading')?.remove();
+        alert('Erro: ' + error.message);
         const modalLista = document.getElementById('modalTodosPedidos');
-        if (modalLista) {
-            modalLista.style.display = 'flex';
-        }
+        if (modalLista) modalLista.style.display = 'flex';
     }
 };
 //---------------------------------------------------------------------------------------------------------------
