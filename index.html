@@ -13899,13 +13899,32 @@ document.addEventListener('DOMContentLoaded', function() {
 // =========================
 async function saveUserToFirestore(user) {
     try {
-        // 🔴 IDENTIFICADORES ÚNICOS DO HORTIFRUTI 2
-        const sistema = 'hortifruti2';
-        const projeto = 'hortifruti-cliente-2'; // Seu projeto real
-        const dominio = 'hortifruti-cliente-2.firebaseapp.com'; // Seu authDomain
+        console.log('💾 Salvando usuário no Firestore (Hortifruti 2)...');
         
+        // 🔴 CONFIGURAÇÃO DO HORTIFRUTI 2
+        const CONFIG = {
+            sistema: 'hortifruti2',
+            projeto: 'hortifruti-cliente-2',
+            authDomain: 'hortifruti-cliente-2.firebaseapp.com',
+            colecaoPrincipal: 'hortifruti2_users', // Coleção específica
+            colecaoBackup: 'users'                 // Coleção geral
+        };
+        
+        // 🔴 VERIFICAR SE O USUÁRIO JÁ TEM DADOS DO HORTIFRUTI 2
+        const userDoc = await db.collection(CONFIG.colecaoPrincipal).doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const dadosExistentes = userDoc.data();
+            
+            // Se já existe mas não é do Hortifruti 2, SOBRESCREVER
+            if (dadosExistentes.sistema !== CONFIG.sistema) {
+                console.warn(`⚠️ Usuário existente de outro sistema (${dadosExistentes.sistema}). Sobrescrevendo...`);
+            }
+        }
+        
+        // 🔴 DADOS COMPLETOS DO USUÁRIO
         const userData = {
-            // Dados básicos do usuário
+            // Identificação básica
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
@@ -13913,38 +13932,120 @@ async function saveUserToFirestore(user) {
             phoneNumber: user.phoneNumber || '',
             provider: user.providerData[0]?.providerId || 'google',
             
-            // 🔴 IDENTIFICADORES DO SISTEMA (IMPORTANTE!)
-            sistema: sistema,                    // 'hortifruti2'
-            projeto: projeto,                    // 'hortifruti-cliente-2'
-            dominio: dominio,                    // authDomain
-            sistema_id: `h2_${user.uid}`,        // ID único do sistema
+            // 🔴 IDENTIFICAÇÃO DO SISTEMA (CRÍTICO)
+            sistema: CONFIG.sistema,
+            projeto: CONFIG.projeto,
+            authDomain: CONFIG.authDomain,
             
             // Timestamps
-            lastLogin: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             
-            // 🔴 Metadata para isolamento
+            // Metadata
+            appVersion: '2.0',
             isolated: true,
-            isolated_timestamp: Date.now(),
-            version: '2.0' // Versão do isolamento
+            sessionId: 'h2_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
         };
         
-        // 🔴 Coleção ESPECÍFICA para Hortifruti 2 (opcional, mas recomendado)
-        const colecao = 'hortifruti2_users'; // Ou mantenha 'users' se preferir
+        // 🔴 SALVAR NA COLEÇÃO PRINCIPAL DO HORTIFRUTI 2
+        await db.collection(CONFIG.colecaoPrincipal)
+                .doc(user.uid)
+                .set(userData, { merge: true });
         
-        // Salvar/atualizar no Firestore
-        await db.collection(colecao).doc(user.uid).set(userData, { merge: true });
+        console.log(`✅ Usuário salvo na coleção ${CONFIG.colecaoPrincipal}:`, user.email);
         
-        console.log(`✅ Usuário salvo no Firestore (${sistema}):`, user.uid);
-        console.log('📋 Dados do sistema:', { sistema, projeto, dominio });
+        // 🔴 SALVAR TAMBÉM NA COLEÇÃO GERAL COM PREFIXO (para consultas cruzadas)
+        const backupData = {
+            ...userData,
+            colecao_origem: CONFIG.colecaoPrincipal,
+            backup_timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
         
-        // 🔴 TAMBÉM salvar em coleção geral com prefixo (backup)
-        await db.collection('users').doc(`${sistema}_${user.uid}`).set(userData, { merge: true });
+        await db.collection(CONFIG.colecaoBackup)
+                .doc(`${CONFIG.sistema}_${user.uid}`)
+                .set(backupData, { merge: true });
+        
+        console.log(`✅ Backup salvo em ${CONFIG.colecaoBackup} com prefixo`);
+        
+        // 🔴 ATUALIZAR window.currentUser com esses dados
+        if (window.currentUser) {
+            window.currentUser = {
+                ...window.currentUser,
+                sistema: CONFIG.sistema,
+                projeto: CONFIG.projeto,
+                firestoreSaved: true,
+                savedAt: new Date().toISOString()
+            };
+            
+            // Atualizar localStorage
+            localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
+            localStorage.setItem('hortifruti2_user_firestore', JSON.stringify(userData));
+        }
+        
+        return userData;
         
     } catch (error) {
         console.error('❌ Erro ao salvar usuário no Firestore:', error);
+        
+        // Log adicional
+        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
+            await sistemaLogs.registrar('firestore_save_error', {
+                uid: user.uid,
+                error: error.message,
+                sistema: 'hortifruti2'
+            });
+        }
+        
+        throw error;
     }
 }
+
+//------------------------------------------------------------------------------------------
+
+async function verificarUsuarioFirestore(user) {
+    try {
+        if (!user || !user.uid) return false;
+        
+        console.log('🔍 Verificando usuário no Firestore...');
+        
+        // Tentar na coleção específica do Hortifruti 2
+        const docRef = db.collection('hortifruti2_users').doc(user.uid);
+        const docSnap = await docRef.get();
+        
+        if (docSnap.exists) {
+            const firestoreData = docSnap.data();
+            
+            // Verificar se é realmente do Hortifruti 2
+            if (firestoreData.sistema === 'hortifruti2' && 
+                firestoreData.projeto === 'hortifruti-cliente-2') {
+                
+                console.log('✅ Usuário confirmado no Firestore do Hortifruti 2');
+                
+                // Atualizar dados locais com dados do Firestore
+                window.currentUser = {
+                    ...user,
+                    ...firestoreData,
+                    firestoreVerified: true,
+                    verifiedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
+                return true;
+            } else {
+                console.warn('⚠️ Usuário no Firestore mas de outro sistema:', firestoreData.sistema);
+                return false;
+            }
+        }
+        
+        console.log('ℹ️ Usuário não encontrado na coleção do Hortifruti 2');
+        return false;
+        
+    } catch (error) {
+        console.error('Erro ao verificar Firestore:', error);
+        return false;
+    }
+}
+
 //------------------------------------------------------------------------------------------
 
 // Alternar entre login e cadastro
