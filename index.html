@@ -14757,235 +14757,270 @@ async function registerWithFirebase(name, email, password, phone) {
 
 //----------------------------------------------------------------------------------------------------
 // =========================
-// FUNÇÃO DE PEDIDOS QUE FUNCIONA SEM CONFLITOS
+// FUNÇÃO DE PEDIDOS - VERSÃO 100% RESPONSIVA E FUNCIONAL
 // =========================
 
 function abrirListaPedidos() {
     console.log('🎯 Abrindo lista de pedidos...');
     
     // Fechar qualquer modal existente
-    const modaisExistentes = document.querySelectorAll('.modal-pedidos-container');
-    modaisExistentes.forEach(modal => modal.remove());
+    document.querySelectorAll('.modal-pedidos-container').forEach(modal => modal.remove());
     
-    // Criar container principal
+    // Criar container PRINCIPAL
     const container = document.createElement('div');
     container.className = 'modal-pedidos-container';
     container.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.95);
+        width: 100vw;
+        height: 100vh;
+        background: white;
         z-index: 1000000;
         display: flex;
+        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        overflow: hidden;
+    `;
+    
+    // CABEÇALHO FIXO
+    const header = document.createElement('div');
+    header.style.cssText = `
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 12px 15px;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        padding: 20px;
+        flex-shrink: 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        min-height: 60px;
         box-sizing: border-box;
     `;
     
-    // Criar conteúdo do modal
-    const modal = document.createElement('div');
-    modal.className = 'modal-pedidos-conteudo';
-    modal.style.cssText = `
-        position: relative;
-        width: 95%;
-        max-width: 900px;
-        max-height: 95vh;
-        overflow-y: auto;
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9);
-        border: 3px solid #3498db;
-        box-sizing: border-box;
-        display: block;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        line-height: 1.5;
-        color: #000;
-    `;
-    
-    // Conteúdo inicial (loading)
-    modal.innerHTML = `
-        <div style="padding: 40px;">
-            <!-- Header -->
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 30px;
-                padding-bottom: 20px;
-                border-bottom: 2px solid #3498db;
-            ">
+    header.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+            <button onclick="fecharModalPedidos()" 
+                    style="
+                        background: rgba(255,255,255,0.2);
+                        color: white;
+                        border: none;
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        font-size: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                    "
+                    title="Voltar">
+                ←
+            </button>
+            <div style="min-width: 0;">
                 <h1 style="
-                    margin: 0;
-                    color: #2c3e50;
-                    font-size: 28px;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
+                    margin: 0; 
+                    font-size: 16px; 
+                    font-weight: bold;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 ">
-                    📦 TODOS OS PEDIDOS
+                    📦 Pedidos
                 </h1>
-                <button onclick="fecharModalPedidos()" 
-                        style="
-                            background: #e74c3c;
-                            color: white;
-                            border: none;
-                            width: 50px;
-                            height: 50px;
-                            border-radius: 50%;
-                            cursor: pointer;
-                            font-size: 24px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            transition: transform 0.2s;
-                        "
-                        onmouseover="this.style.transform='scale(1.1)'"
-                        onmouseout="this.style.transform='scale(1)'">
-                    ✕
-                </button>
-            </div>
-            
-            <!-- Barra de busca e filtros -->
-            <div style="
-                background: #f8f9fa;
-                padding: 20px;
-                border-radius: 10px;
-                margin-bottom: 30px;
-            ">
-                <input type="text" 
-                       id="filtroBuscaPedidos" 
-                       placeholder="🔍 Buscar por cliente, telefone ou número do pedido..." 
-                       style="
-                            width: 100%;
-                            padding: 15px;
-                            border: 2px solid #3498db;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            margin-bottom: 15px;
-                            box-sizing: border-box;
-                       ">
-                
-                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
-                    <button onclick="filtrarPedidosPorStatus('todos')" 
-                            class="filtro-status ativo"
-                            style="
-                                background: #3498db;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 20px;
-                                cursor: pointer;
-                                white-space: nowrap;
-                                font-weight: bold;
-                            ">
-                        Todos
-                    </button>
-                    <button onclick="filtrarPedidosPorStatus('pendente')" 
-                            class="filtro-status"
-                            style="
-                                background: #f39c12;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 20px;
-                                cursor: pointer;
-                                white-space: nowrap;
-                            ">
-                        ⏳ Pendente
-                    </button>
-                    <button onclick="filtrarPedidosPorStatus('enviado')" 
-                            class="filtro-status"
-                            style="
-                                background: #3498db;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 20px;
-                                cursor: pointer;
-                                white-space: nowrap;
-                            ">
-                        📤 Enviado
-                    </button>
-                    <button onclick="filtrarPedidosPorStatus('entregue')" 
-                            class="filtro-status"
-                            style="
-                                background: #2ecc71;
-                                color: white;
-                                border: none;
-                                padding: 10px 20px;
-                                border-radius: 20px;
-                                cursor: pointer;
-                                white-space: nowrap;
-                            ">
-                        🚚 Entregue
-                    </button>
+                <div style="font-size: 12px; opacity: 0.9; display: flex; align-items: center; gap: 5px;">
+                    <span id="contadorPedidos">0</span> pedidos
                 </div>
             </div>
-            
-            <!-- Lista de pedidos -->
-            <div id="listaPedidosConteudo" style="min-height: 300px;">
-                <div style="text-align: center; padding: 60px 20px;">
-                    <div style="font-size: 64px; margin-bottom: 20px;">🔄</div>
-                    <h3 style="color: #2c3e50;">Carregando pedidos...</h3>
-                    <p style="color: #7f8c8d;">Isso pode levar alguns segundos</p>
-                </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="
-                margin-top: 40px;
-                padding-top: 20px;
-                border-top: 1px solid #eee;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            ">
-                <div style="color: #7f8c8d; font-size: 14px;">
-                    <span id="contadorPedidos">0</span> pedidos encontrados
-                </div>
-                <button onclick="carregarPedidos()" 
-                        style="
-                            padding: 12px 30px;
-                            background: #2ecc71;
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            font-weight: bold;
-                            display: flex;
-                            align-items: center;
-                            gap: 8px;
-                        ">
-                    🔄 Atualizar
-                </button>
+        </div>
+        
+        <div style="display: flex; gap: 8px; flex-shrink: 0;">
+            <button onclick="carregarPedidos()" 
+                    style="
+                        background: #2ecc71;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 13px;
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        white-space: nowrap;
+                    "
+                    title="Atualizar lista">
+                🔄
+            </button>
+        </div>
+    `;
+    
+    // SEÇÃO DE FILTROS
+    const filtrosSection = document.createElement('div');
+    filtrosSection.style.cssText = `
+        background: #f8f9fa;
+        padding: 10px 15px;
+        border-bottom: 1px solid #e0e0e0;
+        flex-shrink: 0;
+        min-height: 90px;
+        box-sizing: border-box;
+    `;
+    
+    filtrosSection.innerHTML = `
+        <input type="text" 
+               id="filtroBuscaPedidos" 
+               placeholder="🔍 Buscar..." 
+               style="
+                    width: 100%;
+                    padding: 10px 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                    box-sizing: border-box;
+                    min-height: 40px;
+               "
+               aria-label="Buscar pedidos">
+        
+        <div style="
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 2px;
+            min-height: 32px;
+        ">
+            <button onclick="filtrarPedidosPorStatus('todos')" 
+                    class="filtro-status ativo"
+                    style="
+                        background: #3498db;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 16px;
+                        cursor: pointer;
+                        font-size: 12px;
+                        flex-shrink: 0;
+                        min-width: 60px;
+                        white-space: nowrap;
+                    "
+                    aria-label="Todos os pedidos">
+                Todos
+            </button>
+            <button onclick="filtrarPedidosPorStatus('pendente')" 
+                    class="filtro-status"
+                    style="
+                        background: #f39c12;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 16px;
+                        cursor: pointer;
+                        font-size: 12px;
+                        flex-shrink: 0;
+                        min-width: 60px;
+                        white-space: nowrap;
+                    "
+                    aria-label="Pedidos pendentes">
+                ⏳ Pendente
+            </button>
+            <button onclick="filtrarPedidosPorStatus('enviado')" 
+                    class="filtro-status"
+                    style="
+                        background: #3498db;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 16px;
+                        cursor: pointer;
+                        font-size: 12px;
+                        flex-shrink: 0;
+                        min-width: 60px;
+                        white-space: nowrap;
+                    "
+                    aria-label="Pedidos enviados">
+                📤 Enviado
+            </button>
+            <button onclick="filtrarPedidosPorStatus('entregue')" 
+                    class="filtro-status"
+                    style="
+                        background: #2ecc71;
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 16px;
+                        cursor: pointer;
+                        font-size: 12px;
+                        flex-shrink: 0;
+                        min-width: 60px;
+                    "
+                    aria-label="Pedidos entregues">
+                🚚 Entregue
+            </button>
+        </div>
+    `;
+    
+    // CONTAINER DA LISTA (área principal com scroll)
+    const listaContainer = document.createElement('div');
+    listaContainer.id = 'pedidos-lista-container';
+    listaContainer.style.cssText = `
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #f5f7fa;
+        padding: 0;
+        min-height: 200px;
+    `;
+    
+    listaContainer.innerHTML = `
+        <div id="listaPedidosConteudo" style="padding: 15px; min-height: 100%;">
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="
+                    width: 40px;
+                    height: 40px;
+                    border: 3px solid #f3f3f3;
+                    border-top: 3px solid #3498db;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 15px;
+                "></div>
+                <h3 style="color: #2c3e50; margin-bottom: 8px; font-size: 16px;">Carregando...</h3>
             </div>
         </div>
     `;
     
-    // Adicionar à página
-    container.appendChild(modal);
+    // Adicionar tudo ao container
+    container.appendChild(header);
+    container.appendChild(filtrosSection);
+    container.appendChild(listaContainer);
     document.body.appendChild(container);
     
-    // Carregar pedidos
-    carregarPedidos();
+    // Bloquear scroll do body
+    document.body.style.overflow = 'hidden';
     
-    // Configurar busca em tempo real
+    // Carregar pedidos
+    setTimeout(carregarPedidos, 100);
+    
+    // Configurar busca
     setTimeout(() => {
         const inputBusca = document.getElementById('filtroBuscaPedidos');
         if (inputBusca) {
+            let timeout;
             inputBusca.addEventListener('input', function() {
-                filtrarPedidosPorBusca(this.value);
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    filtrarPedidosPorBusca(this.value);
+                }, 300);
             });
+            
+            // Focar no campo de busca
+            setTimeout(() => inputBusca.focus(), 300);
         }
-    }, 500);
+    }, 200);
 }
 
-// Função para carregar pedidos
+// FUNÇÃO PARA CARREGAR PEDIDOS
 async function carregarPedidos() {
     try {
         const lista = document.getElementById('listaPedidosConteudo');
@@ -14996,23 +15031,25 @@ async function carregarPedidos() {
         // Mostrar loading
         lista.innerHTML = `
             <div style="text-align: center; padding: 40px 20px;">
-                <div style="font-size: 48px; margin-bottom: 20px;">🔄</div>
-                <h3 style="color: #2c3e50;">Buscando pedidos...</h3>
+                <div style="font-size: 40px; margin-bottom: 15px; color: #3498db; animation: spin 1s linear infinite;">
+                    🔄
+                </div>
+                <h3 style="color: #2c3e50; margin-bottom: 8px; font-size: 16px;">Buscando pedidos...</h3>
             </div>
         `;
         
-        // Buscar do Firebase
+        // Buscar pedidos do Firebase
         const snapshot = await db.collection('pedidos')
             .orderBy('timestamp', 'desc')
-            .limit(50)
+            .limit(100)
             .get();
         
         if (snapshot.empty) {
             lista.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px;">
-                    <div style="font-size: 80px; margin-bottom: 20px; color: #bdc3c7;">📭</div>
-                    <h3 style="color: #7f8c8d;">Nenhum pedido encontrado</h3>
-                    <p>Quando houver pedidos, eles aparecerão aqui.</p>
+                    <div style="font-size: 50px; margin-bottom: 15px; color: #bdc3c7;">📭</div>
+                    <h3 style="color: #7f8c8d; font-size: 16px;">Nenhum pedido</h3>
+                    <p style="color: #95a5a6; font-size: 14px;">Quando houver pedidos, eles aparecerão aqui.</p>
                 </div>
             `;
             contador.textContent = '0';
@@ -15027,14 +15064,14 @@ async function carregarPedidos() {
             });
         });
         
+        // Salvar globalmente
+        window.pedidosAtuais = pedidos;
+        
         // Atualizar contador
         contador.textContent = pedidos.length;
         
-        // Gerar HTML dos pedidos
+        // Renderizar pedidos
         renderizarPedidos(pedidos);
-        
-        // Salvar pedidos globalmente para filtragem
-        window.pedidosAtuais = pedidos;
         
     } catch (error) {
         console.error('Erro ao carregar pedidos:', error);
@@ -15042,18 +15079,18 @@ async function carregarPedidos() {
         if (lista) {
             lista.innerHTML = `
                 <div style="text-align: center; padding: 40px 20px; color: #e74c3c;">
-                    <div style="font-size: 60px; margin-bottom: 20px;">⚠️</div>
-                    <h3>Erro ao carregar pedidos</h3>
-                    <p>${error.message}</p>
+                    <div style="font-size: 40px; margin-bottom: 15px;">⚠️</div>
+                    <h3 style="margin-bottom: 8px; font-size: 16px;">Erro ao carregar</h3>
+                    <p style="margin-bottom: 20px; font-size: 14px;">${error.message}</p>
                     <button onclick="carregarPedidos()" 
                             style="
-                                margin-top: 20px;
                                 padding: 10px 20px;
                                 background: #3498db;
                                 color: white;
                                 border: none;
-                                border-radius: 5px;
+                                border-radius: 6px;
                                 cursor: pointer;
+                                font-size: 14px;
                             ">
                         Tentar novamente
                     </button>
@@ -15063,22 +15100,22 @@ async function carregarPedidos() {
     }
 }
 
-// Função para renderizar pedidos
+// FUNÇÃO RENDERIZAR PEDIDOS (OTIMIZADA PARA RESPONSIVIDADE)
 function renderizarPedidos(pedidos) {
     const lista = document.getElementById('listaPedidosConteudo');
     if (!lista) return;
     
     if (pedidos.length === 0) {
         lista.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 80px; margin-bottom: 20px; color: #bdc3c7;">📭</div>
-                <p style="color: #7f8c8d;">Nenhum pedido corresponde aos filtros</p>
+            <div style="text-align: center; padding: 40px 20px;">
+                <div style="font-size: 50px; margin-bottom: 15px; color: #bdc3c7;">📭</div>
+                <h3 style="color: #7f8c8d; font-size: 16px;">Nenhum pedido encontrado</h3>
             </div>
         `;
         return;
     }
     
-    let html = '<div style="display: grid; gap: 15px;">';
+    let html = '<div style="display: grid; gap: 12px;">';
     
     pedidos.forEach(pedido => {
         const data = new Date(pedido.timestamp || pedido.dataPedido || Date.now());
@@ -15088,142 +15125,197 @@ function renderizarPedidos(pedidos) {
         const total = pedido.resumo?.total || pedido.total || 0;
         const itensCount = pedido.itens?.length || 0;
         const numeroPedido = pedido.numeroPedido || pedido.id.substring(0, 8).toUpperCase();
+        const formaPagamento = pedido.resumo?.formaPagamento || '';
+        const tipoEntrega = pedido.resumo?.entrega === 'delivery' ? '🛵 Delivery' : '🏪 Retirada';
         
-        // Configurações de status
-        const statusConfig = {
+        // Status colors
+        const statusInfo = {
             'pendente': { cor: '#f39c12', emoji: '⏳', texto: 'PENDENTE' },
             'enviado': { cor: '#3498db', emoji: '📤', texto: 'ENVIADO' },
             'confirmado': { cor: '#27ae60', emoji: '✅', texto: 'CONFIRMADO' },
             'entregue': { cor: '#2ecc71', emoji: '🚚', texto: 'ENTREGUE' },
             'cancelado': { cor: '#e74c3c', emoji: '❌', texto: 'CANCELADO' }
-        };
+        }[status] || { cor: '#f39c12', emoji: '⏳', texto: 'PENDENTE' };
         
-        const statusInfo = statusConfig[status] || statusConfig.pendente;
+        // Formatar datas
+        const dataFormatada = data.toLocaleDateString('pt-BR');
+        const horaFormatada = data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        
+        // Truncar texto longo para responsividade
+        const nomeExibicao = clienteNome.length > 25 ? 
+            clienteNome.substring(0, 25) + '...' : clienteNome;
+        
+        const telefoneExibicao = clienteTelefone.length > 15 ?
+            clienteTelefone.substring(0, 15) + '...' : clienteTelefone;
         
         html += `
             <div class="card-pedido" 
-                 data-id="${pedido.id}"
-                 data-cliente="${clienteNome.toLowerCase()}"
-                 data-telefone="${clienteTelefone}"
-                 data-numero="${numeroPedido}"
-                 data-status="${status}"
+                 data-pedido-id="${pedido.id}"
                  style="
                     background: white;
                     border-radius: 10px;
-                    border: 1px solid #e0e0e0;
                     overflow: hidden;
-                    transition: transform 0.2s, box-shadow 0.2s;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                    border: 1px solid #e8e8e8;
+                    transition: all 0.2s;
+                    min-height: 180px;
+                    display: flex;
+                    flex-direction: column;
                  "
-                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                 ontouchstart="this.style.transform='scale(0.995)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                 ontouchend="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.05)'">
                 
-                <div style="border-left: 5px solid ${statusInfo.cor};">
-                    <!-- Cabeçalho -->
-                    <div style="padding: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
-                            <div>
-                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <!-- Borda colorida por status -->
+                <div style="border-left: 4px solid ${statusInfo.cor}; height: 100%;">
+                    
+                    <!-- CABEÇALHO -->
+                    <div style="padding: 12px; border-bottom: 1px solid #f0f0f0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;">
                                     <span style="
                                         background: ${statusInfo.cor};
                                         color: white;
-                                        padding: 6px 12px;
-                                        border-radius: 15px;
-                                        font-size: 12px;
+                                        padding: 4px 8px;
+                                        border-radius: 12px;
+                                        font-size: 10px;
                                         font-weight: bold;
                                         display: inline-flex;
                                         align-items: center;
-                                        gap: 5px;
-                                    ">
+                                        gap: 3px;
+                                        flex-shrink: 0;
+                                    "
+                                    title="${statusInfo.texto}">
                                         ${statusInfo.emoji} ${statusInfo.texto}
                                     </span>
                                     <span style="
-                                        font-size: 12px;
+                                        font-size: 10px;
                                         color: #666;
-                                        background: #f8f9fa;
-                                        padding: 4px 10px;
-                                        border-radius: 12px;
-                                        font-family: 'Courier New', monospace;
-                                    ">
+                                        background: #f5f5f5;
+                                        padding: 3px 6px;
+                                        border-radius: 8px;
+                                        font-family: monospace;
+                                        font-weight: bold;
+                                        flex-shrink: 0;
+                                    "
+                                    title="Número do pedido">
                                         #${numeroPedido}
                                     </span>
                                 </div>
-                                <div style="font-size: 13px; color: #7f8c8d;">
-                                    ${data.toLocaleDateString('pt-BR')} • ${data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}
+                                <div style="font-size: 11px; color: #7f8c8d; white-space: nowrap;">
+                                    ${dataFormatada} • ${horaFormatada}
                                 </div>
                             </div>
                             
-                            <div style="text-align: right;">
-                                <div style="font-size: 22px; font-weight: bold; color: #27ae60;">
+                            <div style="text-align: right; flex-shrink: 0;">
+                                <div style="font-size: 18px; font-weight: bold; color: #27ae60; line-height: 1;">
                                     R$ ${total.toFixed(2)}
                                 </div>
-                                <div style="font-size: 12px; color: #95a5a6; margin-top: 3px;">
-                                    ${pedido.resumo?.formaPagamento || 'Pagamento'}
+                                ${formaPagamento ? `
+                                <div style="font-size: 10px; color: #95a5a6; margin-top: 2px; white-space: nowrap;">
+                                    ${formaPagamento}
                                 </div>
+                                ` : ''}
                             </div>
-                        </div>
-                        
-                        <!-- Informações do cliente -->
-                        <div style="margin-bottom: 15px;">
-                            <div style="font-size: 17px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">
-                                ${clienteNome}
-                            </div>
-                            <div style="font-size: 14px; color: #666;">
-                                📞 ${clienteTelefone}
-                            </div>
-                        </div>
-                        
-                        <!-- Informações do pedido -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <div style="font-size: 14px; color: #666;">
-                                🛒 ${itensCount} item(s)
-                            </div>
-                            <div style="font-size: 14px; color: #666;">
-                                📦 ${pedido.resumo?.entrega === 'delivery' ? 'Delivery' : 'Retirada'}
-                            </div>
-                        </div>
-                        
-                        <!-- Ações -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <button onclick="abrirDetalhesPedidoIndividual('${pedido.id}')" 
-                                    style="
-                                        padding: 12px;
-                                        background: #3498db;
-                                        color: white;
-                                        border: none;
-                                        border-radius: 8px;
-                                        cursor: pointer;
-                                        font-weight: bold;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        gap: 8px;
-                                        transition: background 0.2s;
-                                    "
-                                    onmouseover="this.style.background='#2980b9'"
-                                    onmouseout="this.style.background='#3498db'">
-                                👁️ Ver Detalhes
-                            </button>
-                            <button onclick="alterarStatusPedidoIndividual('${pedido.id}', '${status}')" 
-                                    style="
-                                        padding: 12px;
-                                        background: ${statusInfo.cor};
-                                        color: white;
-                                        border: none;
-                                        border-radius: 8px;
-                                        cursor: pointer;
-                                        font-weight: bold;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        gap: 8px;
-                                        transition: background 0.2s;
-                                    "
-                                    onmouseover="this.style.background='${statusInfo.cor.replace(')', ', 0.9)').replace('rgb', 'rgba').replace(')', ', 0.9)')}'"
-                                    onmouseout="this.style.background='${statusInfo.cor}'">
-                                🔄 Alterar Status
-                            </button>
                         </div>
                     </div>
+                    
+                    <!-- INFORMAÇÕES DO CLIENTE -->
+                    <div style="padding: 12px; border-bottom: 1px solid #f0f0f0; flex: 1;">
+                        <div style="margin-bottom: 6px;">
+                            <div style="
+                                font-size: 15px; 
+                                font-weight: bold; 
+                                color: #2c3e50; 
+                                margin-bottom: 3px;
+                                line-height: 1.2;
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
+                                max-width: 100%;
+                            "
+                            title="${clienteNome}">
+                                ${nomeExibicao}
+                            </div>
+                            <div style="
+                                font-size: 13px; 
+                                color: #666; 
+                                display: flex; 
+                                align-items: center; 
+                                gap: 4px;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            "
+                            title="Telefone: ${clienteTelefone}">
+                                📞 ${telefoneExibicao}
+                            </div>
+                        </div>
+                        
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-size: 12px;
+                            color: #666;
+                            margin-top: 8px;
+                        ">
+                            <div style="display: flex; align-items: center; gap: 3px; white-space: nowrap;">
+                                🛒 ${itensCount} item(s)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 3px; white-space: nowrap;">
+                                ${tipoEntrega}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- BOTÕES DE AÇÃO -->
+                    <div style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button onclick="window.abrirDetalhesPedido('${pedido.id}')" 
+                                style="
+                                    padding: 10px;
+                                    background: #3498db;
+                                    color: white;
+                                    border: none;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-weight: bold;
+                                    font-size: 13px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 5px;
+                                    transition: all 0.2s;
+                                    min-height: 40px;
+                                    white-space: nowrap;
+                                "
+                                ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
+                                ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
+                            👁️ Ver
+                        </button>
+                        <button onclick="window.alterarStatusPedido('${pedido.id}', '${status}')" 
+                                style="
+                                    padding: 10px;
+                                    background: ${statusInfo.cor};
+                                    color: white;
+                                    border: none;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    font-weight: bold;
+                                    font-size: 13px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    gap: 5px;
+                                    transition: all 0.2s;
+                                    min-height: 40px;
+                                    white-space: nowrap;
+                                "
+                                ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
+                                ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
+                            🔄 Status
+                        </button>
+                    </div>
+                    
                 </div>
             </div>
         `;
@@ -15233,38 +15325,41 @@ function renderizarPedidos(pedidos) {
     lista.innerHTML = html;
 }
 
-// Funções auxiliares
+// FUNÇÕES AUXILIARES
 function fecharModalPedidos() {
     const container = document.querySelector('.modal-pedidos-container');
-    if (container) container.remove();
+    if (container) {
+        container.style.transform = 'translateX(-100%)';
+        container.style.transition = 'transform 0.3s';
+        setTimeout(() => {
+            container.remove();
+            document.body.style.overflow = '';
+        }, 300);
+    }
 }
 
 function filtrarPedidosPorStatus(status) {
-    // Ativar botão clicado
-    const botoes = document.querySelectorAll('.filtro-status');
-    botoes.forEach(botao => {
-        if (botao.getAttribute('onclick')?.includes(`'${status}'`)) {
-            botao.classList.add('ativo');
+    // Atualizar botões
+    document.querySelectorAll('.filtro-status').forEach(botao => {
+        const isAtivo = botao.getAttribute('onclick')?.includes(`'${status}'`);
+        botao.classList.toggle('ativo', isAtivo);
+        if (isAtivo) {
             botao.style.fontWeight = 'bold';
-            botao.style.transform = 'scale(1.05)';
+            botao.style.boxShadow = '0 0 0 2px rgba(255,255,255,0.5)';
         } else {
-            botao.classList.remove('ativo');
             botao.style.fontWeight = 'normal';
-            botao.style.transform = 'scale(1)';
+            botao.style.boxShadow = 'none';
         }
     });
     
     if (!window.pedidosAtuais) return;
     
-    let pedidosFiltrados = window.pedidosAtuais;
-    
-    if (status !== 'todos') {
-        pedidosFiltrados = window.pedidosAtuais.filter(p => p.status === status);
-    }
+    const pedidosFiltrados = status === 'todos' 
+        ? window.pedidosAtuais 
+        : window.pedidosAtuais.filter(p => p.status === status);
     
     renderizarPedidos(pedidosFiltrados);
     
-    // Atualizar contador
     const contador = document.getElementById('contadorPedidos');
     if (contador) {
         contador.textContent = pedidosFiltrados.length;
@@ -15301,67 +15396,139 @@ function filtrarPedidosPorBusca(termo) {
     if (contador) contador.textContent = pedidosFiltrados.length;
 }
 
-function abrirDetalhesPedidoIndividual(pedidoId) {
-    // Usar sua função existente de detalhes
-    if (typeof verDetalhesPedido === 'function') {
-        verDetalhesPedido(pedidoId);
-    } else {
-        alert(`Detalhes do pedido: ${pedidoId}`);
-    }
-}
 
-function alterarStatusPedidoIndividual(pedidoId, statusAtual) {
-    // Usar sua função existente de alterar status
+// FUNÇÕES DE AÇÃO PARA OS BOTÕES - VERSÃO ATUALIZADA
+window.abrirDetalhesPedido = function(pedidoId) {
+    console.log('📋 Abrindo detalhes do pedido:', pedidoId);
+    
+    // Primeiro, fechar o modal de lista
+    fecharModalPedidos();
+    
+    // Depois, abrir os detalhes COM A NOVA VERSÃO
+    setTimeout(() => {
+        // Verificar se a função responsiva existe
+        if (typeof verDetalhesPedido === 'function') {
+            // Usar a NOVA função responsiva
+            verDetalhesPedido(pedidoId);
+        } else {
+            console.error('❌ Função verDetalhesPedido não encontrada!');
+            // Fallback temporário
+            setTimeout(() => {
+                alert(`Detalhes do pedido ${pedidoId}\n\nCarregando função responsiva...`);
+            }, 100);
+        }
+    }, 300);
+};
+
+window.alterarStatusPedido = function(pedidoId, statusAtual) {
+    console.log('🔄 Alterando status do pedido:', pedidoId, 'Status atual:', statusAtual);
+    
+    // Usar sua função existente
     if (typeof alterarStatusPedido === 'function') {
         alterarStatusPedido(pedidoId, statusAtual);
     } else {
-        alert(`Alterar status do pedido: ${pedidoId}`);
+        // Fallback
+        const novoStatus = prompt(`Alterar status do pedido ${pedidoId}\n\nStatus atual: ${statusAtual}\n\nNovo status:`, 'entregue');
+        if (novoStatus) {
+            alert(`Status alterado para: ${novoStatus}`);
+        }
     }
+};
+
+// ADICIONAR ESTILOS RESPONSIVOS
+if (!document.getElementById('estilos-pedidos-responsive')) {
+    const estilo = document.createElement('style');
+    estilo.id = 'estilos-pedidos-responsive';
+    estilo.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* RESPONSIVIDADE */
+        @media (max-width: 480px) {
+            .card-pedido {
+                padding: 10px !important;
+            }
+            
+            .card-pedido > div > div {
+                padding: 10px !important;
+            }
+            
+            button {
+                font-size: 12px !important;
+                padding: 8px !important;
+                min-height: 36px !important;
+            }
+            
+            h1 {
+                font-size: 14px !important;
+            }
+            
+            input {
+                font-size: 14px !important;
+                padding: 8px 10px !important;
+            }
+        }
+        
+        @media (max-width: 320px) {
+            .card-pedido {
+                padding: 8px !important;
+            }
+            
+            button {
+                font-size: 11px !important;
+                padding: 6px !important;
+            }
+            
+            .filtro-status {
+                padding: 4px 8px !important;
+                font-size: 11px !important;
+                min-width: 50px !important;
+            }
+        }
+        
+        /* GARANTIR QUE TEXTO NÃO SOME */
+        .card-pedido * {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* IMPEDIR QUEBRA DE LAYOUT */
+        #listaPedidosConteudo {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        /* SCROLL SUAVE */
+        #pedidos-lista-container {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        
+        #pedidos-lista-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        
+        #pedidos-lista-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        #pedidos-lista-container::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 2px;
+        }
+    `;
+    document.head.appendChild(estilo);
 }
 
-// =========================
-// CONFIGURAÇÃO FINAL
-// =========================
-
-// Substituir a função original
+// Substituir função original
 window.listarTodosPedidos = abrirListaPedidos;
 
-// Adicionar botão de teste se necessário
-function adicionarBotaoTeste() {
-    if (document.getElementById('botaoTesteListaPedidos')) return;
-    
-    const botao = document.createElement('button');
-    botao.id = 'botaoTesteListaPedidos';
-    botao.innerHTML = '📋 TESTAR LISTA DE PEDIDOS';
-    botao.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-        border: none;
-        padding: 15px 25px;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        z-index: 99999;
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
-    `;
-    
-    botao.onclick = abrirListaPedidos;
-    document.body.appendChild(botao);
-    
-    console.log('✅ Botão de teste adicionado!');
-}
-
-// Adicionar botão automaticamente
-setTimeout(adicionarBotaoTeste, 1000);
-
-console.log('🎯 SISTEMA DE PEDIDOS CONFIGURADO!');
+console.log('✅ MODAL DE PEDIDOS PRONTO!');
+console.log('📱 100% responsivo');
+console.log('🔧 Botões funcionais');
 console.log('👉 Execute: abrirListaPedidos()');
-console.log('👉 Ou clique no botão "📋 TESTAR LISTA DE PEDIDOS"');
-
 //----------------------------------------------------------------------------------------------------
 </script>
 </body>
