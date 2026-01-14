@@ -13,6 +13,278 @@
 
 <!-- NO HORTIFRUTI 2 - após Firebase -->
 <script>
+
+//-------------------------------------------------------------------------------------------------------
+// ====================================================
+// ISOLADOR DE SESSÃO - HORTIFRUTI 2 (VERSÃO CORRIGIDA)
+// NÃO desloga ao atualizar a página
+// ====================================================
+
+(function() {
+    'use strict';
+    
+    console.log('🛡️ HORTIFRUTI 2 - Isolador iniciando...');
+    
+    // 🔴 CONFIGURAÇÃO - AJUSTE AQUI
+    const CONFIG = {
+        MEU_SISTEMA: 'hortifruti2',
+        MEU_PROJETO_FIREBASE: 'seu-projeto-hortifruti2', // 🔴 SUA CONFIG
+        MINHA_CHAVE_USER: 'hortifruti2_user',
+        MINHA_CHAVE_CART: 'horti2_cart',
+        
+        // 🔴 IDs dos outros sistemas (descubra no console)
+        PROJETO_BEBIDAS1: 'projeto-bebidas1',
+        PROJETO_HORTIFRUTI1: 'hortifruti1-projeto',
+        PROJETO_HORTIFRUTI3: 'hortifruti3-projeto',
+        PROJETO_HORTIFRUTI4: 'hortifruti4-projeto'
+    };
+    
+    // 🔴 VARIÁVEL PARA CONTROLAR SE JÁ LIMPOU
+    window.HORTIFRUTI2_JA_LIMPOU = window.HORTIFRUTI2_JA_LIMPOU || false;
+    
+    // ==================== FUNÇÃO PRINCIPAL CORRIGIDA ====================
+    
+    function limparSessoesInimigas() {
+        // 🔴 SE JÁ LIMPOU NESTA SESSÃO, NÃO LIMPAR NOVAMENTE
+        if (window.HORTIFRUTI2_JA_LIMPOU) {
+            console.log('ℹ️ Limpeza já foi realizada nesta sessão');
+            return;
+        }
+        
+        console.log('🧹 Primeira carga - limpando sessões rivais...');
+        
+        let totalRemovidos = 0;
+        
+        // Lista de padrões de chaves dos sistemas rivais
+        const padroesInimigos = [
+            // Bebidas 1
+            'delivery_bebidas_user',
+            'bebida_cart',
+            'bebidas_user',
+            `firebase:authUser:${CONFIG.PROJETO_BEBIDAS1}`,
+            
+            // Hortifruti 1
+            'hortifruti_user',
+            'hortifruti1_user',
+            'horti_cart',
+            'horti1_cart',
+            `firebase:authUser:${CONFIG.PROJETO_HORTIFRUTI1}`,
+            
+            // Hortifruti 3
+            'hortifruti3_user',
+            'horti3_cart',
+            `firebase:authUser:${CONFIG.PROJETO_HORTIFRUTI3}`,
+            
+            // Hortifruti 4
+            'hortifruti4_user',
+            'horti4_cart',
+            `firebase:authUser:${CONFIG.PROJETO_HORTIFRUTI4}`
+        ];
+        
+        // 🔴 REMOVER APENAS CHAVES QUE NÃO SÃO DO NOSSO SISTEMA
+        for (let i = 0; i < localStorage.length; i++) {
+            const chave = localStorage.key(i);
+            let deveRemover = false;
+            
+            // Verificar se é chave de sistema inimigo
+            padroesInimigos.forEach(padrao => {
+                if (chave.includes(padrao)) {
+                    deveRemover = true;
+                }
+            });
+            
+            // 🔴 IMPORTANTE: NÃO REMOVER CHAVES DO NOSSO SISTEMA!
+            if (chave.includes(CONFIG.MEU_PROJETO_FIREBASE) ||
+                chave.includes(CONFIG.MEU_SISTEMA) ||
+                chave === CONFIG.MINHA_CHAVE_USER ||
+                chave === CONFIG.MINHA_CHAVE_CART) {
+                deveRemover = false;
+            }
+            
+            // Remover chaves genéricas que podem ser de outros sistemas
+            if (!deveRemover) {
+                // Chaves genéricas como 'cart' ou 'user' podem ser de qualquer sistema
+                if ((chave === 'cart' && chave !== CONFIG.MINHA_CHAVE_CART) ||
+                    (chave === 'user' && chave !== CONFIG.MINHA_CHAVE_USER)) {
+                    // Verificar conteúdo para ver se é nosso
+                    try {
+                        const valor = localStorage.getItem(chave);
+                        if (valor) {
+                            const dados = JSON.parse(valor);
+                            // Se não tem sistema marcado ou é de outro sistema
+                            if (!dados.sistema || dados.sistema !== CONFIG.MEU_SISTEMA) {
+                                deveRemover = true;
+                            }
+                        }
+                    } catch (e) {
+                        // Não é JSON, remover com cuidado
+                        if (chave === 'cart' && !chave.includes('horti2')) {
+                            deveRemover = true;
+                        }
+                    }
+                }
+            }
+            
+            if (deveRemover) {
+                console.log(`🗑️ Removendo chave rival: ${chave}`);
+                localStorage.removeItem(chave);
+                totalRemovidos++;
+            }
+        }
+        
+        // 🔴 MARCAR QUE JÁ LIMPOU
+        window.HORTIFRUTI2_JA_LIMPOU = true;
+        sessionStorage.setItem('hortifruti2_ja_limpou', 'true');
+        
+        console.log(`✅ Limpeza completa. Removidos: ${totalRemovidos} chaves`);
+    }
+    
+    // ==================== VERIFICAR NOSSO USUÁRIO ====================
+    
+    function verificarNossoUsuario() {
+        const nossoUsuario = localStorage.getItem(CONFIG.MINHA_CHAVE_USER);
+        
+        if (nossoUsuario) {
+            try {
+                const usuario = JSON.parse(nossoUsuario);
+                
+                // 🔴 SE É NOSSO USUÁRIO, NÃO FAZER NADA
+                if (usuario.sistema === CONFIG.MEU_SISTEMA) {
+                    console.log('👤 Usuário do Hortifruti 2 encontrado:', usuario.email);
+                    
+                    // Garantir que está no window.currentUser
+                    if (!window.currentUser) {
+                        window.currentUser = usuario;
+                        console.log('🔄 Usuário restaurado para window.currentUser');
+                    }
+                    
+                    return true;
+                } else {
+                    // Usuário de outro sistema - remover
+                    console.warn('⚠️ Usuário de outro sistema encontrado, removendo...');
+                    localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
+                    return false;
+                }
+            } catch (e) {
+                localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
+                return false;
+            }
+        }
+        
+        return false;
+    }
+    
+    // ==================== INTERCEPTAR LOGIN (CORRIGIDO) ====================
+    
+    function interceptarLoginGoogle() {
+        // Aguardar função ser carregada
+        const intervalo = setInterval(() => {
+            if (typeof window.loginWithGoogle === 'function') {
+                clearInterval(intervalo);
+                
+                console.log('🔒 Interceptando loginWithGoogle...');
+                const originalLogin = window.loginWithGoogle;
+                
+                window.loginWithGoogle = async function(...args) {
+                    console.log('🛡️ Login protegido do Hortifruti 2');
+                    
+                    // 🔴 LIMPAR SÓ NA PRIMEIRA VEZ
+                    if (!window.HORTIFRUTI2_JA_LIMPOU) {
+                        limparSessoesInimigas();
+                        
+                        // Logout do Firebase apenas se não estamos logados
+                        if (firebase.auth) {
+                            try {
+                                const user = firebase.auth().currentUser;
+                                if (!user) {
+                                    await firebase.auth().signOut();
+                                    console.log('🚪 Logout preventivo do Firebase');
+                                }
+                            } catch (error) {
+                                // Ignorar erros
+                            }
+                        }
+                    }
+                    
+                    // Executar login original
+                    const resultado = await originalLogin.apply(this, args);
+                    
+                    // 🔴 DEPOIS DO LOGIN, MARCAR COMO NOSSO SISTEMA
+                    setTimeout(() => {
+                        if (window.currentUser) {
+                            window.currentUser.sistema = CONFIG.MEU_SISTEMA;
+                            window.currentUser.projeto = CONFIG.MEU_PROJETO_FIREBASE;
+                            
+                            // Salvar no localStorage
+                            localStorage.setItem(
+                                CONFIG.MINHA_CHAVE_USER,
+                                JSON.stringify(window.currentUser)
+                            );
+                            
+                            console.log('✅ Usuário marcado como Hortifruti 2');
+                        }
+                    }, 100);
+                    
+                    return resultado;
+                };
+                
+                console.log('✅ Login interceptado');
+            }
+        }, 500);
+    }
+    
+    // ==================== INICIALIZAÇÃO INTELIGENTE ====================
+    
+    function iniciarIsolador() {
+        console.log('🚀 Inicializando isolador inteligente...');
+        
+        // 🔴 VERIFICAR SE JÁ TEMOS USUÁRIO SALVO
+        const temNossoUsuario = verificarNossoUsuario();
+        
+        if (temNossoUsuario) {
+            // 🔴 JÁ ESTAMOS LOGADOS - NÃO LIMPAR NADA!
+            console.log('🎯 Usuário já logado no Hortifruti 2 - pulando limpeza');
+            window.HORTIFRUTI2_JA_LIMPOU = true;
+        } else {
+            // 🔴 NÃO ESTAMOS LOGADOS - FAZER LIMPEZA (SÓ NA PRIMEIRA VEZ)
+            // Verificar se já limpou nesta sessão
+            const jaLimpouSessao = sessionStorage.getItem('hortifruti2_ja_limpou');
+            
+            if (!jaLimpouSessao) {
+                limparSessoesInimigas();
+            } else {
+                console.log('ℹ️ Limpeza já foi feita nesta sessão de navegação');
+                window.HORTIFRUTI2_JA_LIMPOU = true;
+            }
+        }
+        
+        // Interceptar login
+        interceptarLoginGoogle();
+        
+        // 🔴 PROTEÇÃO CONTRA DUPLA EXECUÇÃO
+        // Se já tem um isolador ativo, não criar outro
+        if (window.HORTIFRUTI2_ISOLADOR_ATIVO) {
+            console.log('⚠️ Isolador já está ativo, saindo...');
+            return;
+        }
+        window.HORTIFRUTI2_ISOLADOR_ATIVO = true;
+        
+        console.log('✅ Isolador Hortifruti 2 ativado com sucesso');
+    }
+    
+    // ==================== EXECUTAR COM SEGURANÇA ====================
+    
+    // Esperar o DOM carregar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarIsolador);
+    } else {
+        // 🔴 PEQUENO DELAY para evitar conflitos
+        setTimeout(iniciarIsolador, 300);
+    }
+    
+})();
+//-------------------------------------------------------------------------------------------------------
+
 // PROTEÇÃO HORTIFRUTI 2 - CLIENTE B - VERSÃO CORRIGIDA
 // Chave: horti2_cart
 // ============================================
