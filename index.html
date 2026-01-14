@@ -14,352 +14,7 @@
 <!-- NO HORTIFRUTI 2 - após Firebase -->
 <script>
 
-//-------------------------------------------------------------------------------------------------------
-// ====================================================
-// ISOLADOR HORTIFRUTI 2 - PROJETO: hortifruti-cliente-2
-// Bloqueia: hortifruti-cliente-1 (e outros)
-// ====================================================
-
-(function() {
-    'use strict';
-    
-    console.log('🛡️ HORTIFRUTI 2 - Projeto: hortifruti-cliente-2');
-    
-    // 🔴 SUAS CONFIGURAÇÕES REAIS (do console)
-    const MEU_SISTEMA = 'hortifruti2';
-    const MEU_PROJETO = 'hortifruti-cliente-2';
-    const MEU_AUTH_DOMAIN = 'hortifruti-cliente-2.firebaseapp.com';
-    
-    // 🔴 SISTEMAS RIVAIS (com seus dados REAIS)
-    const SISTEMAS_RIVAIS = {
-        'HORTIFRUTI 1': {
-            projeto: 'hortifruti-cliente-1',
-            authDomain: 'hortifruti-cliente-1.firebaseapp.com',
-            chaves: [
-                'hortifruti1_user', 
-                'hortifruti_user', 
-                'horti1_cart', 
-                'horti_cart',
-                'firebase:authUser:hortifruti-cliente-1:[app]',
-                'firebase:host:hortifruti-cliente-1.firebaseapp.com'
-            ]
-        },
-        'BEBIDAS 1': {
-            projeto: 'delivery-bebidas-1', // 🔴 ajuste se for diferente
-            authDomain: 'delivery-bebidas-1.firebaseapp.com',
-            chaves: [
-                'delivery_bebidas_user', 
-                'bebidas_user', 
-                'bebida_cart',
-                'firebase:authUser:delivery-bebidas-1:[app]'
-            ]
-        },
-        'HORTIFRUTI 3': {
-            projeto: 'hortifruti-cliente-3', // 🔴 ajuste se existir
-            authDomain: 'hortifruti-cliente-3.firebaseapp.com',
-            chaves: [
-                'hortifruti3_user', 
-                'horti3_cart',
-                'firebase:authUser:hortifruti-cliente-3:[app]'
-            ]
-        },
-        'HORTIFRUTI 4': {
-            projeto: 'hortifruti-cliente-4', // 🔴 ajuste se existir
-            authDomain: 'hortifruti-cliente-4.firebaseapp.com',
-            chaves: [
-                'hortifruti4_user', 
-                'horti4_cart',
-                'firebase:authUser:hortifruti-cliente-4:[app]'
-            ]
-        }
-    };
-    
-    // ==================== FUNÇÃO CHAVE ====================
-    
-    function forcarLogoutGoogle() {
-        console.log('🔓 Forçando logout do Google Auth...');
-        
-        // Método 1: Limpar estado do gapi (Google API)
-        try {
-            if (window.gapi && window.gapi.auth2) {
-                const auth2 = window.gapi.auth2.getAuthInstance();
-                if (auth2) {
-                    auth2.signOut().then(() => {
-                        console.log('✅ Google Auth2: logout realizado');
-                        auth2.disconnect();
-                    });
-                }
-            }
-        } catch (e) {}
-        
-        // Método 2: Remover cookies específicos do Google
-        const cookiesGoogle = [
-            'g_state', 'gid', 'GA1', '_ga', '_gid',
-            'SID', 'HSID', 'SSID', 'APISID', 'SAPISID',
-            '__Secure-3PSID', '__Secure-3PAPISID'
-        ];
-        
-        cookiesGoogle.forEach(cookieName => {
-            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.google.com;`;
-            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        });
-        
-        // Método 3: Iframe de logout
-        const logoutIframe = document.createElement('iframe');
-        logoutIframe.style.display = 'none';
-        logoutIframe.src = 'https://accounts.google.com/logout';
-        document.body.appendChild(logoutIframe);
-        
-        setTimeout(() => {
-            if (logoutIframe.parentNode) {
-                logoutIframe.parentNode.removeChild(logoutIframe);
-            }
-        }, 2000);
-    }
-    
-    // ==================== LIMPEZA ESPECÍFICA ====================
-    
-    function limparSessoesEspecificas() {
-        console.log('🧹 Limpando sessões específicas de sistemas rivais...');
-        
-        // Criar lista completa de padrões a remover
-        const todosPadroes = [];
-        
-        Object.values(SISTEMAS_RIVAIS).forEach(sistema => {
-            sistema.chaves.forEach(chave => {
-                // Substituir [app] por wildcard
-                if (chave.includes('[app]')) {
-                    // Adicionar variações possíveis
-                    todosPadroes.push(chave.replace('[app]', ''));
-                    todosPadroes.push(chave.replace('[app]', '[DEFAULT]'));
-                } else {
-                    todosPadroes.push(chave);
-                }
-            });
-        });
-        
-        // Remover do localStorage
-        let removidos = 0;
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-            const chave = localStorage.key(i);
-            let deveRemover = false;
-            
-            // Verificar se é chave de sistema rival
-            todosPadroes.forEach(padrao => {
-                if (chave.includes(padrao) && 
-                    !chave.includes(MEU_PROJETO) && 
-                    !chave.includes('hortifruti2')) {
-                    deveRemover = true;
-                }
-            });
-            
-            // Remover chaves genéricas que podem ser de outros sistemas
-            if (!deveRemover && (chave === 'cart' || chave === 'user')) {
-                // Verificar conteúdo
-                try {
-                    const valor = localStorage.getItem(chave);
-                    if (valor) {
-                        const dados = JSON.parse(valor);
-                        if (dados.sistema && dados.sistema !== MEU_SISTEMA) {
-                            deveRemover = true;
-                        }
-                    }
-                } catch (e) {
-                    // Não é JSON válido
-                }
-            }
-            
-            if (deveRemover) {
-                console.log(`🗑️ Removendo: ${chave}`);
-                localStorage.removeItem(chave);
-                removidos++;
-            }
-        }
-        
-        console.log(`✅ ${removidos} chaves rivais removidas`);
-    }
-    
-    // ==================== INTERCEPTAR LOGIN ====================
-    
-    function interceptarEAjustarLogin() {
-        // Aguardar função loginWithGoogle
-        const checkInterval = setInterval(() => {
-            if (typeof window.loginWithGoogle === 'function') {
-                clearInterval(checkInterval);
-                
-                console.log('🔐 Capturando função loginWithGoogle...');
-                const originalLogin = window.loginWithGoogle;
-                
-                window.loginWithGoogle = async function(...args) {
-                    console.log('🚀 Login do Hortifruti 2 - Modo isolado');
-                    
-                    // 1. FORÇAR LOGOUT DO GOOGLE
-                    forcarLogoutGoogle();
-                    
-                    // 2. LIMPAR SESSÕES RIVAIS
-                    limparSessoesEspecificas();
-                    
-                    // 3. CONFIGURAR PROVEDOR PARA ISOLAMENTO
-                    if (window.googleProvider) {
-                        window.googleProvider.setCustomParameters({
-                            prompt: 'select_account',
-                            auth_type: 'reauthenticate',
-                            login_hint: '',
-                            include_granted_scopes: 'false'
-                        });
-                        console.log('⚙️ Google Provider configurado para isolamento');
-                    }
-                    
-                    // 4. EXECUTAR LOGIN ORIGINAL
-                    const resultado = await originalLogin.apply(this, args);
-                    
-                    // 5. MARCAR USUÁRIO COMO DO HORTIFRUTI 2
-                    setTimeout(() => {
-                        if (window.currentUser) {
-                            // Criar identificador ÚNICO
-                            const usuarioIsolado = {
-                                ...window.currentUser,
-                                sistema: MEU_SISTEMA,
-                                projeto: MEU_PROJETO,
-                                dominio: MEU_AUTH_DOMAIN,
-                                isolado_em: new Date().toISOString(),
-                                hash: 'h2_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
-                            };
-                            
-                            // Salvar na chave isolada
-                            localStorage.setItem(
-                                'hortifruti2_user_isolated',
-                                JSON.stringify(usuarioIsolado)
-                            );
-                            
-                            // Também na chave normal (compatibilidade)
-                            localStorage.setItem(
-                                'hortifruti2_user',
-                                JSON.stringify({
-                                    ...window.currentUser,
-                                    sistema: MEU_SISTEMA
-                                })
-                            );
-                            
-                            // Atualizar window.currentUser
-                            window.currentUser = usuarioIsolado;
-                            
-                            console.log('🏷️ Usuário isolado e salvo como Hortifruti 2');
-                        }
-                    }, 500);
-                    
-                    return resultado;
-                };
-                
-                console.log('✅ Login interceptado e modificado');
-            }
-        }, 300);
-    }
-    
-    // ==================== VERIFICAR E RESTAURAR ====================
-    
-    function verificarERestaurarSessao() {
-        const usuarioIsolado = localStorage.getItem('hortifruti2_user_isolated');
-        
-        if (usuarioIsolado) {
-            try {
-                const usuario = JSON.parse(usuarioIsolado);
-                
-                // Verificar se é do nosso sistema E projeto
-                if (usuario.sistema === MEU_SISTEMA && 
-                    usuario.projeto === MEU_PROJETO) {
-                    
-                    console.log('👤 Sessão isolada do Hortifruti 2 encontrada');
-                    
-                    // Restaurar no window.currentUser
-                    window.currentUser = usuario;
-                    
-                    /*// Verificar Firebase Auth
-                    if (window.firebase && firebase.auth) {
-                        firebase.auth().onAuthStateChanged((firebaseUser) => {
-                            if (!firebaseUser) {
-                                console.log('⚠️ Firebase não autenticado, mas temos usuário isolado');
-                                // Não fazer nada - manter estado isolado
-                            } else if (firebaseUser.uid !== usuario.id) {
-                                console.warn('🚨 Firebase autenticado com usuário DIFERENTE!');
-                                // Forçar logout do Firebase
-                                firebase.auth().signOut();
-                            }
-                        });
-                    }*/
-                    
-                    return true;
-                } else {
-                    console.warn('⚠️ Usuário isolado corrompido, removendo...');
-                    localStorage.removeItem('hortifruti2_user_isolated');
-                    localStorage.removeItem('hortifruti2_user');
-                }
-            } catch (e) {
-                localStorage.removeItem('hortifruti2_user_isolated');
-                localStorage.removeItem('hortifruti2_user');
-            }
-        }
-        
-        return false;
-    }
-    
-    // ==================== INICIAR ====================
-    
-    function iniciarIsolador() {
-        console.log(`🚀 Iniciando isolador para ${MEU_PROJETO}`);
-        
-        // Verificar se já temos sessão isolada
-        const temSessaoIsolada = verificarERestaurarSessao();
-        
-        if (!temSessaoIsolada) {
-            // Se não tem sessão isolada, limpar rivais
-            console.log('🆕 Sem sessão isolada - limpando rivais');
-            limparSessoesEspecificas();
-        }
-        
-        // Interceptar login
-        interceptarEAjustarLogin();
-        
-        // Proteção contra invasão
-        setInterval(() => {
-            // Verificar se rivais invadiram
-            Object.values(SISTEMAS_RIVAIS).forEach(sistema => {
-                if (sistema.projeto === 'hortifruti-cliente-1') {
-                    // Especial atenção ao Hortifruti 1
-                    sistema.chaves.forEach(padraoChave => {
-                        const chaveReal = encontrarChaveReal(padraoChave);
-                        if (chaveReal && localStorage.getItem(chaveReal)) {
-                            console.warn(`🚨 HORTIFRUTI 1 INVADIU! Removendo: ${chaveReal}`);
-                            localStorage.removeItem(chaveReal);
-                        }
-                    });
-                }
-            });
-        }, 3000);
-        
-        console.log('✅ Isolador ativado para Hortifruti 2');
-    }
-    
-    function encontrarChaveReal(padrao) {
-        for (let i = 0; i < localStorage.length; i++) {
-            const chave = localStorage.key(i);
-            if (chave.includes(padrao.replace('[app]', '')) && 
-                !chave.includes(MEU_PROJETO)) {
-                return chave;
-            }
-        }
-        return null;
-    }
-    
-    // Executar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', iniciarIsolador);
-    } else {
-        setTimeout(iniciarIsolador, 800);
-    }
-    
-})();
-//-------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // PROTEÇÃO HORTIFRUTI 2 - CLIENTE B - VERSÃO CORRIGIDA
 // Chave: horti2_cart
@@ -2477,6 +2132,233 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 //-----------------------------------------------------------------------------------------------
+// ============================================
+// ISOLADOR HORTIFRUTI 2 - VERSÃO FINAL
+// Não desloga após login
+// ============================================
+
+(function() {
+    'use strict';
+    
+    // 🔴 VARIÁVEL DE CONTROLE GLOBAL
+    window.HORTIFRUTI2_ISOLADOR = {
+        executado: false,
+        usuarioEncontrado: false
+    };
+    
+    console.log('🛡️ HORTIFRUTI 2 - Isolador inteligente');
+    
+    // ==================== CONFIGURAÇÃO ====================
+    
+    const CONFIG = {
+        MEU_SISTEMA: 'hortifruti2',
+        MINHA_CHAVE_USER: 'hortifruti2_user',
+        MINHA_CHAVE_CART: 'horti2_cart',
+        
+        // 🔴 AUMENTAR TEMPO DE ESPERA (usuário pode demorar a salvar)
+        TEMPO_ESPERA_USUARIO: 2000, // 2 segundos
+        
+        CHAVES_RIVAIS: [
+            // Hortifruti 1
+            'hortifruti1_user', 'hortifruti_user', 'horti1_cart', 'horti_cart',
+            // Bebidas 1
+            'delivery_bebidas_user', 'bebidas_user', 'bebida_cart',
+            // Hortifruti 3
+            'hortifruti3_user', 'horti3_cart',
+            // Hortifruti 4
+            'hortifruti4_user', 'horti4_cart'
+        ]
+    };
+    
+    // ==================== FUNÇÕES ====================
+    
+    function verificarNossoUsuario() {
+        console.log('🔍 Verificando nosso usuário...');
+        
+        const usuario = localStorage.getItem(CONFIG.MINHA_CHAVE_USER);
+        
+        if (!usuario) {
+            console.log('ℹ️ Nenhum usuário encontrado');
+            return false;
+        }
+        
+        try {
+            const dados = JSON.parse(usuario);
+            
+            // Verificar se é do nosso sistema
+            if (dados.sistema === CONFIG.MEU_SISTEMA) {
+                console.log('✅ Usuário do Hortifruti 2 encontrado');
+                window.HORTIFRUTI2_ISOLADOR.usuarioEncontrado = true;
+                return true;
+            } else {
+                console.warn('⚠️ Usuário de outro sistema encontrado');
+                localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
+                return false;
+            }
+        } catch (e) {
+            console.error('❌ Erro ao ler usuário:', e);
+            localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
+            return false;
+        }
+    }
+    
+    function limparRivaisSeNecessario() {
+        // 🔴 SÓ LIMPAR SE NÃO TEMOS USUÁRIO
+        if (window.HORTIFRUTI2_ISOLADOR.usuarioEncontrado) {
+            console.log('👤 Temos usuário - pulando limpeza');
+            return;
+        }
+        
+        console.log('🧹 Limpando sistemas rivais...');
+        
+        let removidas = 0;
+        CONFIG.CHAVES_RIVAIS.forEach(chave => {
+            if (localStorage.getItem(chave)) {
+                localStorage.removeItem(chave);
+                removidas++;
+                console.log(`🗑️ ${chave}`);
+            }
+        });
+        
+        console.log(`✅ ${removidas} chaves rivais removidas`);
+    }
+    
+    // ==================== INICIALIZAÇÃO INTELIGENTE ====================
+    
+    function iniciarIsoladorInteligente() {
+        // Evitar execução duplicada
+        if (window.HORTIFRUTI2_ISOLADOR.executado) {
+            console.log('🔁 Isolador já executou');
+            return;
+        }
+        
+        window.HORTIFRUTI2_ISOLADOR.executado = true;
+        console.log('🚀 Iniciando isolador inteligente...');
+        
+        // 🔴 ESTRATÉGIA:
+        // 1. Verificar usuário IMEDIATAMENTE
+        // 2. Aguardar um pouco e verificar NOVAMENTE (usuário pode estar sendo salvo)
+        // 3. Só então limpar rivais se necessário
+        
+        // PRIMEIRA VERIFICAÇÃO (imediata)
+        const temUsuarioAgora = verificarNossoUsuario();
+        
+        if (temUsuarioAgora) {
+            console.log('✅ Usuário encontrado na primeira verificação');
+            // Não limpar nada - temos usuário
+            return;
+        }
+        
+        // 🔴 AGUARDAR um pouco para dar tempo do login salvar
+        console.log(`⏳ Aguardando ${CONFIG.TEMPO_ESPERA_USUARIO}ms antes de limpar...`);
+        
+        setTimeout(() => {
+            // SEGUNDA VERIFICAÇÃO (após espera)
+            const temUsuarioAposEspera = verificarNossoUsuario();
+            
+            if (temUsuarioAposEspera) {
+                console.log('✅ Usuário encontrado após espera');
+                // Não limpar - login foi concluído
+                return;
+            }
+            
+            // 🔴 SÓ AQUI LIMPAR RIVAIS (usuário realmente não existe)
+            console.log('👤 Nenhum usuário encontrado - limpando rivais');
+            limparRivaisSeNecessario();
+            
+        }, CONFIG.TEMPO_ESPERA_USUARIO);
+    }
+    
+    // ==================== EXECUTAR ====================
+    
+    // Executar quando o DOM estiver pronto
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarIsoladorInteligente);
+    } else {
+        // Pequeno delay para garantir que outras coisas carreguem
+        setTimeout(iniciarIsoladorInteligente, 300);
+    }
+    
+})();
+//-----------------------------------------------------------------------------------------------
+// =========================
+// ADMIN PANEL - FUNÇÃO PRINCIPAL CORRIGIDA
+// =========================
+async function renderAdminProducts() {
+    console.log('🔄 renderAdminProducts chamado, estado admin:', window.adminAutenticado);
+    
+    // Se já está autenticado como admin, abre direto
+    if (window.adminAutenticado) {
+        console.log('✅ Admin já autenticado - abrindo painel');
+        await renderAdminProductsContent();
+        iniciarTimeoutAdmin();
+        return;
+    }
+    
+    // Se não está autenticado, verificar se tem usuário Firebase
+    if (auth.currentUser) {
+        console.log('👤 Usuário Firebase detectado, verificando permissões...');
+        
+        try {
+            const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
+            const adminAccessSnap = await adminAccessRef.get();
+            
+            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+                // Tem permissão de admin
+                window.adminAutenticado = true;
+                
+                // Salvar sessão
+                sessionStorage.setItem('admin_session_firebase', 'true');
+                sessionStorage.setItem('admin_user_id', auth.currentUser.uid);
+                
+                console.log('✅ Permissão admin confirmada para:', auth.currentUser.email);
+                await renderAdminProductsContent();
+                iniciarTimeoutAdmin();
+                return;
+            } else {
+                console.log('❌ Usuário não tem permissão admin');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao verificar permissões:', error);
+        }
+    }
+    
+    // Se chegou aqui, pedir autenticação
+    console.log('🔐 Pedindo autenticação admin...');
+    const loginResult = await showLoginModal();
+    
+    if (loginResult.success) {
+        console.log('✅ Login bem-sucedido:', loginResult.user.email);
+        
+        // Verificar se o usuário tem permissão admin
+        try {
+            const adminAccessRef = db.collection('admin_access').doc(loginResult.user.uid);
+            const adminAccessSnap = await adminAccessRef.get();
+            
+            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+                window.adminAutenticado = true;
+                
+                // Salvar sessão
+                sessionStorage.setItem('admin_session_firebase', 'true');
+                sessionStorage.setItem('admin_user_id', loginResult.user.uid);
+                
+                await renderAdminProductsContent();
+                iniciarTimeoutAdmin();
+            } else {
+                alert('❌ Este usuário não tem permissão de administrador!');
+                window.adminAutenticado = false;
+            }
+        } catch (error) {
+            alert('❌ Erro ao verificar permissões: ' + error.message);
+        }
+    } else {
+        console.log('❌ Login cancelado ou falhou');
+    }
+}
+
+//-----------------------------------------------------------------------------------------------
+
+
 // =========================
 // CONFIGURAÇÃO DO FIREBASE AUTH COM GOOGLE
 // =========================
@@ -6454,17 +6336,43 @@ function continuarComprando() {
 }
 
 // =========================
-// FUNÇÃO PARA INICIAR TIMEOUT DA SESSÃO (30 minutos)
+// TIMEOUT DA SESSÃO ADMIN - CORRIGIDO
 // =========================
 function iniciarTimeoutAdmin() {
-  if (adminSessaoTimeout) {
-    clearTimeout(adminSessaoTimeout);
-  }
-  
-  adminSessaoTimeout = setTimeout(() => {
-    adminAutenticado = false;
-    alert('⏰ Sessão do admin expirada! Faça login novamente.');
-  }, 5 * 60 * 1000); // 30 minutos
+    console.log('⏱️ Iniciando timeout da sessão admin...');
+    
+    // Limpar timeout anterior se existir
+    if (window.adminSessaoTimeout) {
+        clearTimeout(window.adminSessaoTimeout);
+    }
+    
+    // Timeout de 60 minutos
+    window.adminSessaoTimeout = setTimeout(async () => {
+        console.log('⏰ Sessão admin prestes a expirar...');
+        
+        // Renovar sessão automaticamente se ainda estiver autenticado
+        if (auth.currentUser) {
+            try {
+                const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
+                const adminAccessSnap = await adminAccessRef.get();
+                
+                if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+                    // Ainda tem permissão, renovar sessão
+                    console.log('🔄 Renovando sessão admin...');
+                    iniciarTimeoutAdmin();
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ Erro ao renovar sessão:', error);
+            }
+        }
+        
+        // Se não tem permissão ou não está autenticado, fazer logout
+        logoutAdmin();
+        
+    }, 60 * 60 * 1000); // 60 minutos
+    
+    console.log('✅ Timeout admin configurado (60 minutos)');
 }
 
 // =========================
@@ -7226,32 +7134,76 @@ function showLoginModal() {
 // =========================
 // ADMIN PANEL - FUNÇÃO PRINCIPAL COM FIREBASE
 // =========================
+// =========================
+// ADMIN PANEL - FUNÇÃO PRINCIPAL CORRIGIDA
+// =========================
 async function renderAdminProducts() {
-    console.log('🔄 Abrindo painel admin (com Firebase Auth)...');
+    console.log('🔄 renderAdminProducts chamado, estado admin:', window.adminAutenticado);
     
-    // Verificar se já está autenticado
+    // Se já está autenticado como admin, abre direto
+    if (window.adminAutenticado) {
+        console.log('✅ Admin já autenticado - abrindo painel');
+        await renderAdminProductsContent();
+        iniciarTimeoutAdmin();
+        return;
+    }
+    
+    // Se não está autenticado, verificar se tem usuário Firebase
     if (auth.currentUser) {
-        // Verificar se ainda tem permissão
-        const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
-        const adminAccessSnap = await adminAccessRef.get();
+        console.log('👤 Usuário Firebase detectado, verificando permissões...');
         
-        if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-            // Já autenticado e com permissão
-            console.log('✅ Usuário já autenticado:', auth.currentUser.email);
-            await renderAdminProductsContent();
-            iniciarTimeoutAdmin();
-            return;
+        try {
+            const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
+            const adminAccessSnap = await adminAccessRef.get();
+            
+            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+                // Tem permissão de admin
+                window.adminAutenticado = true;
+                
+                // Salvar sessão
+                sessionStorage.setItem('admin_session_firebase', 'true');
+                sessionStorage.setItem('admin_user_id', auth.currentUser.uid);
+                
+                console.log('✅ Permissão admin confirmada para:', auth.currentUser.email);
+                await renderAdminProductsContent();
+                iniciarTimeoutAdmin();
+                return;
+            } else {
+                console.log('❌ Usuário não tem permissão admin');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao verificar permissões:', error);
         }
     }
     
-    // Se não está autenticado, mostrar modal de login
+    // Se chegou aqui, pedir autenticação
+    console.log('🔐 Pedindo autenticação admin...');
     const loginResult = await showLoginModal();
     
     if (loginResult.success) {
         console.log('✅ Login bem-sucedido:', loginResult.user.email);
-        window.adminAutenticado = true;
-        await renderAdminProductsContent();
-        iniciarTimeoutAdmin();
+        
+        // Verificar se o usuário tem permissão admin
+        try {
+            const adminAccessRef = db.collection('admin_access').doc(loginResult.user.uid);
+            const adminAccessSnap = await adminAccessRef.get();
+            
+            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
+                window.adminAutenticado = true;
+                
+                // Salvar sessão
+                sessionStorage.setItem('admin_session_firebase', 'true');
+                sessionStorage.setItem('admin_user_id', loginResult.user.uid);
+                
+                await renderAdminProductsContent();
+                iniciarTimeoutAdmin();
+            } else {
+                alert('❌ Este usuário não tem permissão de administrador!');
+                window.adminAutenticado = false;
+            }
+        } catch (error) {
+            alert('❌ Erro ao verificar permissões: ' + error.message);
+        }
     } else {
         console.log('❌ Login cancelado ou falhou');
     }
@@ -13899,32 +13851,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // =========================
 async function saveUserToFirestore(user) {
     try {
-        console.log('💾 Salvando usuário no Firestore (Hortifruti 2)...');
-        
-        // 🔴 CONFIGURAÇÃO DO HORTIFRUTI 2
-        const CONFIG = {
-            sistema: 'hortifruti2',
-            projeto: 'hortifruti-cliente-2',
-            authDomain: 'hortifruti-cliente-2.firebaseapp.com',
-            colecaoPrincipal: 'hortifruti2_users', // Coleção específica
-            colecaoBackup: 'users'                 // Coleção geral
-        };
-        
-        // 🔴 VERIFICAR SE O USUÁRIO JÁ TEM DADOS DO HORTIFRUTI 2
-        const userDoc = await db.collection(CONFIG.colecaoPrincipal).doc(user.uid).get();
-        
-        if (userDoc.exists) {
-            const dadosExistentes = userDoc.data();
-            
-            // Se já existe mas não é do Hortifruti 2, SOBRESCREVER
-            if (dadosExistentes.sistema !== CONFIG.sistema) {
-                console.warn(`⚠️ Usuário existente de outro sistema (${dadosExistentes.sistema}). Sobrescrevendo...`);
-            }
-        }
-        
-        // 🔴 DADOS COMPLETOS DO USUÁRIO
+        // 🔴 SALVAR NO localStorage PRIMEIRO (para o isolador ver)
         const userData = {
-            // Identificação básica
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
@@ -13932,117 +13860,28 @@ async function saveUserToFirestore(user) {
             phoneNumber: user.phoneNumber || '',
             provider: user.providerData[0]?.providerId || 'google',
             
-            // 🔴 IDENTIFICAÇÃO DO SISTEMA (CRÍTICO)
-            sistema: CONFIG.sistema,
-            projeto: CONFIG.projeto,
-            authDomain: CONFIG.authDomain,
+            // 🔴 IDENTIFICADOR DO SISTEMA (IMPORTANTE!)
+            sistema: 'hortifruti2',
+            projeto: 'hortifruti-cliente-2',
             
-            // Timestamps
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            
-            // Metadata
-            appVersion: '2.0',
-            isolated: true,
-            sessionId: 'h2_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+            // 🔴 TIMESTAMP para controle
+            loginTimestamp: Date.now(),
+            createdAt: new Date().toISOString()
         };
         
-        // 🔴 SALVAR NA COLEÇÃO PRINCIPAL DO HORTIFRUTI 2
-        await db.collection(CONFIG.colecaoPrincipal)
-                .doc(user.uid)
-                .set(userData, { merge: true });
+        // 1. SALVAR NO localStorage IMEDIATAMENTE
+        localStorage.setItem('hortifruti2_user', JSON.stringify(userData));
+        console.log('💾 Usuário salvo no localStorage (rápido)');
         
-        console.log(`✅ Usuário salvo na coleção ${CONFIG.colecaoPrincipal}:`, user.email);
+        // 2. Atualizar window.currentUser
+        window.currentUser = userData;
         
-        // 🔴 SALVAR TAMBÉM NA COLEÇÃO GERAL COM PREFIXO (para consultas cruzadas)
-        const backupData = {
-            ...userData,
-            colecao_origem: CONFIG.colecaoPrincipal,
-            backup_timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        await db.collection(CONFIG.colecaoBackup)
-                .doc(`${CONFIG.sistema}_${user.uid}`)
-                .set(backupData, { merge: true });
-        
-        console.log(`✅ Backup salvo em ${CONFIG.colecaoBackup} com prefixo`);
-        
-        // 🔴 ATUALIZAR window.currentUser com esses dados
-        if (window.currentUser) {
-            window.currentUser = {
-                ...window.currentUser,
-                sistema: CONFIG.sistema,
-                projeto: CONFIG.projeto,
-                firestoreSaved: true,
-                savedAt: new Date().toISOString()
-            };
-            
-            // Atualizar localStorage
-            localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
-            localStorage.setItem('hortifruti2_user_firestore', JSON.stringify(userData));
-        }
-        
-        return userData;
+        // 3. Depois salvar no Firestore (pode ser mais lento)
+        await db.collection('hortifruti2_users').doc(user.uid).set(userData, { merge: true });
+        console.log('✅ Usuário salvo no Firestore');
         
     } catch (error) {
-        console.error('❌ Erro ao salvar usuário no Firestore:', error);
-        
-        // Log adicional
-        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
-            await sistemaLogs.registrar('firestore_save_error', {
-                uid: user.uid,
-                error: error.message,
-                sistema: 'hortifruti2'
-            });
-        }
-        
-        throw error;
-    }
-}
-
-//------------------------------------------------------------------------------------------
-
-async function verificarUsuarioFirestore(user) {
-    try {
-        if (!user || !user.uid) return false;
-        
-        console.log('🔍 Verificando usuário no Firestore...');
-        
-        // Tentar na coleção específica do Hortifruti 2
-        const docRef = db.collection('hortifruti2_users').doc(user.uid);
-        const docSnap = await docRef.get();
-        
-        if (docSnap.exists) {
-            const firestoreData = docSnap.data();
-            
-            // Verificar se é realmente do Hortifruti 2
-            if (firestoreData.sistema === 'hortifruti2' && 
-                firestoreData.projeto === 'hortifruti-cliente-2') {
-                
-                console.log('✅ Usuário confirmado no Firestore do Hortifruti 2');
-                
-                // Atualizar dados locais com dados do Firestore
-                window.currentUser = {
-                    ...user,
-                    ...firestoreData,
-                    firestoreVerified: true,
-                    verifiedAt: new Date().toISOString()
-                };
-                
-                localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
-                return true;
-            } else {
-                console.warn('⚠️ Usuário no Firestore mas de outro sistema:', firestoreData.sistema);
-                return false;
-            }
-        }
-        
-        console.log('ℹ️ Usuário não encontrado na coleção do Hortifruti 2');
-        return false;
-        
-    } catch (error) {
-        console.error('Erro ao verificar Firestore:', error);
-        return false;
+        console.error('❌ Erro ao salvar usuário:', error);
     }
 }
 
