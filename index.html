@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>HORTIFRUTI CLIENTE 2</title>
+<title>HORTIFRUTI 2</title>
 
 <!-- FIREBASE (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
@@ -13,16 +14,13 @@
 
 <!-- NO HORTIFRUTI 2 - após Firebase -->
 <script>
-
-//-------------------------------------------------------------------------------------------------
-
 // PROTEÇÃO HORTIFRUTI 2 - CLIENTE B - VERSÃO CORRIGIDA
 // Chave: horti2_cart
 // ============================================
 (function() {
     'use strict';
     
-    const SISTEMA = 'HORTIFRUTI 2 (Cliente B)';
+    window.SISTEMA = 'HORTIFRUTI 2 (Cliente B)';
     const CHAVE_CART = 'horti2_cart';
 
     //-------------------------------------------------------------------------------------------------------
@@ -329,9 +327,8 @@ setInterval(() => {
     console.log(`🔄 ${SISTEMA}: Sistema de sincronização ativado`);
 })();
 
-//---------------------------------------------------------------------------------------------------------
-
 </script>
+
 
 
 <style>
@@ -355,7 +352,7 @@ header {
 #btnOpenCart{ background:rgba(255,255,255,0.12); color:#fff; padding:6px 10px; border-radius:6px; border:0; cursor:pointer; font-weight:700; }
 .page { padding:19px; max-width:1400px; margin:0 auto; }
 .layout-coluna{ display:flex; flex-direction:column; gap:14px; align-items:center; }
-.card{ background:var(--card); border-radius:10px; padding-top: 67px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
+.card{ background:var(--card); border-radius:10px; padding-top: 90px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
 .products{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
 .product{ width:180px; background:#fafafa; border:1px solid #eee; border-radius:8px; padding:8px; text-align:center; display:flex; flex-direction:column; gap:8px; }
 
@@ -367,6 +364,7 @@ header {
     width: 90%;
     margin: 10px auto;
     display: block;
+    
   }
 
   .product img {
@@ -532,12 +530,12 @@ header {
 
 .current-price strong {
   font-size: 20px;
-  color: #fcf804;
+  color: #fffb00;
 }
 
 .old-price {
   font-size: 14px;
-  color: #05f5e1;
+  color: #01f4fc;
   text-decoration: line-through;
 }
 
@@ -557,7 +555,7 @@ header {
 
 .desc {
   font-size: 13px;
-  color: #f8f7f7;
+  color: #ffffff;
 }
 
 /* carrinho desativado*/
@@ -1109,6 +1107,7 @@ header {
   box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
 }
 
+
 /* 2. MODAL BACKDROP - COBRE TUDO INCLUINDO CABEÇALHO */
 .modal-backdrop {
   z-index: 1000 !important; /* Acima do cabeçalho */
@@ -1475,13 +1474,13 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
     display: flex;
     align-items: center;
     gap: 8px;
-    /*background: rgb(254, 255, 255);*/
-    background: linear-gradient(90deg, #fdba03, #fde400, #0bb945) !important;
+    background: linear-gradient(90deg, #ec9108, #fdf903, #099b45 ) !important;
+    /*background: rgb(255, 238, 0);*/
     padding: 4px 8px;
     border-radius: 4px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    border-left: 2px solid #0375df;
-    max-width: 200px;
+    border-left: 2px solid #3498db;
+    max-width: 250px;
 }
 
 .user-info-area img {
@@ -1498,12 +1497,11 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
     flex-direction: column;
     min-width: 0;
     flex: 1;
-    
 }
 
 .user-name {
     font-weight: 600;
-    color: #fafbfc;
+    color: #2c3e50;
     font-size: 11px;
     white-space: nowrap;
     overflow: hidden;
@@ -1520,7 +1518,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 
 .btn-logout {
     background: #e74c3c;
-    color: white;
+    color: rgb(255, 255, 255);
     border: none;
     padding: 3px 6px;
     border-radius: 2px;
@@ -1832,6 +1830,71 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 }
 /*-----------------------------------------------------------------------------------------------*/
 
+/* Estilos para o histórico de pedidos */
+.usuario-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: #f0f8ff !important;
+    border-color: #3498db !important;
+}
+
+.pedido-card {
+    transition: all 0.3s ease;
+}
+
+.pedido-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.status-pendente {
+    background: #f39c12;
+    color: white;
+}
+
+.status-confirmado {
+    background: #3498db;
+    color: white;
+}
+
+.status-entregue {
+    background: #27ae60;
+    color: white;
+}
+
+.status-cancelado {
+    background: #e74c3c;
+    color: white;
+}
+
+
+/*--------------------------------------------*/
+.pedido-container {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+.status.enviado {
+  color: green;
+  font-weight: bold;
+}
+.produto {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.foto-produto img {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+table {
+  width: 100%;
+}
+
+/*---------------------------------------------*/
 </style> <!--final style-->
 
 
@@ -1846,13 +1909,13 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
     <!-- LOGO -->
     <img src="imagens/compras_verduras.png" 
          alt="Logo" 
-         style="width: 30px; height: auto; border-radius: 8px;">
+         style="width: 40px; height: auto; border-radius: 8px;">
     
     
     <!-- NOME DA EMPRESA -->
-    <h1 style="margin: 0; font-size: 18px; font-weight: bold; color: #222;">
-      HORTIFRUTI CLIENTE 2
-    </h1>
+    <h6 style="margin: 0; font-size: 18px; font-weight: bold; color: #222;">
+     HORTIFRUTI 2
+    </h6>
   </div>
 
   <!-- ÁREA DO USUÁRIO LOGADO -->
@@ -1870,7 +1933,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
   <a href="https://www.instagram.com/ta_na_mao_delivery/" 
      target="_blank"
      style="
-       color: #e23326;
+       color: #000000;
        text-decoration: none;
        display: flex;
        align-items: center;
@@ -1884,7 +1947,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
   <a href="https://www.facebook.com/DeliveryTNM" 
      target="_blank"
      style="
-       color: #1877f2;
+       color: #000000;
        text-decoration: none;
        display: flex;
        align-items: center;
@@ -1942,7 +2005,7 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
            "
            onmouseover="this.style.transform='scale(1.2) rotate(5deg)';"
            onmouseout="this.style.transform='scale(1) rotate(0deg)';">
-    </button>
+    </button> 
     <button id="btnOpenCart">
       <img 
         src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" 
@@ -2114,11 +2177,11 @@ div[style*="CONFIGURAR TAXAS POR BAIRRO"] input {
 
 <script>
 
-// FIREBASE HORTIFRUTI 2
+//FIREBASE HORTIFRUTI 2
 // =========================
 // FIREBASE (compat) CONFIG
 // =========================
-const firebaseConfig = {
+ const firebaseConfig = {
   apiKey: "AIzaSyBYkn_DB7yzt_KhMd49RxfIVgIleNZjhdQ",
   authDomain: "hortifruti-cliente-2.firebaseapp.com",
   projectId: "hortifruti-cliente-2",
@@ -2133,232 +2196,323 @@ const db = firebase.firestore();
 
 //-----------------------------------------------------------------------------------------------
 // ============================================
-// ISOLADOR HORTIFRUTI 2 - VERSÃO FINAL
-// Não desloga após login
+// ISOLADOR HORTIFRUTI 2 - VERSÃO CORRIGIDA
+// NÃO limpa usuário após login
 // ============================================
 
 (function() {
     'use strict';
     
-    // 🔴 VARIÁVEL DE CONTROLE GLOBAL
-    window.HORTIFRUTI2_ISOLADOR = {
-        executado: false,
-        usuarioEncontrado: false
-    };
+    console.log('🛡️ HORTIFRUTI 2 - Isolador CORRIGIDO (não limpa usuário logado)');
     
-    console.log('🛡️ HORTIFRUTI 2 - Isolador inteligente');
-    
-    // ==================== CONFIGURAÇÃO ====================
+    // ==================== CONFIGURAÇÃO SEGURA ====================
     
     const CONFIG = {
-        MEU_SISTEMA: 'hortifruti2',
-        MINHA_CHAVE_USER: 'hortifruti2_user',
-        MINHA_CHAVE_CART: 'horti2_cart',
+        // 🔴 NOSSO SISTEMA - ESTAS SÃO AS CHAVES QUE DEVEM SER PROTEGIDAS
+        NOSSAS_CHAVES: [
+            'hortifruti2_user', 'horti2_cart', 'hortifruti_user',
+            'currentUser', 'usuario_sessao', 'usuario_simples',
+            'last_login_email', 'user_session_v2'
+        ],
         
-        // 🔴 AUMENTAR TEMPO DE ESPERA (usuário pode demorar a salvar)
-        TEMPO_ESPERA_USUARIO: 2000, // 2 segundos
-        
+        // 🔴 CHAVES DE OUTROS SISTEMAS QUE PODEM CONFLITAR
         CHAVES_RIVAIS: [
-            // Hortifruti 1
-            'hortifruti1_user', 'hortifruti_user', 'horti1_cart', 'horti_cart',
-            // Bebidas 1
+            // Hortifruti 1 (outro sistema)
+            'hortifruti1_user', 'horti1_cart',
+            // Bebidas 1 (outro sistema)
             'delivery_bebidas_user', 'bebidas_user', 'bebida_cart',
-            // Hortifruti 3
+            // Hortifruti 3/4 (outros sistemas)
             'hortifruti3_user', 'horti3_cart',
-            // Hortifruti 4
             'hortifruti4_user', 'horti4_cart'
         ]
     };
     
-    // ==================== FUNÇÕES ====================
+    // ==================== FUNÇÕES SEGURAS ====================
     
-    function verificarNossoUsuario() {
-        console.log('🔍 Verificando nosso usuário...');
+    // 🔴 VERIFICAR SE TEMOS USUÁRIO LOGADO
+    function temosUsuarioLogado() {
+        console.log('🔍 Verificando se temos usuário logado...');
         
-        const usuario = localStorage.getItem(CONFIG.MINHA_CHAVE_USER);
-        
-        if (!usuario) {
-            console.log('ℹ️ Nenhum usuário encontrado');
-            return false;
-        }
-        
-        try {
-            const dados = JSON.parse(usuario);
-            
-            // Verificar se é do nosso sistema
-            if (dados.sistema === CONFIG.MEU_SISTEMA) {
-                console.log('✅ Usuário do Hortifruti 2 encontrado');
-                window.HORTIFRUTI2_ISOLADOR.usuarioEncontrado = true;
-                return true;
-            } else {
-                console.warn('⚠️ Usuário de outro sistema encontrado');
-                localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
-                return false;
+        // Verificar em TODAS as nossas chaves possíveis
+        for (const chave of CONFIG.NOSSAS_CHAVES) {
+            const usuario = localStorage.getItem(chave);
+            if (usuario) {
+                try {
+                    const dados = JSON.parse(usuario);
+                    // Se tem email, é usuário logado
+                    if (dados.email || dados.userEmail) {
+                        console.log(`✅ Usuário logado encontrado em: ${chave}`);
+                        console.log(`📧 Email: ${dados.email || dados.userEmail}`);
+                        return true;
+                    }
+                } catch (e) {
+                    // Ignorar erros de parse
+                }
             }
-        } catch (e) {
-            console.error('❌ Erro ao ler usuário:', e);
-            localStorage.removeItem(CONFIG.MINHA_CHAVE_USER);
-            return false;
         }
+        
+        // 🔴 TAMBÉM verificar Firebase Auth
+        if (typeof auth !== 'undefined' && auth.currentUser) {
+            console.log('✅ Firebase tem usuário:', auth.currentUser.email);
+            return true;
+        }
+        
+        console.log('👤 Nenhum usuário logado encontrado');
+        return false;
     }
     
-    function limparRivaisSeNecessario() {
-        // 🔴 SÓ LIMPAR SE NÃO TEMOS USUÁRIO
-        if (window.HORTIFRUTI2_ISOLADOR.usuarioEncontrado) {
-            console.log('👤 Temos usuário - pulando limpeza');
-            return;
-        }
-        
-        console.log('🧹 Limpando sistemas rivais...');
+    // 🔴 LIMPAR APENAS CARRINHOS DE OUTROS SISTEMAS (NUNCA USUÁRIO)
+    function limparApenasCarrinhosRivais() {
+        console.log('🧹 Limpando apenas CARRINHOS de sistemas rivais...');
         
         let removidas = 0;
+        
         CONFIG.CHAVES_RIVAIS.forEach(chave => {
-            if (localStorage.getItem(chave)) {
-                localStorage.removeItem(chave);
-                removidas++;
-                console.log(`🗑️ ${chave}`);
+            // 🔴 IMPORTANTE: Só limpar se for CARRINHO (não usuário)
+            if (chave.includes('_cart') || chave.includes('cart')) {
+                if (localStorage.getItem(chave)) {
+                    localStorage.removeItem(chave);
+                    removidas++;
+                    console.log(`🗑️ Carrinho rival: ${chave}`);
+                }
             }
+            // 🔴 NUNCA limpar chaves de USUÁRIO de outros sistemas
+            // Isso evita que eles limpem nossos usuários depois
         });
         
-        console.log(`✅ ${removidas} chaves rivais removidas`);
+        console.log(`✅ ${removidas} carrinhos rivais removidos`);
+        
+        return removidas;
     }
     
-    // ==================== INICIALIZAÇÃO INTELIGENTE ====================
-    
-    function iniciarIsoladorInteligente() {
-        // Evitar execução duplicada
-        if (window.HORTIFRUTI2_ISOLADOR.executado) {
-            console.log('🔁 Isolador já executou');
-            return;
-        }
+    // 🔴 PROTEGER NOSSOS DADOS
+    function protegerNossosDados() {
+        console.log('🛡️ Protegendo nossos dados...');
         
-        window.HORTIFRUTI2_ISOLADOR.executado = true;
-        console.log('🚀 Iniciando isolador inteligente...');
+        // 1. Verificar se temos usuário
+        const temUsuario = temosUsuarioLogado();
         
-        // 🔴 ESTRATÉGIA:
-        // 1. Verificar usuário IMEDIATAMENTE
-        // 2. Aguardar um pouco e verificar NOVAMENTE (usuário pode estar sendo salvo)
-        // 3. Só então limpar rivais se necessário
-        
-        // PRIMEIRA VERIFICAÇÃO (imediata)
-        const temUsuarioAgora = verificarNossoUsuario();
-        
-        if (temUsuarioAgora) {
-            console.log('✅ Usuário encontrado na primeira verificação');
-            // Não limpar nada - temos usuário
-            return;
-        }
-        
-        // 🔴 AGUARDAR um pouco para dar tempo do login salvar
-        console.log(`⏳ Aguardando ${CONFIG.TEMPO_ESPERA_USUARIO}ms antes de limpar...`);
-        
-        setTimeout(() => {
-            // SEGUNDA VERIFICAÇÃO (após espera)
-            const temUsuarioAposEspera = verificarNossoUsuario();
+        if (temUsuario) {
+            console.log('✅ Temos usuário logado - PROIBIDO limpar qualquer coisa!');
             
-            if (temUsuarioAposEspera) {
-                console.log('✅ Usuário encontrado após espera');
-                // Não limpar - login foi concluído
-                return;
+            // 🔴 CRÍTICO: Se tem usuário, NÃO limpar NADA
+            // Apenas garantir que nossos dados estão seguros
+            
+            // Verificar e criar backup se necessário
+            criarBackupUsuario();
+            
+            return false; // Não fez limpeza
+        }
+        
+        // 2. Se NÃO tem usuário, limpar apenas carrinhos rivais
+        console.log('👤 Sem usuário logado - pode limpar carrinhos rivais');
+        return limparApenasCarrinhosRivais() > 0;
+    }
+    
+    // 🔴 CRIAR BACKUP DO USUÁRIO (para segurança)
+    function criarBackupUsuario() {
+        // Procurar nosso usuário atual
+        for (const chave of CONFIG.NOSSAS_CHAVES) {
+            const usuario = localStorage.getItem(chave);
+            if (usuario) {
+                try {
+                    const dados = JSON.parse(usuario);
+                    if (dados.email) {
+                        // Criar backup com timestamp
+                        const backup = {
+                            ...dados,
+                            backupTimestamp: Date.now(),
+                            backupSistema: 'hortifruti2'
+                        };
+                        
+                        localStorage.setItem('backup_usuario_h2', JSON.stringify(backup));
+                        console.log('💾 Backup de usuário criado');
+                        break;
+                    }
+                } catch (e) {
+                    // Ignorar erro
+                }
+            }
+        }
+    }
+    
+    // 🔴 RESTAURAR USUÁRIO SE NECESSÁRIO
+    function restaurarUsuarioSeNecessario() {
+        const backup = localStorage.getItem('backup_usuario_h2');
+        if (!backup) return;
+        
+        try {
+            const dados = JSON.parse(backup);
+            const tempoDesdeBackup = Date.now() - dados.backupTimestamp;
+            
+            // Se o backup é recente (menos de 5 minutos)
+            if (tempoDesdeBackup < 300000) {
+                console.log('🔄 Backup recente encontrado, restaurando...');
+                
+                // Procurar onde salvar
+                const chavePrincipal = 'hortifruti_user';
+                localStorage.setItem(chavePrincipal, JSON.stringify({
+                    email: dados.email,
+                    name: dados.name || dados.email.split('@')[0],
+                    uid: dados.uid || 'backup-' + Date.now(),
+                    restored: true,
+                    restoredAt: new Date().toISOString()
+                }));
+                
+                console.log('✅ Usuário restaurado do backup');
+            }
+        } catch (e) {
+            console.warn('Erro ao restaurar backup:', e);
+        }
+    }
+    
+    // ==================== INICIALIZAÇÃO SEGURA ====================
+    
+    function iniciarIsoladorSeguro() {
+        console.log('🚀 Iniciando isolador SEGURO...');
+        
+        // 🔴 ESTRATÉGIA SEGURA:
+        // 1. PRIMEIRO restaurar backup se necessário
+        // 2. DEPOIS proteger dados
+        // 3. NUNCA limpar usuário logado
+        
+        // Passo 1: Verificar/restaurar backup
+        restaurarUsuarioSeNecessario();
+        
+        // Passo 2: Aguardar um pouco para Firebase/outros scripts
+        setTimeout(() => {
+            console.log('⏳ Aguardando inicialização completa...');
+            
+            // Passo 3: Proteger nossos dados (NUNCA limpa usuário)
+            const fezLimpeza = protegerNossosDados();
+            
+            if (fezLimpeza) {
+                console.log('⚠️ AVISO: Alguns carrinhos foram limpos');
+            } else {
+                console.log('✅ Nenhum dado importante foi alterado');
             }
             
-            // 🔴 SÓ AQUI LIMPAR RIVAIS (usuário realmente não existe)
-            console.log('👤 Nenhum usuário encontrado - limpando rivais');
-            limparRivaisSeNecessario();
+            // Passo 4: Log final
+            console.log('📊 Estado final:');
+            console.log('- Tem usuário?', temosUsuarioLogado() ? 'SIM' : 'NÃO');
+            console.log('- Firebase user?', auth?.currentUser?.email || 'NÃO');
             
-        }, CONFIG.TEMPO_ESPERA_USUARIO);
+        }, 1000); // 🔴 AUMENTEI para 1 segundo (dá tempo para login salvar)
     }
     
-    // ==================== EXECUTAR ====================
+    // ==================== EXECUTAR COM SEGURANÇA ====================
     
-    // Executar quando o DOM estiver pronto
+    // 🔴 ESTRATÉGIA DE EXECUÇÃO:
+    // 1. Esperar DOM carregar
+    // 2. Esperar mais um pouco para outros scripts
+    // 3. Executar de forma segura
+    
+    function executarComSeguranca() {
+        // Verificar se já executou
+        if (window.ISOLADOR_H2_EXECUTADO) {
+            console.log('🔁 Isolador já executou anteriormente');
+            return;
+        }
+        
+        window.ISOLADOR_H2_EXECUTADO = true;
+        
+        // Esperar um pouco MAIS para garantir que o login foi salvo
+        setTimeout(() => {
+            iniciarIsoladorSeguro();
+        }, 1500); // 🔴 1.5 segundos de espera
+    }
+    
+    // Iniciar quando a página carregar
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', iniciarIsoladorInteligente);
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(executarComSeguranca, 500);
+        });
     } else {
-        // Pequeno delay para garantir que outras coisas carreguem
-        setTimeout(iniciarIsoladorInteligente, 300);
+        executarComSeguranca();
     }
+    
+    // 🔴 EXPORTAR FUNÇÃO PARA DEBUG
+    window.debugIsolador = function() {
+        console.log('=== DEBUG ISOLADOR H2 ===');
+        console.log('Config:', CONFIG);
+        console.log('Tem usuário?', temosUsuarioLogado());
+        console.log('Firebase auth:', auth?.currentUser?.email || 'null');
+        console.log('localStorage keys:', Object.keys(localStorage));
+        console.log('=== FIM DEBUG ===');
+    };
     
 })();
 //-----------------------------------------------------------------------------------------------
 // =========================
-// ADMIN PANEL - FUNÇÃO PRINCIPAL CORRIGIDA
+// INICIALIZAÇÃO DO CARRINHO - CORRIGIDA
 // =========================
-async function renderAdminProducts() {
-    console.log('🔄 renderAdminProducts chamado, estado admin:', window.adminAutenticado);
-    
-    // Se já está autenticado como admin, abre direto
-    if (window.adminAutenticado) {
-        console.log('✅ Admin já autenticado - abrindo painel');
-        await renderAdminProductsContent();
-        iniciarTimeoutAdmin();
-        return;
-    }
-    
-    // Se não está autenticado, verificar se tem usuário Firebase
-    if (auth.currentUser) {
-        console.log('👤 Usuário Firebase detectado, verificando permissões...');
+window.CHAVE_CART = 'horti2_cart'; // Definir chave globalmente
+
+// Inicializar array do carrinho
+window.cart = [];
+
+// Função para carregar o carrinho da chave correta
+function carregarCarrinhoDaStorage() {
+    try {
+        const chaveCart = window.CHAVE_CART || 'horti2_cart';
+        const savedCart = localStorage.getItem(chaveCart);
         
-        try {
-            const adminAccessRef = db.collection('admin_access').doc(auth.currentUser.uid);
-            const adminAccessSnap = await adminAccessRef.get();
-            
-            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-                // Tem permissão de admin
-                window.adminAutenticado = true;
-                
-                // Salvar sessão
-                sessionStorage.setItem('admin_session_firebase', 'true');
-                sessionStorage.setItem('admin_user_id', auth.currentUser.uid);
-                
-                console.log('✅ Permissão admin confirmada para:', auth.currentUser.email);
-                await renderAdminProductsContent();
-                iniciarTimeoutAdmin();
-                return;
-            } else {
-                console.log('❌ Usuário não tem permissão admin');
+        if (savedCart) {
+            window.cart = JSON.parse(savedCart);
+            console.log('🛒 Carrinho carregado de ' + chaveCart + ':', window.cart.length, 'itens');
+        } else {
+            // Tentar carregar de outras chaves possíveis
+            const chavesPossiveis = ['horti2_cart', 'horti_cart', 'cart'];
+            for (const chave of chavesPossiveis) {
+                const dados = localStorage.getItem(chave);
+                if (dados && dados !== '[]') {
+                    window.cart = JSON.parse(dados);
+                    console.log('🔄 Carrinho migrado de ' + chave + ' para ' + chaveCart);
+                    localStorage.setItem(chaveCart, dados);
+                    break;
+                }
             }
-        } catch (error) {
-            console.error('❌ Erro ao verificar permissões:', error);
         }
-    }
-    
-    // Se chegou aqui, pedir autenticação
-    console.log('🔐 Pedindo autenticação admin...');
-    const loginResult = await showLoginModal();
-    
-    if (loginResult.success) {
-        console.log('✅ Login bem-sucedido:', loginResult.user.email);
-        
-        // Verificar se o usuário tem permissão admin
-        try {
-            const adminAccessRef = db.collection('admin_access').doc(loginResult.user.uid);
-            const adminAccessSnap = await adminAccessRef.get();
-            
-            if (adminAccessSnap.exists && adminAccessSnap.data().active !== false) {
-                window.adminAutenticado = true;
-                
-                // Salvar sessão
-                sessionStorage.setItem('admin_session_firebase', 'true');
-                sessionStorage.setItem('admin_user_id', loginResult.user.uid);
-                
-                await renderAdminProductsContent();
-                iniciarTimeoutAdmin();
-            } else {
-                alert('❌ Este usuário não tem permissão de administrador!');
-                window.adminAutenticado = false;
-            }
-        } catch (error) {
-            alert('❌ Erro ao verificar permissões: ' + error.message);
-        }
-    } else {
-        console.log('❌ Login cancelado ou falhou');
+    } catch (error) {
+        console.error('❌ Erro ao carregar carrinho:', error);
+        window.cart = [];
     }
 }
 
+// Chamar a função quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(carregarCarrinhoDaStorage, 100);
+});
+
+// Função para forçar sincronização do carrinho
+function sincronizarCarrinho() {
+    const chaveCart = window.CHAVE_CART || 'horti2_cart';
+    
+    // Verificar se window.cart existe
+    if (!window.cart) {
+        window.cart = [];
+    }
+    
+    // Garantir que está salvo na chave principal
+    if (window.cart.length > 0) {
+        const dados = JSON.stringify(window.cart);
+        localStorage.setItem(chaveCart, dados);
+        
+        // Sincronizar com outras chaves para compatibilidade
+        localStorage.setItem('cart', dados);
+        
+        console.log('🔄 Carrinho sincronizado em ' + chaveCart);
+    }
+    
+    // Atualizar contador
+    if (typeof window.updateCartCount === 'function') {
+        window.updateCartCount();
+    }
+}
+
+// Executar sincronização periodicamente
+setInterval(sincronizarCarrinho, 5000);
 //-----------------------------------------------------------------------------------------------
-
-
 // =========================
 // CONFIGURAÇÃO DO FIREBASE AUTH COM GOOGLE
 // =========================
@@ -2424,7 +2578,7 @@ function debugCarrinho() {
     console.log('🔍 DEBUG CARRINHO:');
     console.log('1. localStorage keys:', Object.keys(localStorage));
     
-    // ✅ CORREÇÃO: Usar window.CHAVE_CART que foi definida globalmente
+    // ✅ USAR A CHAVE GLOBAL CORRETA
     const chaveCorreta = window.CHAVE_CART || 'horti2_cart';
     
     console.log('2. Carrinho na chave correta (' + chaveCorreta + '):', localStorage.getItem(chaveCorreta));
@@ -2437,11 +2591,14 @@ function debugCarrinho() {
         const saved = localStorage.getItem(chaveCorreta);
         if (!saved || saved === '[]') {
             console.error('❌ PROBLEMA DETECTADO: Carrinho na memória mas não salvo!');
-            alert('⚠️ Problema detectado: carrinho não está sendo salvo. Corrigindo automaticamente...');
             
-            // ✅ CORREÇÃO: Usar a chave correta para salvar
-            localStorage.setItem(chaveCorreta, JSON.stringify(window.cart));
-            console.log('✅ Carrinho corrigido manualmente em ' + chaveCorreta);
+            // ✅ CORREÇÃO: Forçar salvamento na chave correta
+            try {
+                localStorage.setItem(chaveCorreta, JSON.stringify(window.cart));
+                console.log('✅ Carrinho corrigido manualmente em ' + chaveCorreta);
+            } catch (e) {
+                console.error('❌ Erro ao salvar:', e);
+            }
         } else {
             console.log('✅ Carrinho já está salvo em ' + chaveCorreta);
         }
@@ -4592,7 +4749,7 @@ async function carregarTaxaEntrega() {
 //---------------------------------------------------------------------------------------------------------------
 
 // =========================
-// CONTROLE DO CARRINHO - VERSÃO CORRIGIDA HORTIFRUTI 2
+// CONTROLE DO CARRINHO - VERSÃO CORRIGIDA
 // =========================
 async function atualizarStatusCarrinhoUnificado() {
   try {
@@ -4620,21 +4777,7 @@ async function atualizarStatusCarrinhoUnificado() {
     // Apenas esvaziar carrinho se estiver desativado
     if (!cartEnabled) {
       cart = [];
-      
-      // USAR MÉTODO SEGURO para limpar localStorage (evita interceptação)
-      try {
-        // Método 1: Usar Storage.prototype diretamente
-        Storage.prototype.removeItem.call(localStorage, 'cart');
-        
-        // Método 2: Limpar também a chave específica do Hortifruti 2
-        const chaveHortifruti = window.CHAVE_CART || 'horti2_cart';
-        Storage.prototype.removeItem.call(localStorage, chaveHortifruti);
-        
-        console.log('🛒 Carrinho limpo (desativado)');
-      } catch (storageErr) {
-        console.warn('⚠️ Erro ao limpar localStorage:', storageErr);
-      }
-      
+      localStorage.removeItem('cart');
       if (typeof renderCart === 'function') renderCart();
       if (typeof updateCartCount === 'function') updateCartCount();
     }
@@ -5332,6 +5475,7 @@ async function verificarPermissaoLocalizacao() {
   }
 }
 // =========================
+// =========================
 // FUNÇÃO ENVIAR WHATSAPP - CORRIGIDA PARA ABRIR APP NATIVO
 // =========================
 async function enviarWhats() {
@@ -5425,7 +5569,7 @@ async function enviarWhats() {
 
   // Verificar se há conflito com outras variáveis
   console.log('\n6. VERIFICANDO VARIÁVEIS GLOBAIS:');
-  const variaveisCart = ['cart', 'Cart', 'carrinho', 'shoppingCart', 'bebida_cart', 'bebida1_cart'];
+  const variaveisCart = ['cart', 'Cart', 'carrinho', 'shoppingCart', 'horti_cart', 'horti2_cart'];
   variaveisCart.forEach(varName => {
       if (window[varName] !== undefined) {
           console.log(`   window.${varName}:`, window[varName]);
@@ -5773,7 +5917,7 @@ async function enviarWhats() {
     msg += `\n───────────────\n`;
     
     // PRODUTOS SELECIONADOS
-    msg += `🍍🍎*Produtos Selecionados:*\n`;
+    msg += `🍅🥑🥥 *Produtos de qualidade:*\n`;
     
     cart.forEach((item, index) => {
       const emojiNumero = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
@@ -5810,7 +5954,7 @@ async function enviarWhats() {
 
     msg += `*TOTAL FINAL: ${formatBRL(totalFinal)}*\n\n`;
     msg += `💖 Agradecemos pela sua preferência!\n`;
-    msg += `🚛 Seu pedido já está sendo providenciado.\n`;
+    msg += `🛒 Seu pedido já está sendo providenciado.\n`;
     
     let pixParaExibicao = rawPixPhone || 'Não configurada';
     if (pixParaExibicao) {
@@ -5869,7 +6013,7 @@ async function enviarWhats() {
       
       if (carrinhoParaSalvar.length === 0) {
         console.log('⚠️ Cópia do carrinho vazia! Usando localStorage como backup...');
-        const backupCart = JSON.parse(localStorage.getItem('bebida1_cart') || '[]');
+        const backupCart = JSON.parse(localStorage.getItem('horti2_cart') || '[]');
         if (backupCart.length > 0) {
           console.log('🔄 Usando backup do localStorage:', backupCart.length, 'itens');
           carrinhoParaSalvar.push(...backupCart);
@@ -5945,7 +6089,7 @@ async function enviarWhats() {
         
         numeroPedido: 'PED' + Date.now().toString().slice(-8),
         status: 'pendente', // ← MUDAR DE 'enviado' PARA 'pendente'
-        origem: 'delivery_bebidas_1',
+        origem: 'hortifruti_2',
                 
         dataPedido: new Date().toISOString(),
         criadoEm: new Date().toISOString(),
@@ -6091,7 +6235,7 @@ async function salvarPedidoNoFirebase(pedidoData) {
             // Metadados do pedido
             numeroPedido: numeroPedido,
             status: 'pendente', // ou 'enviado' se já foi pelo WhatsApp
-            origem: 'Hortifruti 2',
+            origem: 'hortifruti_2',
             observacoes: document.getElementById('clientTroco')?.value || '',
             
             // Datas
@@ -7138,6 +7282,7 @@ async function renderAdminProducts() {
         console.log('❌ Login cancelado ou falhou');
     }
 }
+
 //--------------------------------------------------------------------------------------------------------
 
 // =========================
@@ -7397,8 +7542,27 @@ header.querySelector('div').appendChild(closeBtn);
   
   toolbar.appendChild(addBtn);
 
-  //------------------------------------------------------------------------------------
-  // BOTÃO VER TODOS OS PEDIDOS
+  //-------------------------------------------------------------------------
+   /* // BOTÃO HISTÓRICO DE PEDIDOS DOS USUÁRIOS
+      const historicoBtn = document.createElement('button');
+      historicoBtn.className = 'btn';
+      historicoBtn.style.cssText = 'background: #3498db; color: #fff; margin: 0; flex: 1; min-width: 200px;';
+      historicoBtn.innerHTML = '📋 Histórico de Pedidos dos Usuários';
+
+      historicoBtn.addEventListener('click', async () => {
+          // Verificar se o usuário é admin (dono da loja)
+          if (!window.adminAutenticado) {
+              alert('❌ Acesso não autorizado!');
+              return;
+          }
+          
+          await mostrarHistoricoPedidos();
+      });
+
+      toolbar.appendChild(historicoBtn); */
+  //--------------------------------------------------------------------------
+  //--------------------------------------------------------------------------
+// BOTÃO VER TODOS OS PEDIDOS
 const todosPedidosBtn = document.createElement('button');
 todosPedidosBtn.className = 'btn';
 todosPedidosBtn.style.cssText = 'background: #9b59b6; color: #fff; margin: 0; flex: 1; min-width: 200px;';
@@ -7423,8 +7587,8 @@ todosPedidosBtn.addEventListener('click', async () => {
 
 toolbar.appendChild(todosPedidosBtn);
 //--------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------------
+    
+  //-------------------------------------------------------------------------
 
   // BOTÃO REPOSIÇÃO DE ESTOQUE
   const estoqueRapidoBtn = document.createElement('button');
@@ -7853,6 +8017,10 @@ pixConfigBtn.addEventListener('click', async () => {
 
 // Execute o teste quando a página carregar
 setTimeout(testarCorrecaoPIX, 2000);
+
+//------------------------------------------------------------------------------------------
+ 
+//-------------------------------------------------------------------------------------------
        
     // 🔧 FUNÇÃO PARA VALIDAR CHAVE PIX COM MENSAGEM CLARA E 3 TENTATIVAS
     function validarChavePIX(chave) {
@@ -9222,75 +9390,443 @@ window.criarAdminFirebase = async function(email, password, nome) {
     }
 };
 
-// =========================
-// FUNÇÃO DE LOGOUT
-// =========================
 
-window.logoutAdmin = async function() {
+//----------------------------------------------------------------------------------------
+// =========================
+// FUNÇÃO PARA MOSTRAR HISTÓRICO DE PEDIDOS DOS USUÁRIOS
+// =========================
+async function mostrarHistoricoPedidos() {
     try {
-        await auth.signOut();
-        window.adminAutenticado = false;
+        console.log('📋 Buscando histórico de pedidos...');
         
-        // Limpar timeout da sessão
-        if (window.adminSessaoTimeout) {
-            clearTimeout(window.adminSessaoTimeout);
-            window.adminSessaoTimeout = null;
+        // Mostrar loading
+        const loadingDiv = document.createElement('div');
+        loadingDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            z-index: 1000000;
+            font-weight: bold;
+            text-align: center;
+        `;
+        loadingDiv.textContent = '🔄 Carregando histórico de pedidos...';
+        document.body.appendChild(loadingDiv);
+        
+        // Buscar todos os usuários
+        const usersSnapshot = await db.collection('users').get();
+        const usuarios = [];
+        
+        usersSnapshot.forEach(doc => {
+            const userData = doc.data();
+            usuarios.push({
+                id: doc.id,
+                nome: userData.displayName || userData.email.split('@')[0],
+                email: userData.email,
+                telefone: userData.phoneNumber || 'Não informado',
+                dataCadastro: userData.createdAt || 'Não informada'
+            });
+        });
+        
+        // Remover loading
+        loadingDiv.remove();
+        
+        // Criar modal para exibir histórico
+        const modalHistorico = document.createElement('div');
+        modalHistorico.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000000;
+            font-family: Arial, sans-serif;
+        `;
+        
+        let historicoHTML = `
+            <div style="background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 1000px; max-height: 80vh; overflow-y: auto;">
+                <h3 style="color: #2c3e50; margin-top: 0; margin-bottom: 20px;">
+                    📋 Histórico de Pedidos dos Usuários
+                </h3>
+                
+                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <input type="text" id="filterUsers" placeholder="🔍 Filtrar por nome ou email..." 
+                           style="flex: 1; padding: 10px; border: 2px solid #3498db; border-radius: 5px;">
+                    <select id="sortUsers" style="padding: 10px; border: 2px solid #3498db; border-radius: 5px;">
+                        <option value="name">Ordenar por Nome</option>
+                        <option value="recent">Ordenar por Mais Recentes</option>
+                        <option value="oldest">Ordenar por Mais Antigos</option>
+                    </select>
+                </div>
+                
+                <div style="max-height: 60vh; overflow-y: auto;">
+        `;
+        
+        if (usuarios.length === 0) {
+            historicoHTML += `
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📭</div>
+                    <h4 style="color: #7f8c8d;">Nenhum usuário cadastrado ainda</h4>
+                    <p>Os usuários aparecerão aqui após fazerem login e realizarem pedidos.</p>
+                </div>
+            `;
+        } else {
+            historicoHTML += `
+                <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 10px;">
+                    ${usuarios.length} usuários encontrados
+                </div>
+            `;
+            
+            for (const usuario of usuarios) {
+                historicoHTML += `
+                    <div class="usuario-card" style="
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-bottom: 10px;
+                        background: #f9f9f9;
+                        cursor: pointer;
+                        transition: all 0.2s;
+                    " data-email="${usuario.email.toLowerCase()}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="color: #2c3e50; font-size: 16px;">${usuario.nome}</strong>
+                                <div style="color: #666; font-size: 13px; margin-top: 3px;">
+                                    📧 ${usuario.email}
+                                </div>
+                                <div style="color: #666; font-size: 13px; margin-top: 3px;">
+                                    📞 ${usuario.telefone}
+                                </div>
+                                <div style="color: #999; font-size: 12px; margin-top: 3px;">
+                                    🗓️ Cadastrado em: ${usuario.dataCadastro ? new Date(usuario.dataCadastro).toLocaleDateString('pt-BR') : 'Data não disponível'}
+                                </div>
+                            </div>
+                            <button onclick="verPedidosUsuario('${usuario.id}', '${usuario.nome}')" 
+                                    style="background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 13px;">
+                                👁️ Ver Pedidos
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
         }
         
-        // Fechar modal se estiver aberto
-        document.querySelectorAll('.modal-backdrop').forEach(m => m.remove());
+        historicoHTML += `
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; text-align: center;">
+                    <button onclick="fecharHistorico()" 
+                            style="background: #e74c3c; color: white; border: none; padding: 10px 25px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        ✕ Fechar
+                    </button>
+                </div>
+            </div>
+        `;
         
-        console.log('✅ Logout realizado');
-        alert('✅ Logout realizado com sucesso!');
+        modalHistorico.innerHTML = historicoHTML;
+        document.body.appendChild(modalHistorico);
+        
+        // Configurar filtro
+        document.getElementById('filterUsers').addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const cards = document.querySelectorAll('.usuario-card');
+            
+            cards.forEach(card => {
+                const email = card.getAttribute('data-email');
+                const text = card.textContent.toLowerCase();
+                
+                if (text.includes(filter) || email.includes(filter)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Configurar ordenação
+        document.getElementById('sortUsers').addEventListener('change', function() {
+            const container = document.querySelector('.usuario-card').parentNode;
+            const cards = Array.from(container.querySelectorAll('.usuario-card'));
+            
+            cards.sort((a, b) => {
+                const nameA = a.querySelector('strong').textContent.toLowerCase();
+                const nameB = b.querySelector('strong').textContent.toLowerCase();
+                
+                switch(this.value) {
+                    case 'name':
+                        return nameA.localeCompare(nameB);
+                    case 'recent':
+                        return -1; // Implementar lógica de data se disponível
+                    case 'oldest':
+                        return 1; // Implementar lógica de data se disponível
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Reordenar no DOM
+            cards.forEach(card => container.appendChild(card));
+        });
+        
+        // Adicionar efeito hover
+        setTimeout(() => {
+            document.querySelectorAll('.usuario-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                    this.style.background = '#f0f8ff';
+                    this.style.borderColor = '#3498db';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                    this.style.background = '#f9f9f9';
+                    this.style.borderColor = '#ddd';
+                });
+            });
+        }, 100);
         
     } catch (error) {
-        console.error('❌ Erro no logout:', error);
-    }
-};
-
-// =========================
-// FUNÇÃO PARA VERIFICAR PERMISSÕES
-// =========================
-
-async function verificarPermissoesAdmin() {
-    try {
-        const user = auth.currentUser;
-        if (!user) return false;
-        
-        const adminSnap = await db.collection('admin_access').doc(user.uid).get();
-        return adminSnap.exists && adminSnap.data().active !== false;
-        
-    } catch (error) {
-        console.error('Erro ao verificar permissões:', error);
-        return false;
+        console.error('❌ Erro ao buscar histórico:', error);
+        alert('❌ Erro ao carregar histórico de pedidos: ' + error.message);
     }
 }
 
-// =========================
-// LISTENER PARA AUTENTICAÇÃO
-// =========================
-
-// Monitorar estado de autenticação
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        console.log('👤 Usuário autenticado:', user.email);
+// Função para ver pedidos de um usuário específico
+window.verPedidosUsuario = async function(userId, userName) {
+    try {
+        console.log(`Buscando pedidos do usuário: ${userName} (${userId})`);
         
-        // Verificar se tem permissões de admin
-        db.collection('admin_access').doc(user.uid).get()
-            .then(snap => {
-                if (snap.exists && snap.data().active !== false) {
-                    window.adminAutenticado = true;
-                } else {
-                    window.adminAutenticado = false;
-                }
+        // Buscar pedidos do usuário - Você precisará criar uma collection 'pedidos' no Firebase
+        // Exemplo de estrutura do pedido:
+        // {
+        //     userId: 'ID_DO_USUARIO',
+        //     userName: 'NOME_DO_USUARIO',
+        //     userEmail: 'EMAIL_DO_USUARIO',
+        //     items: [...],
+        //     total: 150.00,
+        //     endereco: 'Rua Exemplo, 123',
+        //     telefone: '11999999999',
+        //     status: 'pendente' | 'confirmado' | 'entregue' | 'cancelado',
+        //     dataPedido: '2024-01-09T10:30:00Z',
+        //     dataEntrega: '2024-01-09T12:00:00Z',
+        //     observacoes: 'Observações do pedido',
+        //     formaPagamento: 'pix' | 'dinheiro' | 'cartao'
+        // }
+        
+        const pedidosSnapshot = await db.collection('pedidos')
+            .where('userId', '==', userId)
+            .orderBy('dataPedido', 'desc')
+            .get();
+        
+        const pedidos = [];
+        pedidosSnapshot.forEach(doc => {
+            pedidos.push({
+                id: doc.id,
+                ...doc.data()
             });
-    } else {
-        console.log('👤 Usuário não autenticado');
-        window.adminAutenticado = false;
+        });
+        
+        // Criar modal com os pedidos do usuário
+        const modalPedidos = document.createElement('div');
+        modalPedidos.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000001;
+            font-family: Arial, sans-serif;
+        `;
+        
+        let pedidosHTML = `
+            <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color: #2c3e50; margin: 0;">
+                        📋 Pedidos de ${userName}
+                    </h3>
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                            style="background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                        ✕ Fechar
+                    </button>
+                </div>
+                
+                <div style="margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <div><strong>Total de pedidos:</strong> ${pedidos.length}</div>
+                    <div><strong>Valor total:</strong> R$ ${pedidos.reduce((total, pedido) => total + (parseFloat(pedido.total) || 0), 0).toFixed(2)}</div>
+                </div>
+        `;
+        
+        if (pedidos.length === 0) {
+            pedidosHTML += `
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📭</div>
+                    <h4 style="color: #7f8c8d;">Nenhum pedido encontrado</h4>
+                    <p>Este usuário ainda não realizou nenhum pedido.</p>
+                </div>
+            `;
+        } else {
+            pedidosHTML += `
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <select id="filterStatus" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px; flex: 1;">
+                        <option value="">Todos os status</option>
+                        <option value="pendente">Pendentes</option>
+                        <option value="confirmado">Confirmados</option>
+                        <option value="entregue">Entregues</option>
+                        <option value="cancelado">Cancelados</option>
+                    </select>
+                    <select id="filterDate" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px; flex: 1;">
+                        <option value="">Todas as datas</option>
+                        <option value="today">Hoje</option>
+                        <option value="week">Esta semana</option>
+                        <option value="month">Este mês</option>
+                    </select>
+                </div>
+                
+                <div style="max-height: 50vh; overflow-y: auto;">
+            `;
+            
+            pedidos.forEach((pedido, index) => {
+                const data = pedido.dataPedido ? new Date(pedido.dataPedido).toLocaleString('pt-BR') : 'Data não informada';
+                const statusColors = {
+                    'pendente': '#f39c12',
+                    'confirmado': '#3498db',
+                    'entregue': '#27ae60',
+                    'cancelado': '#e74c3c'
+                };
+                
+                pedidosHTML += `
+                    <div class="pedido-card" style="
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        padding: 15px;
+                        margin-bottom: 10px;
+                        background: white;
+                        position: relative;
+                    " data-status="${pedido.status || 'pendente'}" data-date="${pedido.dataPedido || ''}">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                            <div>
+                                <strong style="color: #2c3e50;">Pedido #${pedido.id.substring(0, 8)}</strong>
+                                <div style="color: #666; font-size: 13px; margin-top: 3px;">
+                                    🗓️ ${data}
+                                </div>
+                            </div>
+                            <span style="
+                                background: ${statusColors[pedido.status] || '#95a5a6'};
+                                color: white;
+                                padding: 4px 10px;
+                                border-radius: 15px;
+                                font-size: 12px;
+                                font-weight: bold;
+                            ">
+                                ${pedido.status ? pedido.status.toUpperCase() : 'PENDENTE'}
+                            </span>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <div style="color: #666; font-size: 14px;">
+                                <strong>📦 Itens:</strong> ${(pedido.itens || pedido.items) ? (pedido.itens || pedido.items).length : 0} produtos
+                            </div>
+                            <div style="color: #666; font-size: 14px;">
+                                <strong>📍 Endereço:</strong> ${pedido.endereco || 'Não informado'}
+                            </div>
+                            <div style="color: #666; font-size: 14px;">
+                                <strong>💰 Total:</strong> R$ ${parseFloat(pedido.total || 0).toFixed(2)}
+                            </div>
+                            <div style="color: #666; font-size: 14px;">
+                                <strong>💳 Pagamento:</strong> ${pedido.formaPagamento || 'Não informado'}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button onclick="verDetalhesPedido('${pedido.id}')" 
+                                    style="background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; flex: 1;">
+                                👁️ Ver Detalhes
+                            </button>
+                            <button onclick="alterarStatusPedido('${pedido.id}', '${pedido.status || 'pendente'}')" 
+                                    style="background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; flex: 1;">
+                                ✏️ Alterar Status
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            pedidosHTML += `</div>`;
+        }
+        
+        pedidosHTML += `</div>`;
+        modalPedidos.innerHTML = pedidosHTML;
+        document.body.appendChild(modalPedidos);
+        
+        // Configurar filtros
+        document.getElementById('filterStatus')?.addEventListener('change', function() {
+            filterPedidos();
+        });
+        
+        document.getElementById('filterDate')?.addEventListener('change', function() {
+            filterPedidos();
+        });
+        
+        function filterPedidos() {
+            const statusFilter = document.getElementById('filterStatus')?.value || '';
+            const dateFilter = document.getElementById('filterDate')?.value || '';
+            const cards = document.querySelectorAll('.pedido-card');
+            
+            cards.forEach(card => {
+                const status = card.getAttribute('data-status');
+                const dateStr = card.getAttribute('data-date');
+                const cardDate = dateStr ? new Date(dateStr) : null;
+                const now = new Date();
+                
+                let show = true;
+                
+                // Filtrar por status
+                if (statusFilter && status !== statusFilter) {
+                    show = false;
+                }
+                
+                // Filtrar por data
+                if (dateFilter && cardDate) {
+                    switch(dateFilter) {
+                        case 'today':
+                            if (cardDate.toDateString() !== now.toDateString()) show = false;
+                            break;
+                        case 'week':
+                            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                            if (cardDate < weekAgo) show = false;
+                            break;
+                        case 'month':
+                            const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                            if (cardDate < monthAgo) show = false;
+                            break;
+                    }
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao buscar pedidos do usuário:', error);
+        alert('❌ Erro ao carregar pedidos: ' + error.message);
     }
-});
+}
 
-//--------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
 // =========================
 // FUNÇÃO SIMPLIFICADA PARA VER DETALHES DO PEDIDO
 // Baseado no design da imagem
@@ -9339,6 +9875,13 @@ window.verDetalhesPedido = async function(pedidoId) {
         }
         
         const pedido = pedidoDoc.data();
+        
+        // ******** ADICIONE ESTA LINHA AQUI ********
+        // OBTER NÚMERO DO PEDIDO PADRONIZADO
+        const numeroPedido = pedido.numeroPedido || 
+                             pedido.resumo?.numeroPedido || 
+                             `PD${pedidoId.substring(pedidoId.length - 6).toUpperCase()}`;
+        // *****************************************
         
         // 5. Preparar itens
         let itensParaMostrar = [];
@@ -9412,6 +9955,9 @@ window.verDetalhesPedido = async function(pedidoId) {
         const dataPedido = pedido.dataPedido || pedido.timestamp || pedido.createdAt;
         const dataFormatada = dataPedido ? new Date(dataPedido).toLocaleDateString('pt-BR') + ', ' + new Date(dataPedido).toLocaleTimeString('pt-BR') : '';
         
+        // Status do pedido (se existir)
+        const statusPedido = pedido.status || 'pendente';
+        
         modalHTML = `
             <div id="${modalId}" style="
                 position: fixed;
@@ -9432,40 +9978,102 @@ window.verDetalhesPedido = async function(pedidoId) {
                     width: 100%;
                     max-width: 500px;
                     background: white;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    border-radius: 12px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
                     font-family: Arial, sans-serif;
+                    overflow: hidden;
                 ">
-                    <!-- CABEÇALHO SIMPLES -->
+                    <!-- CABEÇALHO MELHORADO COM BACKGROUND VERDE -->
                     <div style="
-                        background: #f8f8f8;
-                        padding: 15px;
-                        border-radius: 8px 8px 0 0;
-                        border-bottom: 1px solid #ddd;
+                        background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+                        padding: 20px;
+                        color: white;
+                        position: relative;
                     ">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h2 style="margin: 0; font-size: 16px; color: #333;">
-                                Pedido #${pedido.numeroPedido || pedidoId.substring(0, 8)}
+                        <!-- Botão de fechar bonito -->
+                        <button onclick="document.getElementById('${modalId}').remove(); 
+                                       if (document.getElementById('modalTodosPedidos')) {
+                                           document.getElementById('modalTodosPedidos').style.display = 'flex';
+                                       }" 
+                                style="
+                                    position: absolute;
+                                    top: 15px;
+                                    right: 15px;
+                                    background: rgba(255,255,255,0.2);
+                                    border: none;
+                                    font-size: 22px;
+                                    cursor: pointer;
+                                    color: white;
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    transition: all 0.3s ease;
+                                    font-weight: bold;
+                                    z-index: 10;
+                                "
+                                onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='scale(1.1)';"
+                                onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='scale(1)';">
+                            ×
+                        </button>
+                        
+                        <div style="padding-right: 40px;">
+                            <h2 style="
+                                margin: 0 0 8px 0; 
+                                font-size: 20px; 
+                                color: white;
+                                font-weight: 700;
+                                display: flex;
+                                align-items: center;
+                                gap: 10px;
+                            ">
+                                <span style="
+                                    background: rgba(255,255,255,0.2);
+                                    padding: 4px 12px;
+                                    border-radius: 20px;
+                                    font-size: 14px;
+                                ">
+                                    📦
+                                </span>
+                                Pedido #${numeroPedido}  <!-- AQUI MUDEI! -->
                             </h2>
-                            <button onclick="document.getElementById('${modalId}').remove(); 
-                                           if (document.getElementById('modalTodosPedidos')) {
-                                               document.getElementById('modalTodosPedidos').style.display = 'flex';
-                                           }" 
-                                    style="
-                                        background: none;
-                                        border: none;
-                                        font-size: 20px;
-                                        cursor: pointer;
-                                        color: #666;
-                                        padding: 0;
-                                        width: 30px;
-                                        height: 30px;
-                                    ">
-                                ×
-                            </button>
-                        </div>
-                        <div style="margin-top: 5px; font-size: 12px; color: #666;">
-                            ${dataFormatada}
+                            
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                flex-wrap: wrap;
+                                gap: 10px;
+                                margin-top: 5px;
+                            ">
+                                <div style="
+                                    font-size: 13px; 
+                                    color: rgba(255,255,255,0.9);
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 6px;
+                                    background: rgba(255,255,255,0.1);
+                                    padding: 4px 10px;
+                                    border-radius: 12px;
+                                ">
+                                    📅 ${dataFormatada}
+                                </div>
+                                
+                                <div style="
+                                    background: rgba(255,255,255,0.9);
+                                    color: #2E7D32;
+                                    padding: 4px 14px;
+                                    border-radius: 20px;
+                                    font-size: 12px;
+                                    font-weight: 700;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                ">
+                                    ${statusPedido}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -9553,7 +10161,7 @@ window.verDetalhesPedido = async function(pedidoId) {
                         display: flex;
                         justify-content: center;
                     ">
-                        <button onclick="alterarStatusPedidoAdmin('${pedidoId}'); document.getElementById('${modalId}').remove();" 
+                        <button onclick="window.alterarStatusPedido('${pedidoId}'); document.getElementById('${modalId}').remove();"  
                                 style="
                                     padding: 10px 25px;
                                     background: #4CAF50;
@@ -9587,133 +10195,133 @@ window.verDetalhesPedido = async function(pedidoId) {
     }
 };
 //---------------------------------------------------------------------------------------------------------------
-// =========================
-// FUNÇÃO PARA ALTERAR STATUS DO PEDIDO (VERSÃO CORRIGIDA)
-// =========================
-window.alterarStatusPedido = async function(pedidoId, statusAtual) {
+//FUNÇÃO ALTERAR STATUS DO PEDIDO//
+
+window.alterarStatusPedido = async function(pedidoId) {
+    console.log('✅ FUNÇÃO CORRIGIDA - Pedido:', pedidoId);
+    
     try {
-        // Verificar se o usuário é admin/logista
-        const user = auth.currentUser;
-        if (!user) {
-            alert('❌ Você precisa estar logado para alterar status!');
+        // 1. Buscar dados do pedido
+        const pedidoDoc = await db.collection('pedidos').doc(pedidoId).get();
+        
+        if (!pedidoDoc.exists) {
+            alert('❌ Pedido não encontrado!');
             return;
         }
         
-        // Opções de status com descrições
-        const opcoesStatus = {
-            'pendente': { label: '⏳ Pendente', desc: 'Aguardando processamento', color: '#f39c12' },
-            'enviado': { label: '📤 Enviado', desc: 'Pedido enviado/saiu para entrega', color: '#3498db' },
-            'confirmado': { label: '✅ Confirmado', desc: 'Pedido confirmado', color: '#27ae60' },
-            'entregue': { label: '🚚 Entregue', desc: 'Entrega realizada', color: '#2ecc71' },
-            'cancelado': { label: '❌ Cancelado', desc: 'Pedido cancelado', color: '#e74c3c' }
-        };
+        const pedido = pedidoDoc.data();
+        const statusAtual = pedido.status || 'pendente';
+        const clienteNome = pedido.cliente?.nome || pedido.userName || 'Cliente';
         
-        // Criar lista de opções para o prompt
-        let opcoesTexto = 'Selecione o novo status:\n\n';
-        Object.keys(opcoesStatus).forEach((status, index) => {
-            const info = opcoesStatus[status];
-            opcoesTexto += `${index + 1}. ${info.label} - ${info.desc}\n`;
-        });
+        // CORREÇÃO AQUI ↓
+        // Pegar o número do pedido correto
+        const numeroPedido = pedido.numeroPedido || 
+                           pedido.resumo?.numeroPedido || 
+                           `PD${pedidoId.substring(pedidoId.length - 6).toUpperCase()}`;
         
-        opcoesTexto += `\nStatus atual: ${opcoesStatus[statusAtual]?.label || statusAtual}\n`;
-        opcoesTexto += `Digite o número correspondente:`;
-        
-        const resposta = prompt(opcoesTexto);
-        
-        if (!resposta) {
-            console.log('❌ Alteração cancelada pelo usuário');
-            return;
-        }
-        
-        // Converter resposta para status
-        const opcoesArray = Object.keys(opcoesStatus);
-        const indiceSelecionado = parseInt(resposta) - 1;
-        
-        if (isNaN(indiceSelecionado) || indiceSelecionado < 0 || indiceSelecionado >= opcoesArray.length) {
-            alert('❌ Opção inválida! Use um número de 1 a ' + opcoesArray.length);
-            return;
-        }
-        
-        const novoStatus = opcoesArray[indiceSelecionado];
-        const infoStatus = opcoesStatus[novoStatus];
-        
-        // Confirmar alteração
-        const confirmacao = confirm(
-            `CONFIRMAR ALTERAÇÃO DE STATUS\n\n` +
-            `Pedido: ${pedidoId.substring(0, 8)}\n` +
-            `Status atual: ${opcoesStatus[statusAtual]?.label || statusAtual}\n` +
-            `Novo status: ${infoStatus.label}\n\n` +
-            `${infoStatus.desc}\n\n` +
-            `Deseja continuar?`
+        // 2. Pedir novo status (CORRIGIDO)
+        const novoStatus = prompt(
+            `ALTERAR STATUS\n\n` +
+            `Pedido: ${numeroPedido}\n` +  // ← AQUI MUDOU!
+            `Cliente: ${clienteNome}\n` +
+            `Status atual: ${statusAtual}\n\n` +
+            `Novo status:`,
+            'entregue'
         );
         
-        if (!confirmacao) {
-            console.log('❌ Alteração cancelada na confirmação');
-            return;
-        }
+        if (!novoStatus) return;
         
-        // Mostrar loading
-        alert(`🔄 Alterando status para ${infoStatus.label}...`);
-        
-        // Atualizar no Firebase
+        // 3. Atualizar no Firebase
         await db.collection('pedidos').doc(pedidoId).update({
             status: novoStatus,
-            atualizadoEm: new Date().toISOString(),
-            atualizadoPor: user.uid,
-            atualizadoPorNome: user.displayName || user.email || 'Administrador'
+            atualizadoEm: new Date().toISOString()
         });
         
-        console.log(`✅ Status do pedido ${pedidoId} alterado para: ${novoStatus}`);
+        alert(`✅ Status alterado para: ${novoStatus}`);
         
-        // Fechar modal atual se existir
-        const modalAtual = document.querySelector('div[style*="position: fixed; top: 0; left: 0;"]');
-        if (modalAtual) {
-            modalAtual.remove();
+        // 4. Recarregar lista
+        if (typeof window.carregarPedidos === 'function') {
+            setTimeout(() => window.carregarPedidos(), 500);
         }
-        
-        // ✅ CORREÇÃO AQUI: NÃO pedir ID do usuário
-        // Em vez disso, simplesmente recarregar a lista de pedidos atual
-        
-        // Verificar qual lista está aberta e recarregar
-        if (typeof listarTodosPedidos === 'function') {
-            console.log('🔄 Recarregando lista de pedidos...');
-            setTimeout(() => {
-                listarTodosPedidos(); // Recarrega a lista completa
-            }, 500);
-        } else {
-            console.log('🔄 Recarregando página...');
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
-        }
-        
-        // Mensagem de sucesso
-        setTimeout(() => {
-            alert(`✅ Status alterado com sucesso!\n\n` +
-                  `Pedido: ${pedidoId.substring(0, 8)}\n` +
-                  `Novo status: ${infoStatus.label}\n` +
-                  `Alterado por: ${user.displayName || user.email || 'Administrador'}`);
-        }, 300);
         
     } catch (error) {
-        console.error('❌ Erro ao alterar status:', error);
-        alert('❌ Erro ao alterar status: ' + error.message);
-        
-        // Tentar recarregar a lista mesmo com erro
-        if (typeof listarTodosPedidos === 'function') {
-            setTimeout(listarTodosPedidos, 1000);
-        }
+        console.error('❌ Erro:', error);
+        alert('❌ Erro: ' + error.message);
     }
 };
-// Função para fechar histórico
-function fecharHistorico() {
-    const modal = document.querySelector('div[style*="position: fixed; top: 0; left: 0;"]');
-    if (modal) {
-        modal.remove();
-    }
-}
 //----------------------------------------------------------------------------------------
 
+// =========================
+// FUNÇÃO DE LOGOUT
+// =========================
+
+window.logoutAdmin = async function() {
+    try {
+        await auth.signOut();
+        window.adminAutenticado = false;
+        
+        // Limpar timeout da sessão
+        if (window.adminSessaoTimeout) {
+            clearTimeout(window.adminSessaoTimeout);
+            window.adminSessaoTimeout = null;
+        }
+        
+        // Fechar modal se estiver aberto
+        document.querySelectorAll('.modal-backdrop').forEach(m => m.remove());
+        
+        console.log('✅ Logout realizado');
+        alert('✅ Logout realizado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro no logout:', error);
+    }
+};
+
+// =========================
+// FUNÇÃO PARA VERIFICAR PERMISSÕES
+// =========================
+
+async function verificarPermissoesAdmin() {
+    try {
+        const user = auth.currentUser;
+        if (!user) return false;
+        
+        const adminSnap = await db.collection('admin_access').doc(user.uid).get();
+        return adminSnap.exists && adminSnap.data().active !== false;
+        
+    } catch (error) {
+        console.error('Erro ao verificar permissões:', error);
+        return false;
+    }
+}
+
+// =========================
+// LISTENER PARA AUTENTICAÇÃO
+// =========================
+
+// Monitorar estado de autenticação
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        console.log('👤 Usuário autenticado:', user.email);
+        
+        // Verificar se tem permissões de admin
+        db.collection('admin_access').doc(user.uid).get()
+            .then(snap => {
+                if (snap.exists && snap.data().active !== false) {
+                    window.adminAutenticado = true;
+                } else {
+                    window.adminAutenticado = false;
+                }
+            });
+    } else {
+        console.log('👤 Usuário não autenticado');
+        window.adminAutenticado = false;
+    }
+});
+
+
+
+//--------------------------------------------------------------------------------------------------------
 
 // =========================
 // CONFIGURAR EVENTOS
@@ -12996,8 +13604,7 @@ window.currentUser = null;
 // Inicializar autenticação do usuário
 function initUserAuth() {
     // Verificar se já existe usuário salvo
-    // ALTERAR: 'delivery_bebidas_user' para 'hortifruti2_user'
-    const savedUser = localStorage.getItem('hortifruti2_user'); // ← MUDAR AQUI
+    const savedUser = localStorage.getItem('hortifruti2_user');
     if (savedUser) {
         try {
             window.currentUser = JSON.parse(savedUser);
@@ -13028,7 +13635,7 @@ function showUserLoginModal() {
     
     userLoginModal.innerHTML = `
         <div class="login-modal-content">
-            <h3 style="color: #2c3e50; margin-bottom: 20px;">👤 Entrar na sua conta</h3>
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">👨‍💼 Entrar na sua conta</h3>
             
             <div class="login-tabs">
                 <button class="login-tab active" data-tab="login">Entrar</button>
@@ -13199,7 +13806,7 @@ async function loginWithGoogle() {
         };
         
         // Salvar no localStorage para persistência
-        localStorage.setItem('delivery_bebidas_user', JSON.stringify(window.currentUser));
+        localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
         
         // Salvar/atualizar usuário no Firestore
         await saveUserToFirestore(user);
@@ -13266,203 +13873,12 @@ async function loginWithGoogle() {
         }
     }
 }
-// Função para processar o resultado do login (após retorno do popup ou redirect)
-async function processGoogleLoginResult(result) {
-    try {
-        // Se não tiver resultado, tentar pegar do redirect
-        if (!result) {
-            console.log('🔄 Tentando obter resultado do redirect...');
-            result = await auth.getRedirectResult();
-        }
-        
-        if (!result || !result.user) {
-            console.warn('⚠️ Nenhum usuário retornado do login');
-            return;
-        }
-        
-        const user = result.user;
-        console.log('✅ Login com Google bem-sucedido:', user.email);
-        
-        // Remover loading
-        const loadingDiv = document.getElementById('google-login-loading');
-        if (loadingDiv) loadingDiv.remove();
-        
-        // Limpar estado de redirect
-        sessionStorage.removeItem('google_login_pending');
-        sessionStorage.removeItem('redirect_url');
-        
-        // Salvar dados do usuário
-        window.currentUser = {
-            id: user.uid,
-            name: user.displayName || user.email.split('@')[0],
-            email: user.email,
-            phone: user.phoneNumber || '',
-            photoURL: user.photoURL,
-            provider: 'google',
-            firebaseUser: user
-        };
-        
-        // Salvar no localStorage para persistência
-        localStorage.setItem('hortifruti2_user', JSON.stringify(window.currentUser));
-        
-        // Salvar/atualizar usuário no Firestore
-        await saveUserToFirestore(user);
-        
-        // Atualizar UI
-        updateUserUI();
-        
-        // Fechar modal se existir
-        closeUserLoginModal();
-        
-        // Mostrar mensagem de boas-vindas (mais suave para mobile)
-        if (!/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-            alert(`✅ Bem-vindo, ${user.displayName || user.email}!`);
-        } else {
-            // No mobile, mostrar toast mais amigável
-            showToast(`Bem-vindo, ${user.displayName || user.email}!`, 'success');
-        }
-        
-        // Preencher automaticamente o formulário de cliente
-        if (typeof fillClientFormWithUserData === 'function') {
-            fillClientFormWithUserData();
-        }
-        
-        // Log do sistema
-        if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
-            await sistemaLogs.registrar('login_google_sucesso', {
-                email: user.email,
-                uid: user.uid,
-                provider: 'google',
-                device: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
-            });
-        }
-        
-    } catch (error) {
-        console.error('❌ Erro ao processar login:', error);
-        handleGoogleLoginError(error);
-    }
-}
 
-// Função para tratar erros
-function handleGoogleLoginError(error) {
-    let errorMessage = 'Erro ao conectar com Google: ';
-    
-    switch(error.code) {
-        case 'auth/popup-blocked':
-            errorMessage = '🔒 O popup do Google foi bloqueado.\n\nNo celular, recomendamos usar o navegador Chrome e permitir popups.';
-            break;
-        case 'auth/popup-closed-by-user':
-            errorMessage = '❌ Login cancelado. Você fechou a janela de login.';
-            break;
-        case 'auth/cancelled-popup-request':
-            errorMessage = '❌ Login cancelado. Tente novamente.';
-            break;
-        case 'auth/network-request-failed':
-            errorMessage = '📡 Erro de conexão. Verifique sua internet e tente novamente.';
-            break;
-        case 'auth/operation-not-supported-in-this-environment':
-            errorMessage = '📱 Este navegador não suporta login com popup.\n\nTente:\n1. Usar o Chrome no Android\n2. Usar Safari no iOS\n3. Acessar por HTTPS';
-            break;
-        default:
-            errorMessage += error.message;
-    }
-    
-    // Mostrar erro de forma amigável
-    if (/Mobile/i.test(navigator.userAgent)) {
-        // No mobile, mostrar alerta com dicas
-        alert(`❌ ${errorMessage}\n\n💡 Dicas para celular:\n• Use o navegador Chrome\n• Ative popups nas configurações\n• Tente acessar por: https://...`);
-    } else {
-        alert(`❌ ${errorMessage}`);
-    }
-    
-    // Log de erro
-    if (typeof sistemaLogs !== 'undefined' && sistemaLogs.registrar) {
-        sistemaLogs.registrar('login_google_falha', {
-            error: error.code,
-            message: error.message,
-            userAgent: navigator.userAgent
-        });
-    }
-}
-
-// Função para mostrar toast (melhor que alert no mobile)
-function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: ${type === 'success' ? '#2ecc71' : '#e74c3c'};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        z-index: 10000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        animation: slideUp 0.3s ease;
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.5s';
-        setTimeout(() => toast.remove(), 500);
-    }, 3000);
-}
-
-// IMPORTANTE: Adicionar este código para verificar se veio de redirect
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar se estamos voltando de um redirect de login
-    if (sessionStorage.getItem('google_login_pending') === 'true') {
-        console.log('🔄 Verificando se veio de redirect do Google...');
-        
-        // Mostrar loading enquanto verifica
-        const loadingDiv = document.createElement('div');
-        loadingDiv.id = 'redirect-loading';
-        loadingDiv.textContent = '🔄 Finalizando login...';
-        loadingDiv.style.cssText = `
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100000;
-            font-size: 18px;
-        `;
-        document.body.appendChild(loadingDiv);
-        
-        // Aguardar um momento e processar
-        setTimeout(async () => {
-            try {
-                await processGoogleLoginResult(null);
-            } catch (error) {
-                console.error('Erro ao processar redirect:', error);
-            } finally {
-                const loading = document.getElementById('redirect-loading');
-                if (loading) loading.remove();
-                sessionStorage.removeItem('google_login_pending');
-            }
-        }, 1000);
-    }
-    
-    // Também verificar estado de autenticação do Firebase
-    auth.onAuthStateChanged((user) => {
-        if (user && sessionStorage.getItem('google_login_pending') === 'true') {
-            console.log('👤 Usuário autenticado após redirect:', user.email);
-            processGoogleLoginResult({ user });
-        }
-    });
-});
 // =========================
 // SALVAR USUÁRIO NO FIRESTORE
 // =========================
 async function saveUserToFirestore(user) {
     try {
-        // 🔴 SALVAR NO localStorage PRIMEIRO (para o isolador ver)
         const userData = {
             uid: user.uid,
             email: user.email,
@@ -13470,29 +13886,17 @@ async function saveUserToFirestore(user) {
             photoURL: user.photoURL || '',
             phoneNumber: user.phoneNumber || '',
             provider: user.providerData[0]?.providerId || 'google',
-            
-            // 🔴 IDENTIFICADOR DO SISTEMA (IMPORTANTE!)
-            sistema: 'hortifruti2',
-            projeto: 'hortifruti-cliente-2',
-            
-            // 🔴 TIMESTAMP para controle
-            loginTimestamp: Date.now(),
+            lastLogin: new Date().toISOString(),
             createdAt: new Date().toISOString()
         };
         
-        // 1. SALVAR NO localStorage IMEDIATAMENTE
-        localStorage.setItem('hortifruti2_user', JSON.stringify(userData));
-        console.log('💾 Usuário salvo no localStorage (rápido)');
+        // Salvar/atualizar no Firestore
+        await db.collection('users').doc(user.uid).set(userData, { merge: true });
         
-        // 2. Atualizar window.currentUser
-        window.currentUser = userData;
-        
-        // 3. Depois salvar no Firestore (pode ser mais lento)
-        await db.collection('hortifruti2_users').doc(user.uid).set(userData, { merge: true });
-        console.log('✅ Usuário salvo no Firestore');
+        console.log('✅ Usuário salvo no Firestore:', user.uid);
         
     } catch (error) {
-        console.error('❌ Erro ao salvar usuário:', error);
+        console.error('❌ Erro ao salvar usuário no Firestore:', error);
     }
 }
 
@@ -14156,8 +14560,7 @@ function viewOrderHistory() {
 function userLogout() {
     if (confirm('Deseja sair da sua conta?')) {
         window.currentUser = null;
-        // ALTERAR: 'delivery_bebidas_user' para 'hortifruti2_user'
-        localStorage.removeItem('hortifruti2_user'); // ← MUDAR AQUI
+        localStorage.removeItem('hortifruti2_user');
         updateUserUI();
         alert('Você saiu da sua conta.');
     }
@@ -14367,7 +14770,6 @@ async function registerWithFirebase(name, email, password, phone) {
 
 
 //----------------------------------------------------------------------------------------------------
-// =========================
 // FUNÇÃO DE PEDIDOS - VERSÃO 100% RESPONSIVA E FUNCIONAL
 // =========================
 
@@ -14735,7 +15137,10 @@ function renderizarPedidos(pedidos) {
         const clienteTelefone = pedido.cliente?.telefone || 'Não informado';
         const total = pedido.resumo?.total || pedido.total || 0;
         const itensCount = pedido.itens?.length || 0;
-        const numeroPedido = pedido.numeroPedido || pedido.id.substring(0, 8).toUpperCase();
+        /*const numeroPedido = pedido.numeroPedido || pedido.id.substring(0, 8).toUpperCase();*/
+        const numeroPedido = pedido.numeroPedido || 
+                    pedido.resumo?.numeroPedido || 
+                    `PD${pedido.id.substring(pedido.id.length - 6).toUpperCase()}`;
         const formaPagamento = pedido.resumo?.formaPagamento || '';
         const tipoEntrega = pedido.resumo?.entrega === 'delivery' ? '🛵 Delivery' : '🏪 Retirada';
         
@@ -14880,52 +15285,52 @@ function renderizarPedidos(pedidos) {
                     </div>
                     
                     <!-- BOTÕES DE AÇÃO -->
-                    <div style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        <button onclick="window.abrirDetalhesPedido('${pedido.id}')" 
-                                style="
-                                    padding: 10px;
-                                    background: #3498db;
-                                    color: white;
-                                    border: none;
-                                    border-radius: 6px;
-                                    cursor: pointer;
-                                    font-weight: bold;
-                                    font-size: 13px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    gap: 5px;
-                                    transition: all 0.2s;
-                                    min-height: 40px;
-                                    white-space: nowrap;
-                                "
-                                ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
-                                ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
-                            👁️ Ver
-                        </button>
-                        <button onclick="window.alterarStatusPedido('${pedido.id}', '${status}')" 
-                                style="
-                                    padding: 10px;
-                                    background: ${statusInfo.cor};
-                                    color: white;
-                                    border: none;
-                                    border-radius: 6px;
-                                    cursor: pointer;
-                                    font-weight: bold;
-                                    font-size: 13px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    gap: 5px;
-                                    transition: all 0.2s;
-                                    min-height: 40px;
-                                    white-space: nowrap;
-                                "
-                                ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
-                                ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
-                            🔄 Status
-                        </button>
-                    </div>
+                        <div style="padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <button onclick="window.abrirDetalhesPedido('${pedido.id}')" 
+                                    style="
+                                        padding: 10px;
+                                        background: #3498db;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        font-weight: bold;
+                                        font-size: 13px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 5px;
+                                        transition: all 0.2s;
+                                        min-height: 40px;
+                                        white-space: nowrap;
+                                    "
+                                    ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
+                                    ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
+                                👁️ Ver
+                            </button>
+                            <button onclick="window.alterarStatusPedido('${pedido.id}', '${numeroPedido}')" 
+                                    style="
+                                        padding: 10px;
+                                        background: ${statusInfo.cor};
+                                        color: white;
+                                        border: none;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        font-weight: bold;
+                                        font-size: 13px;
+                                        display: flex;
+                                        align-items: center;
+                                                justify-content: center;
+                                        gap: 5px;
+                                        transition: all 0.2s;
+                                        min-height: 40px;
+                                        white-space: nowrap;
+                                    "
+                                    ontouchstart="this.style.transform='scale(0.95)'; this.style.opacity='0.9'"
+                                    ontouchend="this.style.transform='scale(1)'; this.style.opacity='1'">
+                                🔄 Status
+                            </button>
+                        </div>
                     
                 </div>
             </div>
@@ -15029,21 +15434,6 @@ window.abrirDetalhesPedido = function(pedidoId) {
             }, 100);
         }
     }, 300);
-};
-
-window.alterarStatusPedido = function(pedidoId, statusAtual) {
-    console.log('🔄 Alterando status do pedido:', pedidoId, 'Status atual:', statusAtual);
-    
-    // Usar sua função existente
-    if (typeof alterarStatusPedido === 'function') {
-        alterarStatusPedido(pedidoId, statusAtual);
-    } else {
-        // Fallback
-        const novoStatus = prompt(`Alterar status do pedido ${pedidoId}\n\nStatus atual: ${statusAtual}\n\nNovo status:`, 'entregue');
-        if (novoStatus) {
-            alert(`Status alterado para: ${novoStatus}`);
-        }
-    }
 };
 
 // ADICIONAR ESTILOS RESPONSIVOS
