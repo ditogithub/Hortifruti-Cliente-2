@@ -352,7 +352,7 @@ header {
 #btnOpenCart{ background:rgba(255,255,255,0.12); color:#fff; padding:6px 10px; border-radius:6px; border:0; cursor:pointer; font-weight:700; }
 .page { padding:19px; max-width:1400px; margin:0 auto; }
 .layout-coluna{ display:flex; flex-direction:column; gap:14px; align-items:center; }
-.card{ background:var(--card); border-radius:10px; padding-top: 67px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
+.card{ background:var(--card); border-radius:10px; padding-top: 45px; width:103%; max-width:1390px; box-shadow:0 6px 18px rgba(0,0,0,0.04); position:relative; }
 .products{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
 .product{ width:180px; background:#fafafa; border:1px solid #eee; border-radius:8px; padding:8px; text-align:center; display:flex; flex-direction:column; gap:8px; }
 
@@ -1919,17 +1919,41 @@ table {
   </div>
 
   <!-- ÁREA DO USUÁRIO LOGADO -->
-  <div id="userInfoArea" class="user-info-area" style="display: none;">
-    <span id="userEmail" class="user-email">Carregando...</span>
-    <button id="btnLogout" class="btn-logout">
-      <i class="fas fa-sign-out-alt"></i> Sair
-    </button>
-  </div>
+<div id="userInfoArea" class="user-info-area" style="display: none; align-items: center; gap: 8px;">
+  <span id="userEmail" class="user-email" style="
+    font-size: 12px; 
+    color: #2c3e50;
+    font-weight: 400;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  ">Carregando...</span>
+  
+  <button id="btnLogout" class="btn-logout" style="
+    padding: 3px 12px;
+    font-size: 11px;
+    border-radius: 4px;
+    background: #f8f9fa;
+    border: 1px solid #ced4da;
+    color: #6c757d;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+    height: 10px;
+  "
+  onmouseover="this.style.background='#e9ecef'; this.style.color='#495057';"
+  onmouseout="this.style.background='#f8f9fa'; this.style.color='#6c757d';">
+    <i class="fas fa-sign-out-alt" style="font-size: 10px;"></i> Sair
+  </button>
+</div>
 
   <!--------------------------------------------------------------------------------------------------->
-  <!-- REDES SOCIAIS -->
+  <!-- REDES SOCIAIS 
 <div style="display: flex; gap: 15px; margin-top: 8px;">
-  <!-- Instagram -->
+  <!-- Instagram 
   <a href="https://www.instagram.com/ta_na_mao_delivery/" 
      target="_blank"
      style="
@@ -1941,9 +1965,9 @@ table {
        font-weight: bold;
      ">
     <i class="fab fa-instagram" style="font-size: 24px;"></i>
-  </a>
+  </a> -->
   
-  <!-- Facebook -->
+  <!-- Facebook 
   <a href="https://www.facebook.com/DeliveryTNM" 
      target="_blank"
      style="
@@ -1956,7 +1980,7 @@ table {
      ">
     <i class="fab fa-facebook" style="font-size: 24px;"></i>
   </a>
-</div>
+</div> -->
   <!------------------------------------------------------------------------------------------------->
    <!-- Adicione este código no cabeçalho, depois do botão do carrinho -->
 <button id="btnUserLogin" style="
@@ -1970,9 +1994,9 @@ table {
     display: flex;
     align-items: center;
     gap: 4px; /* Reduzido de 6px */
-    font-size: 10px; /* Adicionado para texto menor */
+    font-size: 12px; /* Adicionado para texto menor */
 ">
-    <i class="fas fa-user" style="font-size: 11px;"></i> <!-- Reduzido de 14px -->
+    <i class="fas fa-user" style="font-size: 12px;"></i> <!-- Reduzido de 14px -->
     <span id="userLoginText">Entrar</span>
 </button>
 
@@ -2026,7 +2050,7 @@ table {
 
   <!-- Produtos / catálogo -->
   <div class="card" id="catalogCard">
-    <h2 style="text-align:center;margin:0 0 8px 0;">Produtos</h2>
+    <h3 style="text-align:center;margin:0 0 8px 0;">Produtos</h3>
     <div id="productsList" class="products"></div>
 
     <!-- bloco mostrado quando vendas estão bloqueadas -->
@@ -2170,11 +2194,41 @@ table {
         <button class="btn" id="btnCopyPayload" style="margin-top:6px; background:var(--blue); color:#fff;">📋 Copiar código PIX</button>
       </div>
     </div>
-
+  <!------------------------------------------------------------------------------------------------------------->
   </div>
+  <!-- REDES SOCIAIS -->
+    <div style="display: flex; gap: 15px; margin-top: 8px;">
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/ta_na_mao_delivery/" 
+        target="_blank"
+        style="
+          color: #000000;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-weight: bold;
+        ">
+        <i class="fab fa-instagram" style="font-size: 24px;"></i>
+      </a> 
+      
+      <!-- Facebook -->
+      <a href="https://www.facebook.com/DeliveryTNM" 
+        target="_blank"
+        style="
+          color: #000000;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-weight: bold;
+        ">
+        <i class="fab fa-facebook" style="font-size: 24px;"></i>
+      </a>
+    </div> 
+<!------------------------------------------------------------------------------------------------------------->
 </div>
 </main>
-
 <script>
 
 //FIREBASE HORTIFRUTI 2
@@ -7110,7 +7164,7 @@ function showLoginModal() {
                             gap: 8px;
                         ">
                     <span id="loginBtnText">Entrar</span>
-                    <div id="loginLoading" style="display: none; width: 18px; height: 18px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <div id="loginLoading" style="display: none; width: 5px; height: 5px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                 </button>
             </div>
             
